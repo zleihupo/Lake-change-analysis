@@ -1,0 +1,57 @@
+region,feature,dir_metric,dir_type
+Africa,hemisphere_south,0.6978,rho(shap)
+Africa,pet_mm,-0.6339,rho(shap)
+Africa,precip_mm,-0.4246,rho(shap)
+Africa,snow_cover_pct,,
+Africa,snow_depth_cm,,
+Africa,temp_C,-0.5433,rho(shap)
+Amazon,pet_mm,-0.6169,rho(shap)
+Amazon,precip_mm,0.0297,rho(shap)
+Amazon,snow_cover_pct,,
+Amazon,snow_depth_cm,,
+Amazon,temp_C,-0.3669,rho(shap)
+Australia,pet_mm,0.637,rho(shap)
+Australia,precip_mm,-0.237,rho(shap)
+Australia,snow_cover_pct,,
+Australia,snow_depth_cm,,
+Australia,temp_C,-0.2199,rho(shap)
+Central Asia,pet_mm,-0.7291,rho(shap)
+Central Asia,precip_mm,-0.4734,rho(shap)
+Central Asia,snow_cover_pct,0.7779,rho(shap)
+Central Asia,snow_depth_cm,0.2331,rho(shap)
+Central Asia,temp_C,0.1966,rho(shap)
+East Asia,pet_mm,0.5341,rho(shap)
+East Asia,precip_mm,0.0024,rho(shap)
+East Asia,snow_cover_pct,,
+East Asia,snow_depth_cm,,
+East Asia,temp_C,0.0897,rho(shap)
+Europe,pet_mm,0.378,rho(shap)
+Europe,precip_mm,0.3108,rho(shap)
+Europe,snow_cover_pct,-0.6561,rho(shap)
+Europe,snow_depth_cm,0.5842,rho(shap)
+Europe,temp_C,0.5141,rho(shap)
+Greenland,pet_mm,-0.4152,rho(shap)
+Greenland,precip_mm,0.7154,rho(shap)
+Greenland,snow_cover_pct,-0.7386,rho(shap)
+Greenland,snow_depth_cm,0.6493,rho(shap)
+Greenland,temp_C,-0.8931,rho(shap)
+Sahara,pet_mm,0.3691,rho(shap)
+Sahara,precip_mm,0.5432,rho(shap)
+Sahara,snow_cover_pct,,
+Sahara,snow_depth_cm,,
+Sahara,temp_C,0.4942,rho(shap)
+Siberia,pet_mm,-0.5702,rho(shap)
+Siberia,precip_mm,-0.4036,rho(shap)
+Siberia,snow_cover_pct,0.4261,rho(shap)
+Siberia,snow_depth_cm,-0.8051,rho(shap)
+Siberia,temp_C,-0.4824,rho(shap)
+Tibetan Plateau,pet_mm,-0.475,rho(shap)
+Tibetan Plateau,precip_mm,0.3413,rho(shap)
+Tibetan Plateau,snow_cover_pct,-0.8291,rho(shap)
+Tibetan Plateau,snow_depth_cm,-0.8258,rho(shap)
+Tibetan Plateau,temp_C,-0.6654,rho(shap)
+Xinjiang,pet_mm,0.1685,rho(shap)
+Xinjiang,precip_mm,-0.1685,rho(shap)
+Xinjiang,snow_cover_pct,0.0827,rho(shap)
+Xinjiang,snow_depth_cm,-0.5903,rho(shap)
+Xinjiang,temp_C,0.7046,rho(shap)
