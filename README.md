@@ -245,13 +245,3 @@ python viz/plot.py
 
 ---
 
-## 📜 License
-MIT License
-
----
-
-## ✨ Citation
-如使用本仓库，请引用：
-```
-Lei, Z. (2025). Lake Change Analysis with Remote Sensing and Deep Learning. GitHub repository.
-```
