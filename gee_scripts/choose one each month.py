@@ -7,10 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/15mHmpKcKzPc7sH3JBuxt0SS3y3j-Vr7u
 """
 
-# 安装依赖（仅首次运行需要）
+# Install dependencies (only needed for the first run)
 !pip install rasterio matplotlib tqdm
 
-# 挂载 Google Drive（如果在 Colab 上运行）
+# Mount Google Drive (if running on Colab)
 from google.colab import drive
 drive.mount('/content/drive')
 
@@ -24,7 +24,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import gc
 
-# ========== 参数设置 ==========
+# ========== Parameter settings ==========
 input_root = "/content/drive/MyDrive/lake100_orignal"
 output_root = "/content/drive/MyDrive/image"
 os.makedirs(output_root, exist_ok=True)
@@ -32,27 +32,27 @@ os.makedirs(output_root, exist_ok=True)
 batch_size = 200
 max_workers = 2
 
-# ========== 图像评分函数（增强版） ==========
-# 最终严格版 image_score 函数
+# ========== Image scoring function (enhanced version) ==========
+# Final strict version of image_score function
 
 
 def image_score(img):
-    # Step 0: 检查通道和尺寸
+    # Step 0: Check channels and dimensions
     if img.shape[0] < 3 or img.shape[1] == 0 or img.shape[2] == 0:
-        return -1, "❌ 图像通道不足或尺寸为0"
+        return -1, "❌ Insufficient channels or zero dimension"
 
-    # Step 1: 检查是否含 NaN（可能来自损坏图像）
+    # Step 1: Check if contains NaN (possibly from corrupted image)
     if np.isnan(img).any():
-        return -1, "❌ 图像包含 NaN"
+        return -1, "❌ Image contains NaN"
 
-    # Step 2: 预处理
+    # Step 2: Preprocessing
     r = img[0].astype(np.float32)
     g = img[1].astype(np.float32)
     b = img[2].astype(np.float32)
     brightness = (r + g + b) / 3
     h, w = brightness.shape
 
-    # Step 3: 中心区域检测
+    # Step 3: Center region detection
     ch, cw = h // 4, w // 4
     center_r = r[ch:3 * ch, cw:3 * cw]
     center_g = g[ch:3 * ch, cw:3 * cw]
@@ -63,39 +63,39 @@ def image_score(img):
     center_std = np.std(center_brightness)
 
 
-    # Step 5: 云检测（灰白区域）
+    # Step 5: Cloud detection (grayish-white regions)
     grayish = (np.abs(r - g) < 25) & (np.abs(r - b) < 25) & (np.abs(g - b) < 25)
     cloud_mask = (brightness > 220) & grayish
     cloud_ratio = np.sum(cloud_mask) / brightness.size
 
-    # Step 6: 白像素比例（强反射区域）
+    # Step 6: White pixel ratio (high reflectance regions)
     white_ratio = np.sum(brightness > 245) / brightness.size
 
-    # Step 7: 黑像素比例（缺失图）
+    # Step 7: Black pixel ratio (missing images)
     black_ratio = np.sum(brightness < 10) / brightness.size
 
-    # Step 8: 图像完整性过滤
+    # Step 8: Image integrity filtering
     if center_mean < 30:
-        return -1, "中心亮度太低"
+        return -1, "Center brightness too low"
     if center_std < 5:
-        return -1, "中心区域对比度太低"
+        return -1, "Center region contrast too low"
     if black_ratio > 0.2:
-        return -1, "黑像素过多"
+        return -1, "Too many black pixels"
     if np.max(brightness) < 50:
-        return -1, "整体亮度不足"
+        return -1, "Overall brightness too low"
 
-    # Step 9: 综合评分（越小越优）
+    # Step 9: Comprehensive score (the smaller the better)
     score = cloud_ratio + 0.5 * white_ratio
-    return -score, "✅ 合格"
+    return -score, "Qualified"
 
 
 
-# ========== 处理单个文件夹 ==========
+# ========== Process a single folder ==========
 def process_folder(folder):
     try:
         tif_files = [f for f in os.listdir(folder) if f.lower().endswith(".tif")]
         if not tif_files:
-            return f"⚠️ 无图像: {folder}"
+            return f"No images: {folder}"
 
         best_score = float("-inf")
         best_img = None
@@ -115,7 +115,7 @@ def process_folder(folder):
                     best_reason = reason
 
         if best_img is None or best_score == -1:
-            return f"⚠️ 无有效图像: {folder}（原因：{best_reason}）"
+            return f"No valid image: {folder} (Reason: {best_reason})"
 
         rgb = best_img[:3].astype(np.uint8)
         rgb = np.transpose(rgb, (1, 2, 0))
@@ -126,7 +126,7 @@ def process_folder(folder):
         if match:
             lake, year, month = match.groups()
         else:
-            return f"⚠️ 无法解析: {folder_name}"
+            return f"Unable to parse: {folder_name}"
 
         filename = f"{lake}_{year}_{month}_img.png"
         out_path = os.path.join(output_root, filename)
@@ -134,33 +134,31 @@ def process_folder(folder):
 
         del best_img, rgb, img_pil
         gc.collect()
-        return f"✅ 保存: {filename}（评分: {best_score:.3f}）"
+        return f"Saved: {filename} (Score: {best_score:.3f})"
 
     except Exception as e:
-        return f"❌ 错误: {folder}\n{e}"
+        return f"Error: {folder}\n{e}"
 
-# ========== 分批执行 ==========
+# ========== Batch execution ==========
 total = len(all_folders)
-print(f"📂 共需处理 {total} 个文件夹，每批 {batch_size} 个")
+print(f"Total to process {total} folders, {batch_size} per batch")
 
 start_all = time.time()
 
 for i in range(0, total, batch_size):
     batch = all_folders[i:i + batch_size]
-    print(f"\n🚀 开始第 {i//batch_size + 1} 批，共 {len(batch)} 个")
+    print(f"\n🚀 Starting batch {i//batch_size + 1}, total {len(batch)}")
 
     start_batch = time.time()
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(process_folder, folder): folder for folder in batch}
-        for future in tqdm(as_completed(futures), total=len(futures), desc="📷 处理中"):
+        for future in tqdm(as_completed(futures), total=len(futures), desc="📷 Processing"):
             result = future.result()
             print(result)
             with open("image_selection_log.txt", "a") as log:
                 log.write(result + "\n")
 
-    print(f"✅ 当前批次耗时：{(time.time() - start_batch):.2f} 秒")
+    print(f"Current batch time: {(time.time() - start_batch):.2f} seconds")
 
-print(f"\n🎉 全部处理完成，总耗时：{(time.time() - start_all)/60:.2f} 分钟")
-
-
+print(f"\nAll processing completed, total time: {(time.time() - start_all)/60:.2f} minutes")
