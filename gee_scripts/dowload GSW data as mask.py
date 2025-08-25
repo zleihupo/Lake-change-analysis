@@ -7,11 +7,11 @@ Original file is located at
     https://colab.research.google.com/drive/173p2AmUCQzXNlC0c9i9FJX8wJwJqEbvo
 """
 
-# 🚩 Step 1: Mount Google Drive (authorize after running)
+# Step 1: Mount Google Drive (authorize after running)
 from google.colab import drive
 drive.mount('/content/drive')
 
-# ✅ Use Earth Engine to batch export monthly_history images (10 lakes per batch) + generate CSV index (using lake names)
+# Use Earth Engine to batch export monthly_history images (10 lakes per batch) + generate CSV index (using lake names)
 import ee
 import time
 import csv
@@ -33,7 +33,7 @@ SLEEP_BETWEEN_BATCHES = 30  # Wait between batches (seconds)
 EXPORT_FOLDER = "GSW_MonthlyHistory"  # Root folder in Google Drive
 INDEX_CSV = "gsw_export_index.csv"  # Index file name
 
-# ✅ Example: Lake names + coordinates
+# Example: Lake names + coordinates
 lake_info = [
     ("Namtso", [90.1, 30.2, 91.05, 31.1]),
     ("Yamdrok", [90.3, 28.65, 91.1, 29.45]),
@@ -145,7 +145,7 @@ with open(INDEX_CSV, mode='w', newline='') as csvfile:
     # Execute export tasks in batches
     for batch_start in range(0, len(lake_info), LAKES_PER_BATCH):
         batch = lake_info[batch_start:batch_start + LAKES_PER_BATCH]
-        print(f"🚀 Executing batch {batch_start//LAKES_PER_BATCH + 1}...")
+        print(f"Executing batch {batch_start//LAKES_PER_BATCH + 1}...")
 
         for lake_name, (lon_min, lat_min, lon_max, lat_max) in tqdm(batch):
             region = ee.Geometry.Rectangle([lon_min, lat_min, lon_max, lat_max])
@@ -174,15 +174,15 @@ with open(INDEX_CSV, mode='w', newline='') as csvfile:
                     )
                     task.start()
                     writer.writerow([lake_name, ym_year, month, filename + ".tif", folder_path])
-                    print(f"✅ Task submitted: {folder_path}/{filename}")
+                    print(f"Task submitted: {folder_path}/{filename}")
                     time.sleep(SLEEP_BETWEEN_TASKS)
 
-        print(f"⏳ Batch {batch_start//LAKES_PER_BATCH + 1} done, waiting {SLEEP_BETWEEN_BATCHES}s...\n")
+        print(f"Batch {batch_start//LAKES_PER_BATCH + 1} done, waiting {SLEEP_BETWEEN_BATCHES}s...\n")
         time.sleep(SLEEP_BETWEEN_BATCHES)
 
-print("🎉 All tasks submitted. Check Earth Engine Task panel for progress.\nExported images will be automatically saved to your Google Drive → 'GSW_MonthlyHistory/<lake_name>/<year>/'\n📄 Index CSV file generated: gsw_export_index.csv")
+print("All tasks submitted. Check Earth Engine Task panel for progress.\nExported images will be automatically saved to your Google Drive → 'GSW_MonthlyHistory/<lake_name>/<year>/'\n📄 Index CSV file generated: gsw_export_index.csv")
 
-# ✅ Mask extraction function
+# Mask extraction function
 def convert_to_mask_png_if_water(in_path, out_path):
     with rasterio.open(in_path) as src:
         image = src.read(1)
@@ -190,7 +190,7 @@ def convert_to_mask_png_if_water(in_path, out_path):
     # Check if water pixels exist
     has_water = np.any((image == 254) | (image == 2) | (np.isclose(image, 2.0)))
     if not has_water:
-        print(f"⚠️ No water pixels, skipped: {os.path.basename(in_path)}")
+        print(f"No water pixels, skipped: {os.path.basename(in_path)}")
         return False
 
     mask = np.where((image == 254) | (image == 2) | (np.isclose(image, 2.0)), 255, 0).astype(np.uint8)
@@ -206,6 +206,6 @@ for folder, file in tqdm(tif_files):
         if convert_to_mask_png_if_water(in_path, out_path):
             converted += 1
     except Exception as e:
-        print(f"❌ Failed: {file} → {e}")
+        print(f"Failed: {file} → {e}")
 
-print("✅ All PNG mask images generated and saved into a single mask folder!")
+print("All PNG mask images generated and saved into a single mask folder!")
