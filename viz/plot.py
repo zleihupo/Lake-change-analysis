@@ -48,7 +48,7 @@ if MODE == "drive":
 
 else:
     from google.colab import files
-    print("👉 Please select the required files (multiple selection allowed): test images/masks ZIP, NPY, HTML, CSV etc.")
+    print("Please select the required files (multiple selection allowed): test images/masks ZIP, NPY, HTML, CSV etc.")
     uploaded = files.upload()
     # If zip is uploaded, unzip it
     def unzip_if_exists(zipname, outdir):
@@ -248,9 +248,9 @@ lake_col   = find_col(["lake","lakename","name","lake","location"])
 region_col = find_col(["region","zone","area","region","district"])
 if lake_col is None:
     # If no lake column, fallback to global baseline
-    print("⚠️ No lake column detected, will use global baseline of all samples.")
+    print("No lake column detected, will use global baseline of all samples.")
 if region_col is None:
-    print("⚠️ No region column detected, all assigned to 'All'.")
+    print("No region column detected, all assigned to 'All'.")
     region_col = "region"
     df[region_col] = "All"
 
@@ -331,7 +331,7 @@ plt.tight_layout()
 plt.savefig("Fig8_region_small_multiples.png", dpi=300)
 plt.show()
 plt.close(fig)
-print("✅ Saved: Fig8_region_small_multiples.png")
+print("Saved: Fig8_region_small_multiples.png")
 
 out9 = None
 if PERM_CSV and os.path.exists(PERM_CSV):
@@ -391,9 +391,9 @@ if SAVE_TO_DRIVE and MODE=="drive":
     os.makedirs(out_dir, exist_ok=True)
     for f in outs:
         shutil.copy2(f, os.path.join(out_dir, f))
-    print("✅ Copied to:", out_dir)
+    print("Copied to:", out_dir)
 
-print("👇 Select the images you want to download (multiple allowed):")
+print("Select the images you want to download (multiple allowed):")
 for f in outs:
     files.download(f)
 
