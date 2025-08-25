@@ -11,7 +11,7 @@ from google.colab import drive
 drive.mount('/content/drive')
 
 # =============================================
-# 🚀 Fast Evaluate + Soft Voting (cached preds, vectorized metrics)
+# Fast Evaluate + Soft Voting (cached preds, vectorized metrics)
 # =============================================
 import os, glob
 import numpy as np
@@ -164,7 +164,7 @@ df = pd.DataFrame(rows, columns=["U-Net","SegNet","FCN","Thresh","F1","IoU","Acc
 df = df.sort_values('F1', ascending=False).reset_index(drop=True)
 df.to_csv("grid_search_ensemble_results.csv", index=False)
 
-print("\n🏆 Best (F1): (wu,ws,wf) =", (best['wu'],best['ws'],best['wf']),
+print("\nBest (F1): (wu,ws,wf) =", (best['wu'],best['ws'],best['wf']),
       " thr=", round(best['t'],3))
 print("   → F1={F1:.4f}, IoU={IoU:.4f}, Acc={Acc:.4f}, Prec={Prec:.4f}, Rec={Rec:.4f}".format(**best))
 print("Saved: grid_search_ensemble_results.csv")
@@ -179,7 +179,7 @@ if x_val is not None:
     np.save("pred_fcn_val.npy",  p_fcn_v)
 
 # =============================================
-# 📊 Visualization (Matplotlib-only, fast)
+# Visualization (Matplotlib-only, fast)
 # Attach directly to the end of the above script
 # Required variables: df (weighted combination results table), best, y_unet/y_seg/y_fcn, y_test_flat, metrics_from_flat
 # =============================================
