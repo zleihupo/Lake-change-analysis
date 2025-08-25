@@ -10,17 +10,15 @@ Original file is located at
 from google.colab import drive
 drive.mount('/content/drive')
 
-# ========== 0) 依赖安装（如需要） ==========
+# ========== 0) Dependency installation (if necessary) ==========
 import sys, subprocess
 
 def pip_install(pkgs):
     try:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "-q"] + pkgs)
     except Exception as e:
-        print("pip 安装失败:", e)
+        print("pip Installation failed:", e)
 
-# Colab 通常已自带 pandas/numpy/sklearn/matplotlib
-# 但 statsmodels/shap/openpyxl/xlsxwriter 可能缺失
 try:
     import statsmodels.api as sm  # noqa: F401
 except:
@@ -29,13 +27,13 @@ except:
 try:
     import shap  # noqa: F401
 except:
-    # 不强制，若失败将自动启用 PDP 方向
+    # Not mandatory, if it fails, the PDP direction will be automatically enabled
     try:
         pip_install(["shap"]) ; import shap
     except Exception:
         shap = None
 
-# Excel 写入引擎
+# Excel Write Engine
 try:
     import openpyxl  # noqa: F401
 except:
@@ -46,7 +44,7 @@ try:
 except:
     pip_install(["xlsxwriter"]) ; import xlsxwriter
 
-# ========== 1) 导入基础库 ==========
+# ========== 1)Import basic ==========
 import os
 import warnings
 warnings.filterwarnings("ignore")
@@ -61,14 +59,14 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.inspection import permutation_importance
 from scipy.stats import spearmanr
 
-# ========== 2) I/O 工具 ==========
+# ========== 2) I/O Tools ==========
 CONTENT_DIR = "/content"
 CSV_DEFAULT = os.path.join(CONTENT_DIR, "100Lake_area_Temperature_2000-2025.csv")
 XLSX_OUT = os.path.join(CONTENT_DIR, "lake_summer_AI_analysis.xlsx")
 
 
 def show(df: pd.DataFrame, title: str = None, save_csv: bool = False, fname: str = None, head: int = 10):
-    """通用展示函数：打印形状、显示前几行，可选保存为 CSV。"""
+    """General display functions: print shapes, display first few rows, optionally save to CSV."""
     if title:
         print("\n===", title, "===")
     print("shape:", df.shape)
@@ -81,33 +79,33 @@ def show(df: pd.DataFrame, title: str = None, save_csv: bool = False, fname: str
             safe = (title or "table").replace(" ", "_").replace("/", "-")
             fname = os.path.join(CONTENT_DIR, f"{safe}.csv")
         df.to_csv(fname, index=False)
-        print("已保存:", fname)
+        print("saved:", fname)
 
-# ========== 3) 读入数据 ==========
-# 方式A：直接从 /content 读取（推荐将 CSV 放到左侧文件面板的 /content）
+# ========== 3) load data ==========
+# Method A: Read directly from /content 
 CSV_PATH = CSV_DEFAULT
 
 if not os.path.exists(CSV_PATH):
-    # 方式B：若不存在，弹出上传窗口
+    # Method B: If it does not exist, the upload window will pop up.
     try:
         from google.colab import files
-        print("未在 /content 找到CSV，请选择本地CSV上传……")
+        print("No CSV found in /content, please select local CSV upload...")
         uploaded = files.upload()
         if uploaded:
-            # 取第一个文件
+            # Get the first file
             CSV_PATH = list(uploaded.keys())[0]
     except Exception:
-        # 方式C：可选挂载 Drive 手动指定路径
-        print("如需从 Google Drive 读取，请先挂载：")
+        # Method C: Optional Mount Drive Manually Specify Path
+        print("To read from Google Drive, mount it first:")
         print("from google.colab import drive; drive.mount('/content/drive')")
-        print("然后将 CSV_PATH 指到你的 Drive 路径即可。")
-        raise FileNotFoundError("未找到 CSV，请上传或修改 CSV_PATH")
+        print("Then point CSV_PATH to your Drive path.")
+        raise FileNotFoundError("CSV not found, please upload or modify CSV_PATH")
 
-print("使用数据文件:", CSV_PATH)
+print("use data file:", CSV_PATH)
 
 df = pd.read_csv(CSV_PATH)
 
-# ========== 4) 预处理（与原逻辑一致） ==========
+# ========== 4) preprocessing ==========
 
 def to_numeric(x):
     try:
@@ -115,27 +113,27 @@ def to_numeric(x):
     except:
         return np.nan
 
-# 清洗面积
+# Cleaning area
 if 'area_m2' not in df.columns:
-    raise ValueError("数据缺少 'area_m2' 列")
+    raise ValueError("The data is missing the 'area_m2' column")
 
 df['area_m2'] = df['area_m2'].apply(to_numeric)
 
-# 基本字段
+# Basic fields
 for col in ['year', 'month']:
     if col not in df.columns:
-        raise ValueError(f"数据缺少 '{col}' 列")
+        raise ValueError(f"Data is missing column '{col}'")
 
 df['year'] = df['year'].astype(int)
 df['month'] = df['month'].astype(int)
 df['date'] = pd.to_datetime(dict(year=df['year'], month=df['month'], day=1))
 
-# 仅保留正面积
+# Keep only positive areas
 df = df[df['area_m2'] > 0].copy()
 
-# 半球夏季筛选
+# Hemisphere Summer Screening
 if 'hemisphere' not in df.columns:
-    raise ValueError("数据缺少 'hemisphere' 列 (north/south)")
+    raise ValueError("The data is missing the 'hemisphere' column (north/south)")
 
 
 def is_summer(row):
@@ -149,9 +147,9 @@ def is_summer(row):
 df['is_summer'] = df.apply(is_summer, axis=1)
 df = df[df['is_summer']].copy()
 
-# 计算基线面积（2000-2002 夏季均值），无则回退为该湖首3条夏季记录均值
+# Calculate the baseline area (summer average of 2000-2002). If there is no baseline area, fall back to the average of the first three summer records of the lake.
 if 'lake' not in df.columns:
-    raise ValueError("数据缺少 'lake' 列")
+    raise ValueError("The data is missing the 'lake' column")
 
 baseline = (
     df[(df['year'] >= 2000) & (df['year'] <= 2002)]
@@ -173,15 +171,15 @@ base['baseline_area_m2'] = base['baseline_area_m2'].fillna(base['fallback_baseli
 base = base[['baseline_area_m2']].dropna()
 base = base[base['baseline_area_m2'] > 0]
 
-# 合并并计算面积指数
+# Merge and calculate area index
 df = df.merge(base, left_on='lake', right_index=True, how='inner')
 df['area_index'] = df['area_m2'] / df['baseline_area_m2']
 
-# 聚合：夏季 lake-year 粒度
+# Aggregation: Summer lake-year granularity
 required_feats = ['temp_C', 'precip_mm', 'pet_mm', 'snow_cover_pct', 'snow_depth_cm']
 for c in required_feats + ['region', 'hemisphere']:
     if c not in df.columns:
-        raise ValueError(f"数据缺少 '{c}' 列")
+        raise ValueError(f"Data is missing '{c}' column")
 
 agg_cols = {
     'area_index': 'mean',
@@ -198,9 +196,9 @@ summer_lake_year = (
       .reset_index()
 )
 
-show(summer_lake_year.head(20), "夏季 lake-year 聚合预览", head=20)
+show(summer_lake_year.head(20), "Summer lake-year aggregation preview", head=20)
 
-# ========== 5) 区域趋势（每10年斜率） ==========
+# ========== 5) Regional trends (slope per decade) ==========
 import statsmodels.api as sm
 
 
@@ -239,7 +237,7 @@ trend_table = pd.DataFrame(trend_rows).sort_values('region')
 trend_show = trend_table.copy()
 for c in ['temp_trend_C_per_decade', 'temp_trend_p', 'area_index_trend_per_decade', 'area_trend_p']:
     trend_show[c] = trend_show[c].round(3)
-show(trend_show, "(Summer only) 区域-十年趋势（温度 & 面积指数）", save_csv=True)
+show(trend_show, "(Summer only) Regional-Decade Trend (Temperature & Area Index)", save_csv=True)
 
 try:
     import shap
@@ -247,27 +245,27 @@ try:
 except:
     SHAP_AVAILABLE = False
 
-# ========== 6) 各区域机器学习（GBR） ==========
+# ========== 6) Machine Learning by Region (GBR)==========
 features_raw = required_feats
 perf_rows, imp_rows, direction_rows = [], [], []
 
 for reg in regions:
     d = summer_lake_year[summer_lake_year['region'] == reg].dropna(subset=['area_index'] + features_raw).copy()
     if d['year'].nunique() < 6 or len(d) < 100:
-        # 样本太少跳过
+        # Too few samples to skip
         continue
 
-    # 仅编码 hemisphere（drop_first=True -> 南半球为1）
+    # Encode only the hemisphere (drop_first=True -> the southern hemisphere is 1)
     dummies = pd.get_dummies(d[['hemisphere']], drop_first=True)
     X = pd.concat([d[features_raw], dummies], axis=1)
     y = d['area_index']
 
-    # 时间切分：train<=2018, val 2019-2021, test>=2022
+    # Time division：train<=2018, val 2019-2021, test>=2022
     train_mask = d['year'] <= 2018
     val_mask = (d['year'] >= 2019) & (d['year'] <= 2021)
     test_mask = d['year'] >= 2022
 
-    # 若切分不可用，按7/3时间分割回退
+    # If splitting is not available, fallback to 7/3 time split
     if y[train_mask].empty or y[test_mask].empty:
         years_sorted = sorted(d['year'].unique())
         split_year = years_sorted[int(len(years_sorted) * 0.7)]
@@ -279,11 +277,11 @@ for reg in regions:
     X_val, y_val = X[val_mask], y[val_mask]
     X_test, y_test = X[test_mask], y[test_mask]
 
-    # 模型
+    # model
     model = GradientBoostingRegressor(random_state=42)
     model.fit(X_train, y_train)
 
-    # 评估
+    # evaluation
     def eval_metrics(X_, y_):
         pred = model.predict(X_)
         return {
@@ -299,7 +297,7 @@ for reg in regions:
     perf_rows.append({'region': reg, 'split': 'train', **train_m})
     perf_rows.append({'region': reg, 'split': 'test', **test_m})
 
-    # 置换重要度（测试集）
+    # Permutation Importance (Test Set)
     try:
         perm = permutation_importance(
             model, X_test, y_test,
@@ -308,11 +306,11 @@ for reg in regions:
         for i, col in enumerate(X.columns):
             imp_rows.append({'region': reg, 'feature': col, 'perm_importance': float(perm.importances_mean[i])})
     except Exception as e:
-        print(f"Permutation importance 失败（{reg}）：", e)
+        print(f"Permutation importance fail（{reg}）：", e)
         for col in X.columns:
             imp_rows.append({'region': reg, 'feature': col, 'perm_importance': np.nan})
 
-    # 方向：优先 SHAP
+    # Direction: Prioritize SHAP
     if SHAP_AVAILABLE:
         try:
             explainer = shap.Explainer(model)
@@ -323,11 +321,11 @@ for reg in regions:
                 rho, _ = spearmanr(X_test[col], sv[:, j])
                 direction_rows.append({'region': reg, 'feature': col, 'shap_abs_mean': mag, 'direction_rho': float(rho)})
         except Exception as e:
-            print(f"SHAP 失败（{reg}）：", e)
-            SHAP_AVAILABLE = False  # 降级到 PDP
+            print(f"SHAP fail（{reg}）：", e)
+            SHAP_AVAILABLE = False  # Downgrade to PDP
 
     if not SHAP_AVAILABLE:
-        # 方向回退：PDP 在 20-80 分位区间的斜率
+        # Directional regression: the slope of the PDP in the 20th-80th percentile range
         for col in X.columns:
             xs = X_test[col].values
             if len(xs) < 10 or np.std(xs) == 0:
@@ -345,12 +343,12 @@ for reg in regions:
             slope = (preds[-1] - preds[0]) / (q80 - q20) if (q80 - q20) != 0 else np.nan
             direction_rows.append({'region': reg, 'feature': col, 'pdp_slope': slope})
 
-# 汇总表
+# Summary Table
 perf_tbl = pd.DataFrame(perf_rows)
 imp_tbl = pd.DataFrame(imp_rows)
 dir_tbl = pd.DataFrame(direction_rows)
 
-# Top-3 features（忽略 hemisphere dummy）
+# Top-3 features（dismiss hemisphere dummy）
 
 def summarize_top3(imp_df: pd.DataFrame) -> pd.DataFrame:
     rows = []
@@ -372,7 +370,7 @@ def summarize_top3(imp_df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values('region')
 
 
-# 合并方向信息（优先 SHAP rho，其次 PDP slope）
+# Incorporate directional information (SHAP rho first, PDP slope second)
 
 def merge_direction(imp_df: pd.DataFrame, dir_df: pd.DataFrame) -> pd.DataFrame:
     out = []
@@ -392,7 +390,7 @@ def merge_direction(imp_df: pd.DataFrame, dir_df: pd.DataFrame) -> pd.DataFrame:
 
 dir_merge = merge_direction(imp_tbl, dir_tbl)
 
-# 展示主要表格
+# Display main table
 if not perf_tbl.empty:
     perf_pivot = perf_tbl.pivot_table(index='region', columns='split', values=['MAE', 'RMSE', 'R2', 'n'])
     perf_pivot.columns = ['_'.join(col).strip() for col in perf_pivot.columns.values]
@@ -400,22 +398,22 @@ if not perf_tbl.empty:
     for c in perf_pivot.columns:
         if c != 'region' and pd.api.types.is_numeric_dtype(perf_pivot[c]):
             perf_pivot[c] = perf_pivot[c].round(3)
-    show(perf_pivot, "GBR 各区域性能（夏季）", save_csv=True)
+    show(perf_pivot, "GBR Regional Performance (Summer)", save_csv=True)
 else:
     perf_pivot = pd.DataFrame()
-    print("警告：perf_tbl 为空，可能因为所有区域样本不足被跳过。")
+    print("Warning: perf_tbl is empty, possibly skipped due to insufficient samples for all regions.")
 
 if not imp_tbl.empty:
     show(imp_tbl.sort_values(['region', 'perm_importance'], ascending=[True, False]).round(4),
-         "Permutation importance（按区域，夏季）", save_csv=True)
+         "Permutation Importance (By Region, Summer)", save_csv=True)
 
 if not dir_merge.empty:
     show(dir_merge.sort_values(['region', 'feature']).round(4),
-         "特征方向指标（rho(shap) 或 pdp_slope）", save_csv=True)
+         "Feature Directional Index (rho(shap) or pdp_slope)", save_csv=True)
 
 if not imp_tbl.empty:
     top3_tbl = summarize_top3(imp_tbl)
-    show(top3_tbl.round(4), "各区域 Top-3 重要特征（夏季）", save_csv=True)
+    show(top3_tbl.round(4), "Top 3 Important Features by Region (Summer)", save_csv=True)
 else:
     top3_tbl = pd.DataFrame()
 
@@ -431,11 +429,11 @@ with pd.ExcelWriter(XLSX_OUT, engine='xlsxwriter') as writer:
     if not top3_tbl.empty:
         top3_tbl.to_excel(writer, sheet_name='Top3', index=False)
 
-print("\n已导出 Excel:", XLSX_OUT)
-print("在 Colab 左侧文件面板中右键下载，或使用：")
+print("\nExported to Excel:", XLSX_OUT)
+print("Right-click in the file panel on the left of Colab to download, or use:")
 print("from google.colab import files; files.download(r'" + XLSX_OUT + "')")
 
-# ========== 8) （可选）快速摘要/检查 ==========
+# ========== 8) Quick Summary/Review ==========
 try:
     perf = pd.read_excel(XLSX_OUT, sheet_name='Model_Perf')
     if 'R2_test' in perf.columns:
@@ -446,9 +444,9 @@ try:
             'max_R2_test': float(test_r2.max()) if len(test_r2) > 0 else None,
             'num_regions': int(len(test_r2))
         }
-        print("\n测试集 R2 概览:", test_summary)
+        print("\nTest Set R2 Overview:", test_summary)
 except Exception as e:
-    print("摘要环节跳过：", e)
+    print("Skip the summary:", e)
 
 !ls -lh /content
 !zip -r /content/lake_analysis_outputs.zip /content/*.csv /content/*.xlsx
