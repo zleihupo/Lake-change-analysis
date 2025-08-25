@@ -1,4 +1,4 @@
-// ===== 数据源 =====
+// ===== data source =====
 var ERA5 = ee.ImageCollection("ECMWF/ERA5_LAND/MONTHLY_BY_HOUR")
   .select([
     'total_precipitation',   // m
@@ -7,7 +7,7 @@ var ERA5 = ee.ImageCollection("ECMWF/ERA5_LAND/MONTHLY_BY_HOUR")
     'snow_cover'             // 0–1
   ]);
 
-// ===== 湖泊列表 =====
+// ===== lake list =====
 var lakes = [
   {name: 'Namtso', geom: ee.Geometry.Polygon([[[90.10, 30.20], [91.05, 30.20], [91.05, 31.10], [90.10, 31.10], [90.10, 30.20]]]), hemisphere: 'north'},
   {name: 'Yamdrok', geom: ee.Geometry.Polygon([[[90.3, 28.65], [91.1, 28.65], [91.1, 29.45], [90.3, 29.45], [90.3, 28.65]]]), hemisphere: 'north'},
@@ -111,11 +111,11 @@ var lakes = [
   {name: 'Lake Gregory', geom: ee.Geometry.Polygon([[[127.24, -20.31], [127.53, -20.31], [127.53, -20.06], [127.24, -20.06], [127.24, -20.31]]]), hemisphere: 'south'}
 ];
 
-// ===== 时间范围 =====
+// ===== Time Range =====
 var START = '2000-01-01';
 var END   = '2025-3-31';
 
-// ===== 工具函数：逐月时间窗 =====
+// ===== Tool function: Monthly time window =====
 function monthSeq(start, end) {
   var s = ee.Date(start).advance(0, 'month').update({day: 1});
   var e = ee.Date(end).advance(1, 'month').update({day: 1});
@@ -127,10 +127,10 @@ function monthSeq(start, end) {
   });
 }
 
-// ===== 主函数：提取夏季数据并单位转换 =====
+// ===== Main function: extract summer data and convert units =====
 function getSummerClimate(lake) {
   var name = lake.name;
-  var geom = lake.geom.buffer(10000); // 扩 10km 缓冲
+  var geom = lake.geom.buffer(10000); // Expand 10km buffer
   var hemi = (lake.hemisphere || 'north').toLowerCase();
   var months = monthSeq(START, END);
 
@@ -141,7 +141,7 @@ function getSummerClimate(lake) {
     var y  = ee.Number(d.get('y'));
     var m  = ee.Number(d.get('m'));
 
-    // 夏季判断
+    // Summer
     var isSummer = (hemi === 'south')
       ? ee.List([12,1,2]).contains(m)
       : ee.List([6,7,8]).contains(m);
@@ -150,7 +150,7 @@ function getSummerClimate(lake) {
       var img = ERA5.filterDate(d1, d2).first();
       if (!img) return null;
 
-      // ===== 单位转换 =====
+      // ===== Unit conversion =====
       var precip_mm = ee.Number(
         img.select('total_precipitation')
           .reduceRegion({reducer: ee.Reducer.mean(), geometry: geom, scale: 9000, maxPixels: 1e13})
@@ -192,18 +192,19 @@ function getSummerClimate(lake) {
   return feats;
 }
 
-// ===== 批量运行 =====
+// ===== Batch Run =====
 var allRows = ee.FeatureCollection([]);
 lakes.forEach(function(lk){
   allRows = allRows.merge(getSummerClimate(lk));
 });
 
-print('总记录数', allRows.size());
+print('Total number of records', allRows.size());
 print(allRows.limit(10));
 
-// ===== 导出 =====
+// ===== Export =====
 Export.table.toDrive({
   collection: allRows,
   description: 'Lake_Climate_Summer_2000_2025_ERA5_UnitsConverted',
   fileFormat: 'CSV'
 });
+
