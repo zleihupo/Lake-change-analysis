@@ -1,6 +1,6 @@
-// GEE 脚本：湖泊面积 + 气温（2000–2025），GSW + Sentinel-2 NDWI（2022–2025）补充
+// lake area GSW + LANDSAT
 
-// ========== 湖泊列表（Polygon 格式） ==========
+// ========== lake list ==========
 var lakes = [
   {name: 'Namtso', geom: ee.Geometry.Polygon([[[90.10, 30.20], [91.05, 30.20], [91.05, 31.10], [90.10, 31.10], [90.10, 30.20]]]), hemisphere: 'north'},
   {name: 'Yamdrok', geom: ee.Geometry.Polygon([[[90.3, 28.65], [91.1, 28.65], [91.1, 29.45], [90.3, 29.45], [90.3, 28.65]]]), hemisphere: 'north'},
@@ -105,7 +105,7 @@ var lakes = [
 ];
 
 
-// ========== 数据提取逻辑 ==========
+// ========== Data extraction logic==========
 var allFeatures = [];
 
 lakes.forEach(function(lake) {
@@ -118,7 +118,7 @@ lakes.forEach(function(lake) {
     return img.set('month', img.date().get('month'));
   }
 
-  // -------- GSW 面积（2000–2021） --------
+  // -------- GSW area（2000–2021） --------
   var areaGSW = ee.ImageCollection("JRC/GSW1_4/MonthlyHistory")
     .map(tagMonth)
     .filterBounds(geom)
@@ -141,7 +141,7 @@ lakes.forEach(function(lake) {
       });
     });
 
-// -------- 使用 Landsat 8 NDWI 代替 Sentinel-2（2022–2025，每年夏季每月一张） --------
+// -------- use Landsat 8 NDWI （2022–2025） --------
 var years = ee.List.sequence(2022, 2025);
 var months = ee.List(summer_months);
 
@@ -153,20 +153,20 @@ var ndwiList = years.map(function(year) {
     var filtered = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
       .filterBounds(geom)
       .filterDate(start, end)
-      .filter(ee.Filter.lt('CLOUD_COVER', 50))  // 放宽云量过滤
+      .filter(ee.Filter.lt('CLOUD_COVER', 50))  // cloud cover
       .sort('CLOUD_COVER');
 
     var img = ee.Image(filtered.first());
 
     return ee.Algorithms.If(img,
       (function() {
-        // 转换为 TOA 反射率（Landsat L2 为整数，需要缩放）
+        // Convert to TOA reflectance (Landsat L2 is integer and needs to be scaled)
         var green = img.select('SR_B3').multiply(0.0000275).add(-0.2);
         var nir = img.select('SR_B5').multiply(0.0000275).add(-0.2);
 
-        // 计算 NDWI（避免除0）
+        // Calculate NDWI (avoid division by zero)
         var ndwi = green.subtract(nir).divide(green.add(nir).add(1e-6)).rename('ndwi');
-        var water = ndwi.gt(0.25).selfMask();  // 阈值可调
+        var water = ndwi.gt(0.25).selfMask();  // Adjustable threshold
 
         var area = water.multiply(ee.Image.pixelArea()).reduceRegion({
           reducer: ee.Reducer.sum(),
@@ -194,7 +194,7 @@ var areaNDWI = ee.FeatureCollection(ndwiList).filter(ee.Filter.notNull(['area_m2
 
 
 
-  // -------- ERA5 气温（2000–2025） --------
+  // -------- ERA5 temperature（2000–2025） --------
   var tempTS = ee.ImageCollection("ECMWF/ERA5_LAND/MONTHLY")
     .map(tagMonth)
     .select('temperature_2m')
@@ -214,7 +214,7 @@ var areaNDWI = ee.FeatureCollection(ndwiList).filter(ee.Filter.notNull(['area_m2
       });
     });
 
-  // -------- 合并面积 + 温度（GSW） --------
+  // -------- Combined Area + Temperature（GSW） --------
   var joinedGSW = ee.Join.inner().apply({
     primary: areaGSW,
     secondary: tempTS,
@@ -225,7 +225,7 @@ var areaNDWI = ee.FeatureCollection(ndwiList).filter(ee.Filter.notNull(['area_m2
     return a.set('temp_C', b.get('temp_C'));
   });
 
-  // -------- 合并面积 + 温度（NDWI） --------
+  // -------- Combined Area + Temperature（NDWI） --------
   var joinedNDWI = ee.Join.inner().apply({
     primary: areaNDWI,
     secondary: tempTS,
@@ -236,7 +236,7 @@ var areaNDWI = ee.FeatureCollection(ndwiList).filter(ee.Filter.notNull(['area_m2
     return a.set('temp_C', b.get('temp_C'));
   });
 
-  // 安全拼接（检查非空）
+  // Safe splicing (check for non-empty)
   var gswSize = joinedGSW.size();
   var ndwiSize = joinedNDWI.size();
 
@@ -246,9 +246,10 @@ var areaNDWI = ee.FeatureCollection(ndwiList).filter(ee.Filter.notNull(['area_m2
 
 var merged = ee.FeatureCollection(ee.List(allFeatures).flatten());
 
-// ========== 导出 CSV ==========
+// ========== Export CSV ==========
 Export.table.toDrive({
   collection: merged,
   description: 'LakeClimate_Summer_landsat_2000_2025',
   fileFormat: 'CSV'
 });
+
