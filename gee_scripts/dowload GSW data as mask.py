@@ -7,33 +7,33 @@ Original file is located at
     https://colab.research.google.com/drive/173p2AmUCQzXNlC0c9i9FJX8wJwJqEbvo
 """
 
-# 🚩 第一步：挂载 Google Drive（运行后授权）
+# 🚩 Step 1: Mount Google Drive (authorize after running)
 from google.colab import drive
 drive.mount('/content/drive')
 
-# ✅ 使用 Earth Engine 分批导出 monthly_history 图像（每批 10 个湖）+ CSV 索引生成（使用湖泊名称）
+# ✅ Use Earth Engine to batch export monthly_history images (10 lakes per batch) + generate CSV index (using lake names)
 import ee
 import time
 import csv
 from tqdm import tqdm
 
-# 初始化 Earth Engine（需授权）
+# Initialize Earth Engine (authorization required)
 ee.Authenticate()
 ee.Initialize(project='lake-465014')
 
-# === 设置参数 ===
+# === Parameter settings ===
 START_YEAR = 2000
 END_YEAR = 2021
-MONTHS_NORTH = [6, 7, 8]  # 北半球夏季
-MONTHS_SOUTH = [12, 1, 2] # 南半球夏季（跨年）
-EXPORT_SCALE = 30  # 分辨率（米）
-LAKES_PER_BATCH = 10  # 每批导出湖泊数
-SLEEP_BETWEEN_TASKS = 0.5  # 每任务间隔（秒）
-SLEEP_BETWEEN_BATCHES = 30  # 每批之间等待（秒）
-EXPORT_FOLDER = "GSW_MonthlyHistory"  # Google Drive 保存根目录
-INDEX_CSV = "gsw_export_index.csv"  # 索引文件名
+MONTHS_NORTH = [6, 7, 8]  # Northern Hemisphere summer
+MONTHS_SOUTH = [12, 1, 2] # Southern Hemisphere summer (cross year)
+EXPORT_SCALE = 30  # Resolution (meters)
+LAKES_PER_BATCH = 10  # Number of lakes exported per batch
+SLEEP_BETWEEN_TASKS = 0.5  # Interval between tasks (seconds)
+SLEEP_BETWEEN_BATCHES = 30  # Wait between batches (seconds)
+EXPORT_FOLDER = "GSW_MonthlyHistory"  # Root folder in Google Drive
+INDEX_CSV = "gsw_export_index.csv"  # Index file name
 
-# ✅ 使用湖泊名称 + 坐标（示例）
+# ✅ Example: Lake names + coordinates
 lake_info = [
     ("Namtso", [90.1, 30.2, 91.05, 31.1]),
     ("Yamdrok", [90.3, 28.65, 91.1, 29.45]),
@@ -137,15 +137,15 @@ lake_info = [
     ("Lake Gregory", [127.24, -20.06, 127.53, -20.31]),
 ]
 
-# 准备 CSV 索引文件
+# Prepare CSV index file
 with open(INDEX_CSV, mode='w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["lake_name", "year", "month", "filename", "folder"])
 
-    # 分批执行导出任务
+    # Execute export tasks in batches
     for batch_start in range(0, len(lake_info), LAKES_PER_BATCH):
         batch = lake_info[batch_start:batch_start + LAKES_PER_BATCH]
-        print(f"🚀 执行第 {batch_start//LAKES_PER_BATCH + 1} 批导出任务...")
+        print(f"🚀 Executing batch {batch_start//LAKES_PER_BATCH + 1}...")
 
         for lake_name, (lon_min, lat_min, lon_max, lat_max) in tqdm(batch):
             region = ee.Geometry.Rectangle([lon_min, lat_min, lon_max, lat_max])
@@ -174,28 +174,29 @@ with open(INDEX_CSV, mode='w', newline='') as csvfile:
                     )
                     task.start()
                     writer.writerow([lake_name, ym_year, month, filename + ".tif", folder_path])
-                    print(f"✅ 提交任务: {folder_path}/{filename}")
+                    print(f"✅ Task submitted: {folder_path}/{filename}")
                     time.sleep(SLEEP_BETWEEN_TASKS)
 
-        print(f"⏳ 批次 {batch_start//LAKES_PER_BATCH + 1} 完成，等待 {SLEEP_BETWEEN_BATCHES}s...\n")
+        print(f"⏳ Batch {batch_start//LAKES_PER_BATCH + 1} done, waiting {SLEEP_BETWEEN_BATCHES}s...\n")
         time.sleep(SLEEP_BETWEEN_BATCHES)
 
-print("🎉 所有批次任务提交完毕。你可以在 Earth Engine Task 面板查看进度。\n导出图像将自动保存到你的 Google Drive → 'GSW_MonthlyHistory/<湖泊名>/<年份>/' 文件夹中。\n📄 索引 CSV 文件已生成：gsw_export_index.csv")
+print("🎉 All tasks submitted. Check Earth Engine Task panel for progress.\nExported images will be automatically saved to your Google Drive → 'GSW_MonthlyHistory/<lake_name>/<year>/'\n📄 Index CSV file generated: gsw_export_index.csv")
 
-# ✅ 掩膜提取函数
+# ✅ Mask extraction function
 def convert_to_mask_png_if_water(in_path, out_path):
     with rasterio.open(in_path) as src:
         image = src.read(1)
 
-    # 判断是否含水体像素
+    # Check if water pixels exist
     has_water = np.any((image == 254) | (image == 2) | (np.isclose(image, 2.0)))
     if not has_water:
-        print(f"⚠️ 无水体像素，跳过: {os.path.basename(in_path)}")
+        print(f"⚠️ No water pixels, skipped: {os.path.basename(in_path)}")
         return False
 
     mask = np.where((image == 254) | (image == 2) | (np.isclose(image, 2.0)), 255, 0).astype(np.uint8)
     Image.fromarray(mask).save(out_path)
     return True
+
 converted = 0
 for folder, file in tqdm(tif_files):
     in_path = os.path.join(folder, file)
@@ -205,5 +206,6 @@ for folder, file in tqdm(tif_files):
         if convert_to_mask_png_if_water(in_path, out_path):
             converted += 1
     except Exception as e:
-        print(f"❌ 失败：{file} → {e}")
-print("✅ 所有 PNG 掩膜图生成完成，已保存到单个 mask 文件夹中！")
+        print(f"❌ Failed: {file} → {e}")
+
+print("✅ All PNG mask images generated and saved into a single mask folder!")
