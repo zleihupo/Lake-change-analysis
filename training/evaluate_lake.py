@@ -169,7 +169,7 @@ print("\n🏆 Best (F1): (wu,ws,wf) =", (best['wu'],best['ws'],best['wf']),
 print("   → F1={F1:.4f}, IoU={IoU:.4f}, Acc={Acc:.4f}, Prec={Prec:.4f}, Rec={Rec:.4f}".format(**best))
 print("Saved: grid_search_ensemble_results.csv")
 
-# (可选) 把三组测试概率也保存，后续评估直接读
+# (Optional) Save the three test probabilities and read them directly for subsequent evaluation
 np.save("pred_unet_test.npy", p_unet)
 np.save("pred_segnet_test.npy", p_seg)
 np.save("pred_fcn_test.npy",  p_fcn)
@@ -179,15 +179,15 @@ if x_val is not None:
     np.save("pred_fcn_val.npy",  p_fcn_v)
 
 # =============================================
-# 📊 可视化（Matplotlib-only, fast）
-# 直接接在上面脚本结尾处
-# 需要变量：df（权重组合结果表）、best、y_unet/y_seg/y_fcn、y_test_flat、metrics_from_flat
+# 📊 Visualization (Matplotlib-only, fast)
+# Attach directly to the end of the above script
+# Required variables: df (weighted combination results table), best, y_unet/y_seg/y_fcn, y_test_flat, metrics_from_flat
 # =============================================
 import matplotlib.pyplot as plt
 import numpy as np
 
-# ---------- 1) Top combinations 热力图（U-Net 权重为 x，SegNet 权重为 y） ----------
-# 构造 11x11 网格，过滤 wu+ws<=1 的位置填 F1，其他填 NaN
+# ---------- 1) Top combinations heatmap (U-Net weight is x, SegNet weight is y) ----------
+# Construct an 11x11 grid, filter positions where wu+ws<=1, and fill them with F1; otherwise, fill them with NaN
 w_vals = np.round(np.arange(0.0, 1.0001, 0.1), 1)
 grid = np.full((len(w_vals), len(w_vals)), np.nan, dtype=float)  # [SegNet(y), U-Net(x)]
 
@@ -201,7 +201,7 @@ im = plt.imshow(grid, origin='lower', extent=[0,1,0,1], aspect='equal')
 plt.colorbar(im, label='F1 Score')
 plt.title('Soft Voting Ensemble — F1 Heatmap')
 plt.xlabel('U-Net weight'); plt.ylabel('SegNet weight')
-# 等高线辅助阅读（可选）
+# Contour line auxiliary reading (optional)
 cs = plt.contour(np.linspace(0,1,grid.shape[1]), np.linspace(0,1,grid.shape[0]),
                  np.nan_to_num(grid, nan=-1), levels=8, linewidths=0.5)
 plt.clabel(cs, inline=True, fontsize=8)
@@ -209,8 +209,8 @@ plt.tight_layout()
 plt.savefig('ensemble_heatmap.png', dpi=300)
 plt.close()
 
-# ---------- 2) 单模型 vs 最优集成 对比条形图 ----------
-# 重新取单模型指标（基于已算好的 y_* 与 y_test_flat）
+# ---------- 2) Single Model vs. Optimal Ensemble Comparison Bar Chart ----------
+# Re-obtain single model metrics (based on the calculated y_* and y_test_flat)
 u_f1,u_iou,u_acc,u_prec,u_rec = metrics_from_flat(y_test_flat, y_unet)
 s_f1,s_iou,s_acc,s_prec,s_rec = metrics_from_flat(y_test_flat, y_seg)
 f_f1,f_iou,f_acc,f_prec,f_rec = metrics_from_flat(y_test_flat, y_fcn)
@@ -242,7 +242,7 @@ import zipfile
 import os
 from google.colab import files
 
-# 假设要打包的文件
+# Assume the file to be packaged
 files_to_zip = [
     "grid_search_ensemble_results.csv",
     "ensemble_heatmap.png",
@@ -254,12 +254,12 @@ files_to_zip = [
 
 files_existing = [f for f in files_to_zip if os.path.exists(f)]
 
-zip_path = "/content/evaluation_results.zip"  # 改成 /content
+zip_path = "/content/evaluation_results.zip"  # Change to /content
 with zipfile.ZipFile(zip_path, 'w') as zf:
     for f in files_existing:
         zf.write(f, arcname=os.path.basename(f))
 
-# 下载到本地
+# Download to local
 files.download(zip_path)
 
 !ls -lh /content/evaluation_results.zip
