@@ -14,24 +14,24 @@ import os
 import shutil
 import random
 
-# 你的数据路径（上传后挂载路径）
-image_dir = '/content/drive/My Drive/train/img'   # 所有原始图像
-mask_dir = '/content/drive/My Drive/train/mask'     # 所有原始掩膜
-output_base = '/content/drive/My Drive/dataset/'    # 输出路径
+# Your dataset path (after mounting Drive)
+image_dir = '/content/drive/My Drive/train/img'     # all raw images
+mask_dir = '/content/drive/My Drive/train/mask'     # all raw masks
+output_base = '/content/drive/My Drive/dataset/'    # output path
 splits = ['train', 'val', 'test']
 split_ratio = {'train': 0.7, 'val': 0.1, 'test': 0.2}
 
-# 创建输出结构
+# Create output directory structure
 for split in splits:
     os.makedirs(os.path.join(output_base, split, 'images'), exist_ok=True)
     os.makedirs(os.path.join(output_base, split, 'masks'), exist_ok=True)
 
-# 收集所有图像文件名
+# Collect all image filenames
 all_files = sorted([f for f in os.listdir(image_dir) if f.endswith(('.jpg', '.png'))])
 random.shuffle(all_files)
 total = len(all_files)
 
-# 划分
+# Split dataset
 train_end = int(split_ratio['train'] * total)
 val_end = train_end + int(split_ratio['val'] * total)
 
@@ -41,7 +41,7 @@ split_files = {
     'test': all_files[val_end:]
 }
 
-# 复制文件到新目录
+# Copy files into new directories
 for split, files in split_files.items():
     for f in files:
         img_src = os.path.join(image_dir, f)
@@ -51,13 +51,13 @@ for split, files in split_files.items():
         shutil.copy(img_src, os.path.join(output_base, split, 'images', f))
         shutil.copy(mask_src, os.path.join(output_base, split, 'masks', mask_name))
 
-print("数据划分完成，共计：")
+print("Dataset split completed, total:")
 for k, v in split_files.items():
-    print(f"{k}: {len(v)} 张图")
+    print(f"{k}: {len(v)} images")
 
 # =============================================
-# 🧠 第二步：训练 U-Net 模型（train_unet.py）— 改进版
-# 可复现、指标更全、训练流程更稳
+# 🧠 Step 1: Train U-Net model (train_unet.py) — Improved version
+# Reproducible, more metrics, more stable training process
 # =============================================
 import os, random, glob
 import numpy as np
@@ -69,12 +69,12 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-# ---------- 1) 固定随机种子：结果更可复现 ----------
+# ---------- 1) Fix random seeds for reproducibility ----------
 SEED = 7
 os.environ["PYTHONHASHSEED"] = str(SEED)
 random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
 
-# ---------- 2) 路径 ----------
+# ---------- 2) Paths ----------
 train_img_path = '/content/drive/My Drive/dataset/train/images/'
 train_mask_path = '/content/drive/My Drive/dataset/train/masks/'
 val_img_path   = '/content/drive/My Drive/dataset/val/images/'
@@ -82,7 +82,7 @@ val_mask_path  = '/content/drive/My Drive/dataset/val/masks/'
 
 IMG_SIZE = (256, 256)
 
-# ---------- 3) 数据读取 ----------
+# ---------- 3) Load data ----------
 def load_data(img_dir, mask_dir, img_size=(256, 256)):
     images, masks = [], []
     img_files = sorted(glob.glob(os.path.join(img_dir, '*')))
@@ -113,7 +113,7 @@ x_val,   y_val   = load_data(val_img_path,   val_mask_path,   IMG_SIZE)
 
 print('Train:', x_train.shape, y_train.shape, ' Val:', x_val.shape, y_val.shape)
 
-# ---------- 4) 评价指标（IoU / Dice） ----------
+# ---------- 4) Metrics (IoU / Dice) ----------
 def iou_metric(y_true, y_pred, smooth=1e-6):
     y_true = tf.cast(y_true, tf.float32)
     y_pred = tf.cast(y_pred, tf.float32)
@@ -130,7 +130,7 @@ def dice_coef(y_true, y_pred, smooth=1e-6):
     denom = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
     return (2.0 * intersection + smooth) / (denom + smooth)
 
-# ---------- 5) U-Net 模型 ----------
+# ---------- 5) U-Net model ----------
 def unet_model(input_size=(256, 256, 3)):
     inputs = Input(input_size)
 
@@ -173,11 +173,11 @@ def unet_model(input_size=(256, 256, 3)):
 model = unet_model(input_size=(IMG_SIZE[0], IMG_SIZE[1], 3))
 model.compile(
     optimizer='adam',
-    loss='binary_crossentropy',          # 与原实现一致；若需可换 BCE+Dice
+    loss='binary_crossentropy',          # same as original; can switch to BCE+Dice if needed
     metrics=['accuracy', iou_metric, dice_coef]
 )
 
-# ---------- 6) 训练回调 ----------
+# ---------- 6) Training callbacks ----------
 ckpt_path = '/content/drive/My Drive/unet_model_best.h5'
 callbacks = [
     ModelCheckpoint(ckpt_path, monitor='val_iou_metric', mode='max',
@@ -188,25 +188,25 @@ callbacks = [
                   patience=15, restore_best_weights=True, verbose=1)
 ]
 
-# ---------- 7) 训练 ----------
+# ---------- 7) Train ----------
 history = model.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
     batch_size=8,
-    epochs=100,                 # 对齐论文训练强度
+    epochs=100,                 # aligned with paper training strength
     callbacks=callbacks,
     shuffle=True,
     verbose=1
 )
 
-# ---------- 8) 保存最终模型 ----------
+# ---------- 8) Save final model ----------
 final_path = '/content/drive/My Drive/unet_model_final.h5'
 model.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
 
 # =============================================
-# 🧠 第三步：训练 SegNet 模型（train_segnet.py）— 改进版
-# 可复现、指标更全、训练流程更稳
+# 🧠 Step 2: Train SegNet model (train_segnet.py) — Improved version
+# Reproducible, more metrics, more stable training
 # =============================================
 import os, random, glob
 import numpy as np
@@ -219,12 +219,12 @@ from tensorflow.keras.layers import (Input, Conv2D, MaxPooling2D, UpSampling2D,
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-# ---------- 1) 固定随机种子 ----------
+# ---------- 1) Fix random seeds ----------
 SEED = 7
 os.environ["PYTHONHASHSEED"] = str(SEED)
 random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
 
-# ---------- 2) 数据路径 ----------
+# ---------- 2) Data paths ----------
 train_img_path = '/content/drive/My Drive/dataset/train/images/'
 train_mask_path = '/content/drive/My Drive/dataset/train/masks/'
 val_img_path   = '/content/drive/My Drive/dataset/val/images/'
@@ -232,7 +232,7 @@ val_mask_path  = '/content/drive/My Drive/dataset/val/masks/'
 
 IMG_SIZE = (256, 256)
 
-# ---------- 3) 数据读取 ----------
+# ---------- 3) Load data ----------
 def load_data(img_dir, mask_dir, img_size=(256, 256)):
     images, masks = [], []
     img_files = sorted(glob.glob(os.path.join(img_dir, '*')))
@@ -250,7 +250,7 @@ def load_data(img_dir, mask_dir, img_size=(256, 256)):
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
         if mask is None:
             continue
-        # 掩膜用最近邻插值，保持边界干净
+        # Use nearest neighbor for mask to keep edges clean
         mask = cv2.resize(mask, img_size, interpolation=cv2.INTER_NEAREST)
         mask = (mask > 127).astype(np.float32)[..., None]  # (H,W,1)
 
@@ -263,7 +263,7 @@ x_train, y_train = load_data(train_img_path, train_mask_path, IMG_SIZE)
 x_val,   y_val   = load_data(val_img_path,   val_mask_path,   IMG_SIZE)
 print('Train:', x_train.shape, y_train.shape, ' Val:', x_val.shape, y_val.shape)
 
-# ---------- 4) 指标（IoU / Dice） ----------
+# ---------- 4) Metrics (IoU / Dice) ----------
 def iou_metric(y_true, y_pred, smooth=1e-6):
     y_true = tf.cast(y_true, tf.float32)
     y_pred = tf.clip_by_value(tf.cast(y_pred, tf.float32), 0.0, 1.0)
@@ -278,7 +278,7 @@ def dice_coef(y_true, y_pred, smooth=1e-6):
     denom = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
     return (2.0 * inter + smooth) / (denom + smooth)
 
-# ---------- 5) SegNet 模型 ----------
+# ---------- 5) SegNet model ----------
 def build_segnet(input_shape=(256, 256, 3)):
     inputs = Input(shape=input_shape)
 
@@ -292,11 +292,11 @@ def build_segnet(input_shape=(256, 256, 3)):
     x = Conv2D(256, (3,3), padding='same')(x);     x = BatchNormalization()(x); x = Activation('relu')(x)
     x = MaxPooling2D()(x)
 
-    # Bottleneck（可选 Dropout 稍微正则化）
+    # Bottleneck (optional Dropout for regularization)
     x = Conv2D(512, (3,3), padding='same')(x);     x = BatchNormalization()(x); x = Activation('relu')(x)
     x = Dropout(0.3)(x)
 
-    # Decoder（UpSampling 近似 SegNet 的上采样）
+    # Decoder (UpSampling approximates SegNet upsampling)
     x = UpSampling2D()(x)
     x = Conv2DTranspose(256, (3,3), padding='same')(x); x = BatchNormalization()(x); x = Activation('relu')(x)
 
@@ -314,7 +314,7 @@ segnet.compile(optimizer='adam',
                loss='binary_crossentropy',
                metrics=['accuracy', iou_metric, dice_coef])
 
-# ---------- 6) 训练回调 ----------
+# ---------- 6) Training callbacks ----------
 ckpt_path  = '/content/drive/My Drive/segnet_model_best.h5'
 final_path = '/content/drive/My Drive/segnet_model_final.h5'
 callbacks = [
@@ -326,7 +326,7 @@ callbacks = [
                   patience=15, restore_best_weights=True, verbose=1),
 ]
 
-# ---------- 7) 训练 ----------
+# ---------- 7) Train ----------
 history = segnet.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
@@ -337,13 +337,13 @@ history = segnet.fit(
     verbose=1
 )
 
-# ---------- 8) 保存 ----------
+# ---------- 8) Save ----------
 segnet.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
 
 # =============================================
-# 🧠 第四步：训练 FCN 模型（train_fcn.py）— 改进版
-# 可复现、指标更全、训练流程更稳；FCN-8s 风格的跳连与上采样
+# 🧠 Step 3: Train FCN model (train_fcn.py) — Improved version
+# Reproducible, more metrics, more stable training; FCN-8s style skip connections and upsampling
 # =============================================
 import os, random, glob
 import numpy as np
@@ -355,12 +355,12 @@ from tensorflow.keras.layers import Input, Conv2D, Conv2DTranspose, Add, Activat
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-# ---------- 1) 固定随机种子 ----------
+# ---------- 1) Fix random seeds ----------
 SEED = 7
 os.environ["PYTHONHASHSEED"] = str(SEED)
 random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
 
-# ---------- 2) 数据路径 ----------
+# ---------- 2) Data paths ----------
 train_img_path = '/content/drive/My Drive/dataset/train/images/'
 train_mask_path = '/content/drive/My Drive/dataset/train/masks/'
 val_img_path   = '/content/drive/My Drive/dataset/val/images/'
@@ -368,9 +368,9 @@ val_mask_path  = '/content/drive/My Drive/dataset/val/masks/'
 
 IMG_SIZE = (256, 256)
 
-# ---------- 3) 数据读取 ----------
+# ---------- 3) Load data ----------
 def load_data(img_dir, mask_dir, img_size=(256, 256)):
-    # 列出常见图片后缀，避免只匹配到 .jpg
+    # List common image extensions, not only .jpg
     patterns = ["*.jpg", "*.jpeg", "*.png", "*.tif", "*.tiff", "*.bmp"]
     img_files = []
     for pat in patterns:
@@ -385,7 +385,7 @@ def load_data(img_dir, mask_dir, img_size=(256, 256)):
     for img_path in tqdm(img_files, desc=f'Loading {os.path.basename(os.path.normpath(img_dir))}'):
         fname = os.path.basename(img_path)
 
-        # 允许原图是 .png/.tif 等，掩膜统一用相同主文件名 + .png 寻找
+        # Allow original images to be .png/.tif etc., masks must have the same stem + .png/.jpg
         stem, _ = os.path.splitext(fname)
         mpath_candidates = [
             os.path.join(mask_dir, stem + ".png"),
@@ -419,11 +419,12 @@ def load_data(img_dir, mask_dir, img_size=(256, 256)):
         raise RuntimeError("Loaded empty arrays — check img/mask directories and names.")
 
     return X, y
+
 x_train, y_train = load_data(train_img_path, train_mask_path, IMG_SIZE)
 x_val,   y_val   = load_data(val_img_path,   val_mask_path,   IMG_SIZE)
 print('Train:', x_train.shape, y_train.shape, ' Val:', x_val.shape, y_val.shape)
 
-# ---------- 4) 指标（IoU / Dice） ----------
+# ---------- 4) Metrics (IoU / Dice) ----------
 def iou_metric(y_true, y_pred, smooth=1e-6):
     y_true = tf.cast(y_true, tf.float32)
     y_pred = tf.clip_by_value(tf.cast(y_pred, tf.float32), 0.0, 1.0)
@@ -438,34 +439,34 @@ def dice_coef(y_true, y_pred, smooth=1e-6):
     denom = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
     return (2.0 * inter + smooth) / (denom + smooth)
 
-# ---------- 5) FCN 模型（VGG16 backbone, FCN-8s 跳连） ----------
+# ---------- 5) FCN model (VGG16 backbone, FCN-8s skip connections) ----------
 def build_fcn(input_shape=(256, 256, 3)):
     vgg = VGG16(include_top=False, weights='imagenet', input_shape=input_shape)
 
-    # 取出三个阶段的特征
+    # Feature maps
     f3 = vgg.get_layer('block3_pool').output   # 1/8
     f4 = vgg.get_layer('block4_pool').output   # 1/16
     f5 = vgg.get_layer('block5_pool').output   # 1/32
 
-    # 顶部分类器替代（保持线性，最后再做 sigmoid）
+    # Classifier replacement (logits)
     o = Conv2D(512, (7, 7), padding='same', activation='relu')(f5)
     o = Conv2D(512, (1, 1), padding='same', activation='relu')(o)
-    o = Conv2D(1,   (1, 1), padding='same', activation=None)(o)  # logits
+    o = Conv2D(1,   (1, 1), padding='same', activation=None)(o)
 
-    # 1/32 -> 1/16，上采样并与 f4 的 1x1 logits 相加
+    # 1/32 -> 1/16
     o = Conv2DTranspose(1, kernel_size=(4, 4), strides=(2, 2), padding='same', activation=None)(o)
     o2 = Conv2D(1, (1, 1), padding='same', activation=None)(f4)
     o = Add()([o, o2])
 
-    # 1/16 -> 1/8，上采样并与 f3 的 1x1 logits 相加
+    # 1/16 -> 1/8
     o = Conv2DTranspose(1, kernel_size=(4, 4), strides=(2, 2), padding='same', activation=None)(o)
     o3 = Conv2D(1, (1, 1), padding='same', activation=None)(f3)
     o = Add()([o, o3])
 
-    # 1/8 -> 1/1，恢复到原尺寸
+    # 1/8 -> 1/1
     o = Conv2DTranspose(1, kernel_size=(8, 8), strides=(8, 8), padding='same', activation=None)(o)
 
-    # 最终 sigmoid
+    # Sigmoid
     o = Activation('sigmoid')(o)
 
     model = Model(inputs=vgg.input, outputs=o)
@@ -473,7 +474,7 @@ def build_fcn(input_shape=(256, 256, 3)):
 
 fcn = build_fcn(input_shape=(IMG_SIZE[0], IMG_SIZE[1], 3))
 
-# 先冻结 backbone 进行 warmup，再解冻高层微调（更稳）
+# Freeze backbone for warmup
 for layer in fcn.layers:
     if layer.name.startswith('block'):
         layer.trainable = False
@@ -493,8 +494,7 @@ callbacks = [
                   patience=15, restore_best_weights=True, verbose=1),
 ]
 
-# ---------- 6) 训练：warmup + 可选解冻微调 ----------
-# Warmup（冻结 VGG）
+# ---------- 6) Train: warmup + optional fine-tune ----------
 history1 = fcn.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
@@ -505,7 +505,7 @@ history1 = fcn.fit(
     verbose=1
 )
 
-# 可选：解冻 block5 继续微调（若资源有限可跳过，或减少 epochs）
+# Fine-tune: unfreeze block5
 for layer in fcn.layers:
     if layer.name.startswith('block5'):
         layer.trainable = True
@@ -517,12 +517,12 @@ history2 = fcn.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
     batch_size=8,
-    epochs=80,   # 总训练强度 ≈ 100
+    epochs=80,
     callbacks=callbacks,
     shuffle=True,
     verbose=1
 )
 
-# ---------- 7) 保存 ----------
+# ---------- 7) Save ----------
 fcn.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
