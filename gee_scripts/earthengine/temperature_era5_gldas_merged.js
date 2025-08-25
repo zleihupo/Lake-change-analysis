@@ -1,8 +1,8 @@
-// ========== 数据源 ==========
+// ========== data source==========
 var ERA5 = ee.ImageCollection("ECMWF/ERA5_LAND/MONTHLY").select('temperature_2m');
 var GLDAS = ee.ImageCollection("NASA/GLDAS/V021/NOAH/G025/M").select('Tair_f_inst');
 
-// ========== 输入：湖泊列表（保持不变，这里省略） ==========
+// ========== lake list ==========
 var lakes = [
   {name: 'Namtso', geom: ee.Geometry.Polygon([[[90.10, 30.20], [91.05, 30.20], [91.05, 31.10], [90.10, 31.10], [90.10, 30.20]]]), hemisphere: 'north'},
   {name: 'Yamdrok', geom: ee.Geometry.Polygon([[[90.3, 28.65], [91.1, 28.65], [91.1, 29.45], [90.3, 29.45], [90.3, 28.65]]]), hemisphere: 'north'},
@@ -105,10 +105,10 @@ var lakes = [
   {name: 'Lake Mackay', geom: ee.Geometry.Polygon([[[128.23, -22.70], [129.29, -22.70], [129.29, -21.97], [128.23, -21.97], [128.23, -22.70]]]), hemisphere: 'south'},
   {name: 'Lake Gregory', geom: ee.Geometry.Polygon([[[127.24, -20.31], [127.53, -20.31], [127.53, -20.06], [127.24, -20.06], [127.24, -20.31]]]), hemisphere: 'south'}
 ];
-// ========== 提取函数 ==========
+// ========== Extraction Function ==========
 function getSummerTemp(lake) {
   var name = lake.name;
-  var geom = lake.geom.buffer(10000); // 扩大 10 km
+  var geom = lake.geom.buffer(10000); // expand 10 km
   var hemi = lake.hemisphere || 'north';
   var summer_months = hemi === 'south' ? [12, 1, 2] : [6, 7, 8];
 
@@ -147,7 +147,7 @@ function getSummerTemp(lake) {
       var temp = img.reduceRegion({
         reducer: ee.Reducer.mean(),
         geometry: geom,
-        scale: 25000, // GLDAS 分辨率 0.25°
+        scale: 25000, // GLDAS Resolution 0.25°
         maxPixels: 1e9
       }).get('Tair_f_inst');
       return ee.Feature(null, {
@@ -162,17 +162,18 @@ function getSummerTemp(lake) {
   return era5TS.merge(gldasTS);
 }
 
-// ========== 运行批量提取 ==========
+// ========== Run a batch extraction ==========
 var allTemp = ee.FeatureCollection([]);
 lakes.forEach(function(lake) {
   allTemp = allTemp.merge(getSummerTemp(lake));
 });
 
-print('总样本数:', allTemp.size());
+print('Total number of samples:', allTemp.size());
 
-// ========== 导出 ==========
+// ========== export ==========
 Export.table.toDrive({
   collection: allTemp,
   description: 'Lake_Temperature_Summer_2000_2025_Merged',
   fileFormat: 'CSV'
 });
+
