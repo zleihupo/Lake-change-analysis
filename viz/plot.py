@@ -10,13 +10,13 @@ Original file is located at
 from google.colab import drive
 drive.mount('/content/drive')
 
-# 选 "drive" 或 "upload"
-MODE = "drive"  # "drive" 或 "upload"
+# Choose "drive" or "upload"
+MODE = "drive"  # "drive" or "upload"
 
-# 当 MODE="drive" 时，设置你的 Drive 根目录（改成你的路径）
-DRIVE_ROOT = "/content/drive/MyDrive"  # ←改成你的
+# When MODE="drive", set your Drive root directory (modify to your path)
+DRIVE_ROOT = "/content/drive/MyDrive"  # ← modify to yours
 
-# 是否把生成的图也拷回 Drive_ROOT
+# Whether to also copy generated figures back to DRIVE_ROOT
 SAVE_TO_DRIVE = True
 
 !sudo apt-get update -y
@@ -32,25 +32,25 @@ import matplotlib.pyplot as plt
 if MODE == "drive":
     from google.colab import drive
     drive.mount('/content/drive')
-    # 约定文件路径（按你的目录结构调整）
-    TEST_IMG_DIR  = f"{DRIVE_ROOT}/dataset/test/images/"        # 或 images/
-    TEST_MASK_DIR = f"{DRIVE_ROOT}/dataset/test/masks/"         # 或 masks/
+    # Convention file paths (adjust according to your directory structure)
+    TEST_IMG_DIR  = f"{DRIVE_ROOT}/dataset/test/images/"        # or images/
+    TEST_MASK_DIR = f"{DRIVE_ROOT}/dataset/test/masks/"         # or masks/
     UNET_NPY      = f"{DRIVE_ROOT}/evaluation_results/pred_unet_test.npy"
     SEGNET_NPY    = f"{DRIVE_ROOT}/evaluation_results/pred_segnet_test.npy"
     FCN_NPY       = f"{DRIVE_ROOT}/evaluation_results/pred_fcn_test.npy"
-    # 地图 HTML（模糊匹配, 可不用改）
+    # Map HTML (fuzzy match, no need to change)
     GLOBAL_HTML = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/global_heatmap_lakes_trends (1).html") if "global" in f.lower() or "heatmap" in f.lower()), None)
     REGION_HTML = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/region_trends_map (1).html") if "region" in f.lower()), None)
-    # 时间序列与重要度 CSV（可按需调整）
+    # Time series and importance CSV (adjust if needed)
     TS_CSV = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/100Lake_area_Temperature_2000-2025.csv") if "Lake" in f or "Temperature" in f or "2000" in f), None)
-    PERM_CSV = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/Permutation_importance（按区域，夏季）.csv") if "Permutation" in f), None)
-    TOP3_CSV = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/各区域_Top-3_重要特征（夏季）.csv") if "Top-3" in f or "Top3" in f), None)
+    PERM_CSV = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/Permutation_importance（by_region_summer）.csv") if "Permutation" in f), None)
+    TOP3_CSV = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/Top-3_features_by_region_summer.csv") if "Top-3" in f or "Top3" in f), None)
 
 else:
     from google.colab import files
-    print("👉 请选择需要的文件（可多选）：测试影像/掩膜 ZIP、NPY、HTML、CSV 等")
+    print("👉 Please select the required files (multiple selection allowed): test images/masks ZIP, NPY, HTML, CSV etc.")
     uploaded = files.upload()
-    # 若上传了zip，解压
+    # If zip is uploaded, unzip it
     def unzip_if_exists(zipname, outdir):
         if os.path.exists(zipname):
             os.makedirs(outdir, exist_ok=True)
@@ -60,7 +60,7 @@ else:
     unzip_if_exists("test_images.zip", "test_images")
     unzip_if_exists("test_masks.zip", "test_masks")
 
-    # 猜目录
+    # Guess directories
     def guess_dir(root):
         if os.path.isdir(root): return root
         for d in glob.glob("*"):
@@ -70,7 +70,7 @@ else:
     TEST_IMG_DIR  = guess_dir("test_images")
     TEST_MASK_DIR = guess_dir("test_masks")
 
-    # 猜测 NPY/HTML/CSV 文件
+    # Guess NPY/HTML/CSV files
     UNET_NPY   = next((k for k in uploaded if "unet"   in k and k.endswith(".npy")), None)
     SEGNET_NPY = next((k for k in uploaded if "segnet" in k and k.endswith(".npy")), None)
     FCN_NPY    = next((k for k in uploaded if "fcn"    in k and k.endswith(".npy")), None)
@@ -114,10 +114,10 @@ def load_pairs(img_dir, msk_dir):
             p = os.path.join(msk_dir, stem+ext)
             if os.path.exists(p): mp = p; break
         if mp: pairs.append((ip, mp))
-    if not pairs: raise RuntimeError("未找到 (image, mask) 配对，请检查影像与掩膜目录")
+    if not pairs: raise RuntimeError("No (image, mask) pairs found, please check image and mask directories")
     return pairs
 
-# HTML→PNG 截图
+# HTML → PNG screenshot
 def html_to_png(html_path, out_png="map.png", width=1600, height=1000, wait_sec=3):
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
@@ -136,25 +136,26 @@ def html_to_png(html_path, out_png="map.png", width=1600, height=1000, wait_sec=
 pairs = load_pairs(TEST_IMG_DIR, TEST_MASK_DIR)
 
 def save_triptych(img_path, msk_path, out_path, size=(256, 256), show=True):
-    # 读图并可选缩放；RGB 归一化到 [0,1]
+    # Read image and optionally resize; normalize RGB to [0,1]
     img = read_img_rgb(img_path, size=size)
-    # 读掩膜并可选缩放；转二值(0/1)，用最近邻保证边界不糊
+    # Read mask and optionally resize; convert to binary (0/1), use nearest neighbor to keep edges sharp
     msk = read_mask_bin(msk_path, size=size)
 
-    # 一行三列：Image / GSW mask / overlay
+    # One row three columns: Image / GSW mask / overlay
     fig, ax = plt.subplots(1, 3, figsize=(9, 3))
     ax[0].imshow(img);                 ax[0].set_title("Image");     ax[0].axis("off")
     ax[1].imshow(msk, cmap="gray");    ax[1].set_title("GSW mask");  ax[1].axis("off")
     ax[2].imshow(img);
-    ax[2].imshow(msk, cmap="gray", alpha=0.35)  # 半透明叠加便于对齐检查
+    ax[2].imshow(msk, cmap="gray", alpha=0.35)  # Semi-transparent overlay for alignment check
     ax[2].set_title("Aligned pair");   ax[2].axis("off")
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=300)     # 先保存，避免 show 后交互式渲染影响边距
+    plt.savefig(out_path, dpi=300)     # Save before show to avoid margin issues
     if show:
-        plt.show()                     # 显示要在 close 之前
-    plt.close(fig)                     # 释放内存（批量生成图时很重要）
+        plt.show()                     # Show must be before close
+    plt.close(fig)                     # Release memory (important for batch figure generation)
     print("Saved:", out_path)
+
 
 # 示例：用第一个样本生成 Fig.2
 save_triptych(pairs[968][0], pairs[968][1], "Fig2_sample_triptych.png", size=(256, 256), show=True)
