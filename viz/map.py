@@ -162,7 +162,7 @@ m.get_root().html.add_child(folium.Element(title_html))
 # ==== 6) Save map ====
 out_path = '/content/lake_area_trend_with_climate.html'
 m.save(out_path)
-print(f"✅ Map saved: {out_path}")
+print(f"Map saved: {out_path}")
 print("Download from the left /content panel in Colab, or run the following command:")
 print(f"from google.colab import files; files.download('{out_path}')")
 
@@ -411,7 +411,7 @@ m.get_root().html.add_child(folium.Element(title_html))
 # =========================
 out_path = '/content/region_trends_map.html'
 m.save(out_path)
-print(f"✅ Map saved: {out_path}")
+print(f"Map saved: {out_path}")
 print("You can directly download from /content, or run:")
 print(f"from google.colab import files; files.download('{out_path}')")
 
@@ -626,7 +626,7 @@ m.get_root().html.add_child(folium.Element(title_html))
 # =========================
 out_path = '/content/global_heatmap_lakes_trends.html'
 m.save(out_path)
-print(f"✅ Heatmap saved: {out_path}")
+print(f"Heatmap saved: {out_path}")
 print("You can download from /content, or run:")
 print(f"from google.colab import files; files.download('{out_path}')")
 
