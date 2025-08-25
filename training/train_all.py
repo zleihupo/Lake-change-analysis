@@ -56,7 +56,7 @@ for k, v in split_files.items():
     print(f"{k}: {len(v)} images")
 
 # =============================================
-# 🧠 Step 1: Train U-Net model (train_unet.py) — Improved version
+# Step 1: Train U-Net model (train_unet.py) — Improved version
 # Reproducible, more metrics, more stable training process
 # =============================================
 import os, random, glob
@@ -205,7 +205,7 @@ model.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
 
 # =============================================
-# 🧠 Step 2: Train SegNet model (train_segnet.py) — Improved version
+# Step 2: Train SegNet model (train_segnet.py) — Improved version
 # Reproducible, more metrics, more stable training
 # =============================================
 import os, random, glob
@@ -342,7 +342,7 @@ segnet.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
 
 # =============================================
-# 🧠 Step 3: Train FCN model (train_fcn.py) — Improved version
+# Step 3: Train FCN model (train_fcn.py) — Improved version
 # Reproducible, more metrics, more stable training; FCN-8s style skip connections and upsampling
 # =============================================
 import os, random, glob
