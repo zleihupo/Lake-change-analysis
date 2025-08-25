@@ -18,15 +18,15 @@ import branca.colormap as cm
 import os
 from google.colab import files
 
-# ==== 1) 确保文件存在，否则上传 ====
+# ==== 1) Ensure files exist, otherwise upload ====
 for fname in ["100Lake_area_Temperature_2000-2025.csv", "100lake.csv"]:
     if not os.path.exists(f"/content/{fname}"):
-        print(f"未找到 {fname}，请上传：")
+        print(f"File not found: {fname}, please upload:")
         uploaded = files.upload()
         for k in uploaded.keys():
-            print(f"已上传: {k}")
+            print(f"Uploaded: {k}")
 
-# ==== 2) 读取并清洗主数据 ====
+# ==== 2) Read and clean main data ====
 df = pd.read_csv('/content/100Lake_area_Temperature_2000-2025.csv')
 
 def clean_area(val):
@@ -43,7 +43,7 @@ def clean_area(val):
 df['area_m2'] = df['area_m2'].apply(clean_area)
 df = df[df['area_m2'] > 0].copy()
 
-# 仅保留夏季月份
+# Keep only summer months
 def is_summer(row):
     hemi = str(row['hemisphere']).lower()
     if hemi.startswith('north'):
@@ -54,7 +54,7 @@ def is_summer(row):
 df['is_summer'] = df.apply(is_summer, axis=1)
 df = df[df['is_summer']].copy()
 
-# ==== 3) 每湖泊趋势计算 ====
+# ==== 3) Per-lake trend calculation ====
 def trend_per_decade(series_year, series_value):
     d = pd.DataFrame({'year': series_year, 'y': series_value}).dropna()
     if d['year'].nunique() < 4:
@@ -81,7 +81,7 @@ for lake, g in df.groupby('lake'):
 
 trends_df = pd.DataFrame(climate_trends)
 
-# ==== 4) 湖泊坐标 ====
+# ==== 4) Lake coordinates ====
 coords = pd.read_csv('/content/100lake.csv', encoding='latin1')
 
 def rect_center(rect_str):
@@ -96,7 +96,7 @@ coords_clean = coords[['lake_name','lat','lon']].dropna()
 
 map_df = coords_clean.merge(trends_df, left_on='lake_name', right_on='lake', how='left')
 
-# ==== 5) folium 交互地图 ====
+# ==== 5) Folium interactive map ====
 def clip(v, lo, hi):
     try:
         return max(lo, min(hi, float(v)))
@@ -159,23 +159,23 @@ Color = Area trend per decade (blue ↑, red ↓). Click points for detailed cli
 '''
 m.get_root().html.add_child(folium.Element(title_html))
 
-# ==== 6) 保存地图 ====
+# ==== 6) Save map ====
 out_path = '/content/lake_area_trend_with_climate.html'
 m.save(out_path)
-print(f"✅ 地图已保存：{out_path}")
-print("在 Colab 左侧文件面板中右键下载，或运行下面命令下载：")
+print(f"✅ Map saved: {out_path}")
+print("Download from the left /content panel in Colab, or run the following command:")
 print(f"from google.colab import files; files.download('{out_path}')")
 
 from google.colab import files
 files.download('/content/lake_area_trend_with_climate.html')
 
 # =========================
-# 安装依赖（Colab）
+# Install dependencies (Colab)
 # =========================
 !pip -q install statsmodels folium branca
 
 # =========================
-# 导入与基础设置
+# Imports & basic setup
 # =========================
 import os, re, numpy as np, pandas as pd
 import statsmodels.api as sm
@@ -184,23 +184,23 @@ import branca.colormap as cm
 from google.colab import files
 
 # =========================
-# 若文件未找到，则触发上传
+# Trigger upload if files not found
 # =========================
 needed = ["100Lake_area_Temperature_2000-2025.csv", "100lake.csv"]
 for fname in needed:
     if not os.path.exists(f"/content/{fname}"):
-        print(f"未找到 {fname}，请上传该文件：")
+        print(f"File not found: {fname}, please upload:")
         uploaded = files.upload()
         for k in uploaded.keys():
-            print(f"已上传: {k}")
+            print(f"Uploaded: {k}")
     else:
-        print(f"已找到：/content/{fname}")
+        print(f"Found: /content/{fname}")
 
 # =========================
-# Helper 函数
+# Helper functions
 # =========================
 def clean_area(val):
-    """从字符串中提取数值，转为 float。其他返回 NaN。"""
+    """Extract numeric value from string, convert to float. Otherwise return NaN."""
     if pd.isna(val):
         return np.nan
     m = re.search(r"[-+]?\d*\.\d+|\d+", str(val))
@@ -212,7 +212,7 @@ def clean_area(val):
     return np.nan
 
 def is_summer(row):
-    """按半球判断夏季月份：北半球6-8，南半球12-2。"""
+    """Determine summer months by hemisphere: North=6-8, South=12-2."""
     hemi = str(row['hemisphere']).lower()
     if hemi.startswith('north'):
         return row['month'] in [6,7,8]
@@ -220,7 +220,7 @@ def is_summer(row):
         return row['month'] in [12,1,2]
 
 def slope_per_decade(years, values):
-    """线性回归斜率 ×10，得到每十年的变化。"""
+    """Linear regression slope ×10 to get per-decade change."""
     d = pd.DataFrame({'year': years, 'y': values}).dropna()
     if d['year'].nunique() < 4:
         return np.nan
@@ -229,7 +229,7 @@ def slope_per_decade(years, values):
     return float(m.params['year'] * 10.0)
 
 def rect_center(rect_str):
-    """解析 ee.Geometry.Rectangle([lon1,lat1,lon2,lat2]) -> (lat_center, lon_center)"""
+    """Parse ee.Geometry.Rectangle([lon1,lat1,lon2,lat2]) -> (lat_center, lon_center)"""
     nums = re.findall(r"[-+]?\d*\.\d+|\d+", str(rect_str))
     if len(nums) >= 4:
         lon1, lat1, lon2, lat2 = map(float, nums[:4])
@@ -237,26 +237,25 @@ def rect_center(rect_str):
     return np.nan, np.nan
 
 def read_100lake_csv(path="/content/100lake.csv"):
-    """尝试多种编码读取 100lake.csv"""
+    """Try multiple encodings to read 100lake.csv"""
     for enc in ("utf-8", "utf-8-sig", "gbk", "latin1", "ISO-8859-1"):
         try:
             return pd.read_csv(path, encoding=enc)
         except Exception:
             pass
-    # 最后尝试不指定编码
     return pd.read_csv(path)
 
 # =========================
-# 1) 读取并清洗主数据（仅夏季）
+# 1) Read and clean main data (summer only)
 # =========================
 df = pd.read_csv('/content/100Lake_area_Temperature_2000-2025.csv')
 
-# 基础列校验
+# Required columns check
 required_main_cols = {'lake','region','hemisphere','year','month','area_m2',
                       'temp_C','precip_mm','pet_mm','snow_cover_pct','snow_depth_cm'}
 missing = required_main_cols - set(df.columns)
 if missing:
-    raise ValueError(f"主数据缺少必要列: {missing}")
+    raise ValueError(f"Main data missing required columns: {missing}")
 
 df['area_m2'] = df['area_m2'].apply(clean_area)
 df = df[df['area_m2'] > 0].copy()
@@ -265,8 +264,8 @@ df['is_summer'] = df.apply(is_summer, axis=1)
 df = df[df['is_summer']].copy()
 
 # =========================
-# 2) 基于 2000-2002 的湖泊基线 -> area_index
-#    若该湖2000-2002缺失，则回退为该湖前3条记录均值
+# 2) Lake baseline (2000–2002) -> area_index
+#    If missing, fallback to mean of first 3 records of that lake
 # =========================
 baseline = (
     df[(df['year']>=2000)&(df['year']<=2002)]
@@ -289,7 +288,7 @@ df = df.merge(base, left_on='lake', right_index=True, how='inner')
 df['area_index'] = df['area_m2'] / df['baseline_area_m2']
 
 # =========================
-# 3) 聚合到 region-year 层，计算温度/面积指数趋势（每十年）
+# 3) Aggregate to region-year level, compute temperature/area index trends (per decade)
 # =========================
 reg_year = (df.groupby(['region','year'])
             .agg(mean_temp=('temp_C','mean'),
@@ -308,33 +307,33 @@ for reg in regions:
 trend_tbl = pd.DataFrame(trend_rows)
 
 # =========================
-# 4) 使用 100lake.csv 的矩形坐标求湖泊中心 -> 求每区域质心
+# 4) Use 100lake.csv rectangle coordinates -> lake center -> region centroid
 # =========================
 coords = read_100lake_csv('/content/100lake.csv')
 if 'rectangle' not in coords.columns or 'lake_name' not in coords.columns:
-    raise ValueError("100lake.csv 需要包含 'rectangle' 和 'lake_name' 列。")
+    raise ValueError("100lake.csv must contain 'rectangle' and 'lake_name' columns.")
 
 coords['lat'], coords['lon'] = zip(*coords['rectangle'].map(rect_center))
 coords = coords[['lake_name','lat','lon']].dropna()
 
-# lake_name -> region 映射来自主数据 df
+# lake_name -> region mapping from main data
 lake_to_region = df[['lake','region']].drop_duplicates().rename(columns={'lake':'lake_name'})
 coords_reg = coords.merge(lake_to_region, on='lake_name', how='left').dropna(subset=['region'])
 
-# 区域质心 = 该区域内各湖中心点的均值
+# Region centroid = mean of lake centers within the region
 reg_centroids = (coords_reg.groupby('region')
                  .agg(lat=('lat','mean'), lon=('lon','mean'), n_lakes=('lake_name','nunique'))
                  .reset_index())
 
-# 合并趋势与质心
+# Merge trends & centroids
 reg_map = reg_centroids.merge(trend_tbl, on='region', how='left')
 
 # =========================
-# 5) 使用 folium 生成交互式区域趋势地图
-#    - 图层1：温度趋势（蓝→白→红）
-#    - 图层2：面积指数趋势（红→白→蓝）
+# 5) Folium interactive region-level trend map
+#    - Layer1: Temperature trend (blue→white→red)
+#    - Layer2: Area index trend (red→white→blue)
 # =========================
-# 温度趋势配色范围：5%-95% 分位数增强对比（缺失则默认）
+# Temperature trend color range: 5%-95% quantiles (default if missing)
 temp_vals = reg_map['temp_trend_C_per_decade'].dropna()
 tmin = float(np.nanpercentile(temp_vals, 5)) if not temp_vals.empty else -0.2
 tmax = float(np.nanpercentile(temp_vals, 95)) if not temp_vals.empty else 0.8
@@ -343,7 +342,7 @@ if tmin == tmax:
 cmap_temp = cm.LinearColormap(colors=['blue','white','red'], vmin=tmin, vmax=tmax)
 cmap_temp.caption = 'Summer Temperature Trend (°C per decade)'
 
-# 面积趋势配色范围：5%-95% 分位数（缺失则默认）
+# Area trend color range: 5%-95% quantiles (default if missing)
 area_vals = reg_map['area_index_trend_per_decade'].dropna()
 amin = float(np.nanpercentile(area_vals, 5)) if not area_vals.empty else -0.4
 amax = float(np.nanpercentile(area_vals, 95)) if not area_vals.empty else 0.4
@@ -361,7 +360,7 @@ for _, r in reg_map.iterrows():
     lat, lon = r['lat'], r['lon']
     if pd.isna(lat) or pd.isna(lon):
         continue
-    # 温度图层
+    # Temperature layer
     t = r['temp_trend_C_per_decade']
     color_t = '#888888' if pd.isna(t) else cmap_temp(t)
     popup_t = folium.Popup(
@@ -375,7 +374,7 @@ for _, r in reg_map.iterrows():
         location=[lat,lon], radius=8, color=color_t,
         fill=True, fill_color=color_t, fill_opacity=0.85, popup=popup_t
     ).add_to(fg_temp)
-    # 面积图层
+    # Area layer
     a = r['area_index_trend_per_decade']
     color_a = '#888888' if pd.isna(a) else cmap_area(a)
     popup_a = folium.Popup(
@@ -408,24 +407,24 @@ Toggle layers to view temperature trend (blue→red) or area trend (red→blue).
 m.get_root().html.add_child(folium.Element(title_html))
 
 # =========================
-# 保存并提示下载
+# Save and download prompt
 # =========================
 out_path = '/content/region_trends_map.html'
 m.save(out_path)
-print(f"✅ 地图已保存：{out_path}")
-print("可直接在左侧 /content 下载，或运行以下命令下载：")
+print(f"✅ Map saved: {out_path}")
+print("You can directly download from /content, or run:")
 print(f"from google.colab import files; files.download('{out_path}')")
 
 from google.colab import files
 files.download('/content/region_trends_map.html')
 
 # =========================
-# 安装依赖（Colab）
+# Install dependencies (Colab)
 # =========================
 !pip -q install statsmodels folium
 
 # =========================
-# 导入
+# Imports
 # =========================
 import os, re
 import numpy as np
@@ -436,17 +435,17 @@ from folium.plugins import HeatMap
 from google.colab import files
 
 # =========================
-# 若文件未找到则触发上传
+# Trigger upload if files not found
 # =========================
 def ensure_file(fname):
     path = f"/content/{fname}"
     if not os.path.exists(path):
-        print(f"未找到 {fname}，请上传该文件：")
+        print(f"File not found: {fname}, please upload:")
         uploaded = files.upload()
         for k in uploaded.keys():
-            print(f"已上传: {k}")
+            print(f"Uploaded: {k}")
     else:
-        print(f"已找到：{path}")
+        print(f"Found: {path}")
 
 ensure_file("100Lake_area_Temperature_2000-2025.csv")
 ensure_file("100lake.csv")
@@ -496,15 +495,15 @@ def read_100lake_csv(path="/content/100lake.csv"):
     return pd.read_csv(path)
 
 # =========================
-# 1) 读取数据（仅夏季）
+# 1) Read data (summer only)
 # =========================
 df = pd.read_csv('/content/100Lake_area_Temperature_2000-2025.csv')
 
-# 必要列检查
+# Required columns check
 need_cols = {'lake','hemisphere','year','month','area_m2','temp_C'}
 miss = need_cols - set(df.columns)
 if miss:
-    raise ValueError(f"主数据缺少必要列: {miss}")
+    raise ValueError(f"Main data missing required columns: {miss}")
 
 df['area_m2'] = df['area_m2'].apply(clean_area)
 df = df[df['area_m2'] > 0].copy()
@@ -513,34 +512,34 @@ df = df[df['is_summer']].copy()
 
 coords = read_100lake_csv('/content/100lake.csv')
 if 'rectangle' not in coords.columns or 'lake_name' not in coords.columns:
-    raise ValueError("100lake.csv 需要包含 'rectangle' 和 'lake_name' 列。")
+    raise ValueError("100lake.csv must contain 'rectangle' and 'lake_name' columns.")
 
 coords['lat'], coords['lon'] = zip(*coords['rectangle'].map(rect_center))
 coords = coords[['lake_name','lat','lon']].dropna()
 
 # =========================
-# 2) 逐湖泊计算夏季趋势
+# 2) Per-lake summer trends
 # =========================
 records = []
 for lake, g in df.groupby('lake'):
     g = g.sort_values('year')
-    # 面积指数基线（2000-2002）
+    # Area index baseline (2000–2002)
     baseline = g[(g['year']>=2000)&(g['year']<=2002)]['area_m2'].mean()
     area_trend = np.nan
     if pd.notna(baseline) and baseline > 0:
         g['area_index'] = g['area_m2'] / baseline
         area_trend = trend_per_decade(g['year'], g['area_index'])
-    # 温度趋势
+    # Temperature trend
     temp_trend = trend_per_decade(g['year'], g['temp_C'])
     records.append({'lake': lake, 'area_trend': area_trend, 'temp_trend': temp_trend})
 
 trends = pd.DataFrame(records)
 
-# 合并坐标
+# Merge coordinates
 points = coords.merge(trends, left_on='lake_name', right_on='lake', how='left').dropna(subset=['lat','lon'])
 
 # =========================
-# 3) 热力层准备
+# 3) Heatmap layers prep
 # =========================
 def norm_weights(series):
     s = series.replace([np.inf, -np.inf], np.nan).dropna()
@@ -562,7 +561,7 @@ temp_pos['w'] = norm_weights(temp_pos['temp_trend'])
 temp_neg['w'] = norm_weights(temp_neg['temp_trend'])
 
 # =========================
-# 4) 构建交互式热力图
+# 4) Build interactive heatmap
 # =========================
 m = folium.Map(location=[20, 0], zoom_start=2, tiles='CartoDB positron')
 
@@ -594,7 +593,7 @@ fg_area_neg.add_to(m)
 fg_temp_pos.add_to(m)
 fg_temp_neg.add_to(m)
 
-# 可选点位图层
+# Optional point layer
 fg_points = folium.FeatureGroup(name='Lake Points', show=False)
 for _, r in points.iterrows():
     popup = folium.Popup(
@@ -623,12 +622,12 @@ Toggle layers: Area ↑(blue), Area ↓(red), Temp ↑(orange), Temp ↓(cyan). 
 m.get_root().html.add_child(folium.Element(title_html))
 
 # =========================
-# 保存 & 下载提示
+# Save & download prompt
 # =========================
 out_path = '/content/global_heatmap_lakes_trends.html'
 m.save(out_path)
-print(f"✅ 热力图已保存：{out_path}")
-print("你可以在左侧 /content 下载，或运行：")
+print(f"✅ Heatmap saved: {out_path}")
+print("You can download from /content, or run:")
 print(f"from google.colab import files; files.download('{out_path}')")
 
 from google.colab import files
