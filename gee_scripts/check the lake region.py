@@ -7,24 +7,23 @@ Original file is located at
     https://colab.research.google.com/drive/1ydusM1iAW7RyITfgu-i0pLnd2VbCsd7t
 """
 
-# ✅ 安装必要库（首次运行需执行）
+# ✅ Install required libraries (execute once if running first time)
 !pip install earthengine-api geemap geedim rasterio pillow -q
 
-
-# ✅ 安装依赖（Colab 需要）
+# ✅ Install dependencies (needed for Colab)
 !pip install geemap earthengine-api -q
 
-# ✅ 导入库
+# ✅ Import libraries
 import ee, geemap
 import datetime
 
-# ✅ 初始化 Earth Engine（Colab 第一次运行会弹出授权）
+# ✅ Initialize Earth Engine (Colab first run will ask for authorization)
 ee.Authenticate()
-ee.Initialize(project='lake-465014')  # 替换为你的项目 ID（如果需要）
+ee.Initialize(project='lake-465014')  # Replace with your project ID (if needed)
 
-# ✅ 设置湖泊区域和日期
+# ✅ Set lake region and date
 lake_name = "Lake Name"
-# 精修版 Rectangle（真实湖泊边界）
+# Refined Rectangle (actual lake boundary)
 region = ee.Geometry.Rectangle([-60.17,-3.66,-60.00,-3.56])
 
 year, month, day = 2018, 6, 11
@@ -33,9 +32,9 @@ end_date = start_date + datetime.timedelta(days=1)
 
 start = start_date.strftime("%Y-%m-%d")
 end = end_date.strftime("%Y-%m-%d")
-print(f"\n📅 正在处理：{start}")
+print(f"\n📅 Processing: {start}")
 
-# ✅ 波段处理函数（避免空图）
+# ✅ Band processing function (avoid empty images)
 def get_median_image(collection, bands, scale_factor):
     if collection.size().getInfo() == 0:
         return None
@@ -46,7 +45,7 @@ def get_median_image(collection, bands, scale_factor):
         .clamp(0, 255) \
         .uint8()
 
-# ✅ 获取三个数据源
+# ✅ Get three data sources
 s2_col = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED") \
     .filterBounds(region).filterDate(start, end) \
     .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
@@ -58,20 +57,20 @@ landsat_col = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2") \
 modis_col = ee.ImageCollection("MODIS/006/MOD09GA") \
     .filterBounds(region).filterDate(start, end)
 
-# ✅ 合成图像
+# ✅ Composite images
 s2_img = get_median_image(s2_col, ['B4', 'B3', 'B2'], 3000)
 landsat_img = get_median_image(landsat_col, ['SR_B4', 'SR_B3', 'SR_B2'], 10000)
 modis_img = get_median_image(modis_col, ['sur_refl_b01', 'sur_refl_b04', 'sur_refl_b03'], 5000)
 
 if not any([s2_img, landsat_img, modis_img]):
-    print("⚠️ 无可用图像，已跳过")
+    print("⚠️ No available images, skipped")
 else:
-    # ✅ 按优先级合并图像
+    # ✅ Merge images by priority
     fused = s2_img or landsat_img or modis_img
     if fused and landsat_img: fused = fused.unmask(landsat_img)
     if fused and modis_img: fused = fused.unmask(modis_img)
 
-    # ✅ 根据图像类型设置波段显示
+    # ✅ Set band visualization depending on image type
     if s2_img:
         vis_params = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 255}
     elif landsat_img:
@@ -81,7 +80,7 @@ else:
     else:
         vis_params = None
 
-    # ✅ 显示地图
+    # ✅ Display map
     fused = fused.clip(region)
     Map = geemap.Map()
     Map.centerObject(region, zoom=8)
@@ -90,5 +89,3 @@ else:
     Map.addLayer(region, {'color': 'red'}, 'Lake Region')
     Map.add_layer_control()
     Map
-
-
