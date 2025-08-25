@@ -1,4 +1,4 @@
-// ======== 湖泊列表（Polygon 格式） ========
+// ======== lake list ========
 var lakes = [
   {name: 'Namtso', geom: ee.Geometry.Polygon([[[90.10, 30.20], [91.05, 30.20], [91.05, 31.10], [90.10, 31.10], [90.10, 30.20]]]), hemisphere: 'north'},
   {name: 'Yamdrok', geom: ee.Geometry.Polygon([[[90.3, 28.65], [91.1, 28.65], [91.1, 29.45], [90.3, 29.45], [90.3, 28.65]]]), hemisphere: 'north'},
@@ -102,7 +102,7 @@ var lakes = [
   {name: 'Lake Gregory', geom: ee.Geometry.Polygon([[[127.24, -20.31], [127.53, -20.31], [127.53, -20.06], [127.24, -20.06], [127.24, -20.31]]]), hemisphere: 'south'}
 ];
 
-// ======== NDWI 面积计算函数 ========
+// ======== NDWI Area calculation function ========
 function calcAreaNDWI(img, geom, lakeName, sourceName) {
   var green = img.select('green');
   var nir = img.select('nir');
@@ -125,7 +125,7 @@ function calcAreaNDWI(img, geom, lakeName, sourceName) {
   });
 }
 
-// ======== 主逻辑 ========
+// ======== Main Logic ========
 var allFeatures = [];
 var years = ee.List.sequence(2000, 2025);
 
@@ -140,7 +140,7 @@ lakes.forEach(function(lake) {
       var start = ee.Date.fromYMD(year, month, 1);
       var end = start.advance(1, 'month');
 
-      // Sentinel-2 SR（优先）
+      // Sentinel-2 SR（first）
       var s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
         .filterBounds(geom)
         .filterDate(start, end)
@@ -151,7 +151,7 @@ lakes.forEach(function(lake) {
         .sort('CLOUDY_PIXEL_PERCENTAGE');
       var s2img = ee.Image(s2.first());
 
-      // Landsat 7/8/9 SR 合并（备选）
+      // Landsat 7/8/9 SR combined
       var ls_all = ee.ImageCollection("LANDSAT/LE07/C02/T1_L2")
         .merge(ee.ImageCollection("LANDSAT/LC08/C02/T1_L2"))
         .merge(ee.ImageCollection("LANDSAT/LC09/C02/T1_L2"))
@@ -173,13 +173,13 @@ lakes.forEach(function(lake) {
         .sort('CLOUD_COVER');
       var lsimg = ee.Image(ls_all.first());
 
-      // Sentinel 面积
+      // Sentinel area
       var sentinelFeat = ee.Algorithms.If(s2img,
         calcAreaNDWI(s2img, geom, name, 'Sentinel-2'),
         null
       );
 
-      // Sentinel 面积为 0 或无数据 → 用 Landsat
+      // Sentinel area is  0 or nan → use Landsat
       var finalFeat = ee.Algorithms.If(
         ee.Algorithms.IsEqual(sentinelFeat, null),
         ee.Algorithms.If(lsimg,
@@ -206,12 +206,13 @@ lakes.forEach(function(lake) {
 
 var resultFC = ee.FeatureCollection(ee.List(allFeatures).flatten());
 
-// ======== 打印总样本数 ========
-print('总样本数:', resultFC.size());
+// ======== Print total number of samples ========
+print('total number of samples:', resultFC.size());
 
-// ======== 导出结果 ========
+// ======== export result ========
 Export.table.toDrive({
   collection: resultFC,
   description: 'Lake_Area_Summer_2000_2025_S2_LS7_8_9_ReplacedZero',
   fileFormat: 'CSV'
 });
+
