@@ -156,24 +156,23 @@ def save_triptych(img_path, msk_path, out_path, size=(256, 256), show=True):
     plt.close(fig)                     # Release memory (important for batch figure generation)
     print("Saved:", out_path)
 
-
-# 示例：用第一个样本生成 Fig.2
+# Example: generate Fig.2 using the 969th sample
 save_triptych(pairs[968][0], pairs[968][1], "Fig2_sample_triptych.png", size=(256, 256), show=True)
 
-# 读取概率缓存
+# Load probability cache
 pred_unet   = np.load(UNET_NPY).squeeze()
 pred_segnet = np.load(SEGNET_NPY).squeeze()
 pred_fcn    = np.load(FCN_NPY).squeeze()
 N = len(pairs)
-assert pred_unet.shape[0]==pred_segnet.shape[0]==pred_fcn.shape[0]==N, "NPY 数量与样本不一致"
+assert pred_unet.shape[0]==pred_segnet.shape[0]==pred_fcn.shape[0]==N, "NPY count not consistent with samples"
 
-# 最优 (w, τ)
+# Best (w, τ)
 best = {"w":[0.3,0.3,0.4], "tau_ens":0.39, "tau_unet":0.5, "tau_segnet":0.5, "tau_fcn":0.5}
 
 wU, wS, wF = best["w"]
 tauU = best.get("tau_unet",0.5); tauS = best.get("tau_segnet",0.5); tauF = best.get("tau_fcn",0.5); tauE = best.get("tau_ens",0.5)
 
-# 选首/中/尾三个样本
+# Select first/middle/last three samples
 idxs = [4, 298, 1135] if N>=3 else [0]
 H,W = pred_unet.shape[1], pred_unet.shape[2]
 
@@ -209,34 +208,34 @@ if GLOBAL_HTML and os.path.exists(GLOBAL_HTML):
     img = cv2.cvtColor(cv2.imread("Fig6_global_trends.png"), cv2.COLOR_BGR2RGB)
     plt.figure(figsize=(12,7)); plt.imshow(img); plt.axis('off')
     plt.title("Fig.6 Global trends (screenshot)");
-    plt.show()  # <—— 显示
+    plt.show()  # <—— show
 
 if REGION_HTML and os.path.exists(REGION_HTML):
     html_to_png(REGION_HTML, "Fig7_region_trends.png", width=1600, height=1000, wait_sec=3)
     img = cv2.cvtColor(cv2.imread("Fig7_region_trends.png"), cv2.COLOR_BGR2RGB)
     plt.figure(figsize=(12,7)); plt.imshow(img); plt.axis('off')
     plt.title("Fig.7 Regional trends (screenshot)")
-    plt.show()  # <—— 显示
+    plt.show()  # <—— show
 
-# ===== Fig.8（鲁棒版）：自动计算 area_index 并绘制区域小倍图 =====
+# ===== Fig.8 (robust version): automatically compute area_index and plot region small multiples =====
 import os, numpy as np, pandas as pd, matplotlib.pyplot as plt, math
 
-# 若前面自动搜索不到，就手动指定 CSV 路径：
+# If auto-search failed above, manually specify CSV path:
 # TS_CSV = "/content/drive/MyDrive/your_project_folder/100Lake_area_Temperature_2000-2025.csv"
 
-assert TS_CSV is not None and os.path.exists(TS_CSV), f"未找到时间序列CSV：{TS_CSV}"
+assert TS_CSV is not None and os.path.exists(TS_CSV), f"Time-series CSV not found: {TS_CSV}"
 df = pd.read_csv(TS_CSV)
 
-# 1) year 列推断
+# 1) Infer year column
 if "year" not in df.columns:
     if "date" in df.columns:
         df["year"] = pd.to_datetime(df["date"]).dt.year
     elif "Year" in df.columns:
         df["year"] = df["Year"]
     else:
-        raise ValueError("CSV 需包含 year 或 date 列（无法推断年份）。")
+        raise ValueError("CSV must contain year or date column (cannot infer year).")
 
-# 2) lake / region 列名推断
+# 2) Infer lake / region column names
 def find_col(cands):
     for c in cands:
         if c in df.columns: return c
@@ -245,44 +244,44 @@ def find_col(cands):
         if any(k in l for k in cands): return col
     return None
 
-lake_col   = find_col(["lake","lakename","name","湖","地点"])
-region_col = find_col(["region","zone","area","区域","地区"])
+lake_col   = find_col(["lake","lakename","name","lake","location"])
+region_col = find_col(["region","zone","area","region","district"])
 if lake_col is None:
-    # 没有 lake 列也可以，只是无法做“按湖泊基线”，退化为整体基线
-    print("⚠️ 未检测到 lake 列，将使用全体样本的全局基线。")
+    # If no lake column, fallback to global baseline
+    print("⚠️ No lake column detected, will use global baseline of all samples.")
 if region_col is None:
-    print("⚠️ 未检测到 region 列，全部归为 'All'。")
+    print("⚠️ No region column detected, all assigned to 'All'.")
     region_col = "region"
     df[region_col] = "All"
 
-# 3) 面积列推断（任选其一）
-area_candidates = ["area_index","area_m2","area_km2","area","面积","Area","AREA"]
+# 3) Infer area column (choose one)
+area_candidates = ["area_index","area_m2","area_km2","area","Area","AREA"]
 area_col = None
 for c in area_candidates:
     if c in df.columns:
         area_col = c
         break
 if area_col is None:
-    # 宽松匹配
+    # Loose match
     for col in df.columns:
         l = col.lower()
         if "area" in l:
             area_col = col; break
 if area_col is None:
-    raise ValueError("CSV 中未找到面积列（例如 area_m2/area_km2/area）。")
+    raise ValueError("CSV missing area column (e.g., area_m2/area_km2/area).")
 
-print(f"检测到列：year={ 'year' }, region={region_col}, lake={lake_col}, area={area_col}")
+print(f"Detected columns: year={'year'}, region={region_col}, lake={lake_col}, area={area_col}")
 
-# 4) 若已自带 area_index 就直接用；否则计算 area_index
+# 4) If area_index not present, compute area_index
 if "area_index" not in df.columns:
-    # 面积转为数值
+    # Convert area to numeric
     df[area_col] = pd.to_numeric(df[area_col], errors="coerce")
     df = df.dropna(subset=[area_col, "year"])
 
     BASELINE_YEARS = {2000,2001,2002}
 
     def compute_baseline(g):
-        # 优先用 2000–2002 的均值；若缺失则用该湖最早的 3 条记录均值
+        # Prefer mean of 2000–2002; if missing, fallback to first 3 records of that lake
         cand = g[g["year"].isin(BASELINE_YEARS)][area_col]
         if cand.dropna().shape[0] >= 1:
             return float(cand.mean())
@@ -292,18 +291,18 @@ if "area_index" not in df.columns:
         base_map = df.groupby(lake_col).apply(compute_baseline).to_dict()
         df["__baseline__"] = df[lake_col].map(base_map)
     else:
-        # 无 lake 列：用全体的基线（2000–2002 或最早3条）
+        # Without lake column: use global baseline (2000–2002 or first 3 records)
         all_base = compute_baseline(df.copy())
         df["__baseline__"] = all_base
 
     df = df[df["__baseline__"] > 0]
     df["area_index"] = df[area_col] / df["__baseline__"]
 else:
-    # 若已有 area_index，确保是数值
+    # If area_index already exists, ensure numeric
     df["area_index"] = pd.to_numeric(df["area_index"], errors="coerce")
     df = df.dropna(subset=["area_index"])
 
-# 5) 按 region-year 聚合并绘图
+# 5) Aggregate to region-year and plot
 g = df.groupby([region_col,"year"], as_index=False)["area_index"].mean()
 
 regions = sorted(g[region_col].unique().tolist())
@@ -324,7 +323,7 @@ for i, reg in enumerate(regions):
     axes[r,c].set_xlabel("Year"); axes[r,c].set_ylabel("Summer area index")
     axes[r,c].grid(True, linestyle="--", alpha=0.3)
 
-# 关多余子图
+# Close extra subplots
 for j in range(len(regions), nrow*ncol):
     r, c = divmod(j, ncol); axes[r,c].axis("off")
 
@@ -337,9 +336,9 @@ print("✅ Saved: Fig8_region_small_multiples.png")
 out9 = None
 if PERM_CSV and os.path.exists(PERM_CSV):
     dfp = pd.read_csv(PERM_CSV)
-    region_col = next((c for c in dfp.columns if "region" in c.lower() or "区域" in c), None)
-    feat_col   = next((c for c in dfp.columns if "feature" in c.lower() or "特征" in c), None)
-    imp_col    = next((c for c in dfp.columns if "importance" in c.lower() or "重要" in c), None)
+    region_col = next((c for c in dfp.columns if "region" in c.lower()), None)
+    feat_col   = next((c for c in dfp.columns if "feature" in c.lower()), None)
+    imp_col    = next((c for c in dfp.columns if "importance" in c.lower()), None)
     if region_col and feat_col and imp_col:
         gg = (dfp[[region_col, feat_col, imp_col]]
               .groupby(region_col, as_index=False)
@@ -360,9 +359,9 @@ if PERM_CSV and os.path.exists(PERM_CSV):
 
 elif TOP3_CSV and os.path.exists(TOP3_CSV):
     dft = pd.read_csv(TOP3_CSV)
-    region_col = next((c for c in dft.columns if "region" in c.lower() or "区域" in c), None)
-    feat_col   = next((c for c in dft.columns if "feature" in c.lower() or "特征" in c), None)
-    score_col  = next((c for c in dft.columns if "score" in c.lower() or "重要" in c), None)
+    region_col = next((c for c in dft.columns if "region" in c.lower()), None)
+    feat_col   = next((c for c in dft.columns if "feature" in c.lower()), None)
+    score_col  = next((c for c in dft.columns if "score" in c.lower()), None)
     if region_col and feat_col and score_col:
         regs = dft[region_col].unique().tolist()
         ncol = min(3, len(regs)); nrow = (len(regs)+ncol-1)//ncol
@@ -377,7 +376,7 @@ elif TOP3_CSV and os.path.exists(TOP3_CSV):
         plt.tight_layout(); out9 = "Fig9_top3_features.png"; plt.savefig(out9, dpi=300); plt.show(); plt.close(fig)
         print("Saved:", out9)
 else:
-    print("未找到重要度/Top-3 CSV，跳过 Fig.9")
+    print("Importance/Top-3 CSV not found, skipping Fig.9")
 
 from google.colab import files
 outs = ["Fig2_sample_triptych.png","Fig3_qualitative_comparison.png",
@@ -392,8 +391,9 @@ if SAVE_TO_DRIVE and MODE=="drive":
     os.makedirs(out_dir, exist_ok=True)
     for f in outs:
         shutil.copy2(f, os.path.join(out_dir, f))
-    print("✅ 已拷贝到：", out_dir)
+    print("✅ Copied to:", out_dir)
 
-print("👇 选择需要下载的图片（可多选）：")
+print("👇 Select the images you want to download (multiple allowed):")
 for f in outs:
     files.download(f)
+
