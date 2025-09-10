@@ -14,12 +14,12 @@ from google.colab import files
 import matplotlib.pyplot as plt
 
 # ===== Upload file if not exists =====
-if not os.path.exists("/content/100Lake_area_Temperature_2000-2025.csv"):
-    print("Please upload 100Lake_area_Temperature_2000-2025.csv file")
+if not os.path.exists("/content/Lake_Area_and_Climate_2000_2025.csv"):
+    print("Please upload Lake_Area_and_Climate_2000_2025.csv file")
     uploaded = files.upload()
 
 # ===== Read data =====
-df = pd.read_csv("/content/100Lake_area_Temperature_2000-2025.csv")
+df = pd.read_csv("/content/Lake_Area_and_Climate_2000_2025.csv")
 
 # ===== Clean area_m2 column =====
 def to_numeric_area(val):
@@ -33,39 +33,28 @@ def to_numeric_area(val):
 
 df['area_m2'] = df['area_m2'].apply(to_numeric_area)
 
-# Check required columns
-required_cols = {'lake','hemisphere','year','month','area_m2'}
+# ===== Check required columns =====
+required_cols = {'lake', 'hemisphere', 'year', 'area_m2'}
 missing = required_cols - set(df.columns)
 if missing:
     raise ValueError(f"Missing required columns: {missing}")
 
-# ===== Define summer by hemisphere =====
-def is_summer(row):
-    hemi = str(row['hemisphere']).lower()
-    if hemi.startswith('north'):
-        return row['month'] in [6,7,8]
-    else:
-        return row['month'] in [12,1,2]
-
-df['is_summer'] = df.apply(is_summer, axis=1)
-df_summer = df[df['is_summer']].copy()
-
 # ===== Group by lake-year =====
 summary = (
-    df_summer.groupby(['lake','year'])
+    df.groupby(['lake','year'])
     .agg(
         n_records=('area_m2','count'),
-        summer_mean_area=('area_m2','mean')
+        mean_area=('area_m2','mean')
     )
     .reset_index()
 )
 
 # Percentage change
-summary['pct_change'] = summary.groupby('lake')['summer_mean_area'].pct_change(fill_method=None)
+summary['pct_change'] = summary.groupby('lake')['mean_area'].pct_change(fill_method=None)
 
 # ===== Flags =====
 summary['incomplete'] = summary['n_records'] < 3
-summary['high_risk'] = (summary['n_records'] < 3) & (summary['pct_change'].abs() > 0.5)
+summary['high_risk'] = (summary['incomplete']) & (summary['pct_change'].abs() > 0.5)
 
 # ===== Yearly stats =====
 year_stats = (
@@ -126,7 +115,7 @@ for _, row in top3.iterrows():
     )
 
 plt.axhline(y=0.2, color='gray', linestyle='--', linewidth=1, label='0.2 Reference')
-plt.title('Annual High-Risk Ratio (Summer records <3 and |Area change| >50%)', fontsize=14)
+plt.title('Annual High-Risk Ratio (Records <3 and |Area change| >50%)', fontsize=14)
 plt.xlabel('Year', fontsize=12)
 plt.ylabel('High Risk Ratio', fontsize=12)
 plt.ylim(0, 1.05)
