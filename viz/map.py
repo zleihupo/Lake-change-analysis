@@ -19,7 +19,7 @@ import os
 from google.colab import files
 
 # ==== 1) Ensure files exist, otherwise upload ====
-for fname in ["100Lake_area_Temperature_2000-2025.csv", "100lake.csv"]:
+for fname in ["Lake_Area_and_Climate_2000_2025.csv", "100lake.csv"]:
     if not os.path.exists(f"/content/{fname}"):
         print(f"File not found: {fname}, please upload:")
         uploaded = files.upload()
@@ -27,7 +27,7 @@ for fname in ["100Lake_area_Temperature_2000-2025.csv", "100lake.csv"]:
             print(f"Uploaded: {k}")
 
 # ==== 2) Read and clean main data ====
-df = pd.read_csv('/content/100Lake_area_Temperature_2000-2025.csv')
+df = pd.read_csv('/content/Lake_Area_and_Climate_2000_2025.csv')
 
 def clean_area(val):
     if pd.isna(val):
@@ -44,14 +44,7 @@ df['area_m2'] = df['area_m2'].apply(clean_area)
 df = df[df['area_m2'] > 0].copy()
 
 # Keep only summer months
-def is_summer(row):
-    hemi = str(row['hemisphere']).lower()
-    if hemi.startswith('north'):
-        return row['month'] in [6,7,8]
-    else:
-        return row['month'] in [12,1,2]
-
-df['is_summer'] = df.apply(is_summer, axis=1)
+df['is_summer'] = True
 df = df[df['is_summer']].copy()
 
 # ==== 3) Per-lake trend calculation ====
@@ -104,12 +97,9 @@ def clip(v, lo, hi):
         return 0.0
 
 area_vals = map_df['area_trend_per_decade'].dropna()
-vmin = -0.6 if area_vals.empty else float(np.percentile(area_vals, 5))
-vmax = 0.6 if area_vals.empty else float(np.percentile(area_vals, 95))
-if vmin == vmax:
-    vmin, vmax = -0.1, 0.1
-
-colormap = cm.LinearColormap(colors=['red','white','blue'], vmin=vmin, vmax=vmax)
+vmax = float(np.percentile(area_vals, 85))
+vmin = -vmax
+colormap = cm.LinearColormap(['blue', 'white', 'red'], vmin=vmin, vmax=vmax)
 colormap.caption = 'Lake summer area trend (per decade, index units)'
 
 m = folium.Map(location=[20, 0], zoom_start=2, tiles='CartoDB positron')
@@ -186,7 +176,7 @@ from google.colab import files
 # =========================
 # Trigger upload if files not found
 # =========================
-needed = ["100Lake_area_Temperature_2000-2025.csv", "100lake.csv"]
+needed = ["Lake_Area_and_Climate_2000_2025.csv", "100lake.csv"]
 for fname in needed:
     if not os.path.exists(f"/content/{fname}"):
         print(f"File not found: {fname}, please upload:")
@@ -210,14 +200,6 @@ def clean_area(val):
         except:
             return np.nan
     return np.nan
-
-def is_summer(row):
-    """Determine summer months by hemisphere: North=6-8, South=12-2."""
-    hemi = str(row['hemisphere']).lower()
-    if hemi.startswith('north'):
-        return row['month'] in [6,7,8]
-    else:
-        return row['month'] in [12,1,2]
 
 def slope_per_decade(years, values):
     """Linear regression slope ×10 to get per-decade change."""
@@ -248,7 +230,7 @@ def read_100lake_csv(path="/content/100lake.csv"):
 # =========================
 # 1) Read and clean main data (summer only)
 # =========================
-df = pd.read_csv('/content/100Lake_area_Temperature_2000-2025.csv')
+df = pd.read_csv('/content/Lake_Area_and_Climate_2000_2025.csv')
 
 # Required columns check
 required_main_cols = {'lake','region','hemisphere','year','month','area_m2',
@@ -260,8 +242,7 @@ if missing:
 df['area_m2'] = df['area_m2'].apply(clean_area)
 df = df[df['area_m2'] > 0].copy()
 
-df['is_summer'] = df.apply(is_summer, axis=1)
-df = df[df['is_summer']].copy()
+df['is_summer'] = True
 
 # =========================
 # 2) Lake baseline (2000–2002) -> area_index
@@ -274,7 +255,7 @@ baseline = (
 )
 
 first3 = (
-    df.sort_values(['lake','year','month'])
+    df.sort_values(['lake','year'])
       .groupby('lake').head(3)
       .groupby('lake')['area_m2'].mean()
       .rename('fallback')
@@ -335,19 +316,16 @@ reg_map = reg_centroids.merge(trend_tbl, on='region', how='left')
 # =========================
 # Temperature trend color range: 5%-95% quantiles (default if missing)
 temp_vals = reg_map['temp_trend_C_per_decade'].dropna()
-tmin = float(np.nanpercentile(temp_vals, 5)) if not temp_vals.empty else -0.2
-tmax = float(np.nanpercentile(temp_vals, 95)) if not temp_vals.empty else 0.8
-if tmin == tmax:
-    tmin, tmax = -0.1, 0.1
+tmax = float(np.nanpercentile(temp_vals, 90))
+tmin = -tmax
+
 cmap_temp = cm.LinearColormap(colors=['blue','white','red'], vmin=tmin, vmax=tmax)
 cmap_temp.caption = 'Summer Temperature Trend (°C per decade)'
 
-# Area trend color range: 5%-95% quantiles (default if missing)
 area_vals = reg_map['area_index_trend_per_decade'].dropna()
-amin = float(np.nanpercentile(area_vals, 5)) if not area_vals.empty else -0.4
-amax = float(np.nanpercentile(area_vals, 95)) if not area_vals.empty else 0.4
-if amin == amax:
-    amin, amax = -0.1, 0.1
+amax = float(np.nanpercentile(area_vals, 65))
+amin = -amax
+
 cmap_area = cm.LinearColormap(colors=['red','white','blue'], vmin=amin, vmax=amax)
 cmap_area.caption = 'Summer Lake Area Index Trend (per decade)'
 
@@ -447,7 +425,7 @@ def ensure_file(fname):
     else:
         print(f"Found: {path}")
 
-ensure_file("100Lake_area_Temperature_2000-2025.csv")
+ensure_file("Lake_Area_and_Climate_2000_2025.csv")
 ensure_file("100lake.csv")
 
 # =========================
@@ -463,13 +441,6 @@ def clean_area(val):
         except:
             return np.nan
     return np.nan
-
-def is_summer(row):
-    hemi = str(row['hemisphere']).lower()
-    if hemi.startswith('north'):
-        return row['month'] in [6,7,8]
-    else:
-        return row['month'] in [12,1,2]
 
 def trend_per_decade(years, values):
     d = pd.DataFrame({'year': years, 'y': values}).dropna()
@@ -497,7 +468,7 @@ def read_100lake_csv(path="/content/100lake.csv"):
 # =========================
 # 1) Read data (summer only)
 # =========================
-df = pd.read_csv('/content/100Lake_area_Temperature_2000-2025.csv')
+df = pd.read_csv('/content/Lake_Area_and_Climate_2000_2025.csv')
 
 # Required columns check
 need_cols = {'lake','hemisphere','year','month','area_m2','temp_C'}
@@ -507,8 +478,7 @@ if miss:
 
 df['area_m2'] = df['area_m2'].apply(clean_area)
 df = df[df['area_m2'] > 0].copy()
-df['is_summer'] = df.apply(is_summer, axis=1)
-df = df[df['is_summer']].copy()
+df['is_summer'] = True 
 
 coords = read_100lake_csv('/content/100lake.csv')
 if 'rectangle' not in coords.columns or 'lake_name' not in coords.columns:
