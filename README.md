@@ -24,6 +24,8 @@ Lake-Change-Analysis/
 │ ├── lake_area_gsw.js                     # Lake area extraction from GSW (2000–2021)
 │ ├── lake_area_s2_landsat.js              # Lake area (2000–2025) using Sentinel-2 (primary) and Landsat (fallback)
 │ ├── temperature_era5_gldas_merged.js     # Summer temperature derived from ERA5 + GLDAS
+│ ├── lake_area.js                         # Lake area (2000–2025) using Sentinel-2 (primary) and Landsat (fallback) and GSW(fallback)
+│ ├── lake_climate.js                      # ERA5 summer climate variables with standardized units
 │ └── climate_era5_summer_units.js         # ERA5 summer climate variables with standardized units
 │
 ├── training/                              # Model training and evaluation
