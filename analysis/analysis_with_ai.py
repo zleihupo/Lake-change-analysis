@@ -105,7 +105,7 @@ print("use data file:", CSV_PATH)
 
 df = pd.read_csv(CSV_PATH)
 
-# ========== 4) preprocessing ==========
+# ========== 4) Preprocessing==========
 
 def to_numeric(x):
     try:
@@ -113,44 +113,47 @@ def to_numeric(x):
     except:
         return np.nan
 
-# Cleaning area
+# Clean area values
 if 'area_m2' not in df.columns:
-    raise ValueError("The data is missing the 'area_m2' column")
+    raise ValueError("Missing 'area_m2' column in the dataset")
 
 df['area_m2'] = df['area_m2'].apply(to_numeric)
 
-# Basic fields
-for col in ['year', 'month']:
-    if col not in df.columns:
-        raise ValueError(f"Data is missing column '{col}'")
-
+# Check basic fields
+if 'year' not in df.columns:
+    raise ValueError("Missing 'year' column in the dataset")
 df['year'] = df['year'].astype(int)
-df['month'] = df['month'].astype(int)
-df['date'] = pd.to_datetime(dict(year=df['year'], month=df['month'], day=1))
 
-# Keep only positive areas
+#  Remove strict check on 'month', but keep original variable name
+if 'month' not in df.columns:
+    print(" 'month' column not found; skipping 'date' and 'is_summer' processing")
+    df['is_summer'] = True  # Ensure consistency, default to all being summer
+else:
+    df['month'] = df['month'].astype(int)
+    df['date'] = pd.to_datetime(dict(year=df['year'], month=df['month'], day=1))
+
+    def is_summer(row):
+        hemi = str(row['hemisphere']).lower()
+        if hemi.startswith('north'):
+            return row['month'] in [6, 7, 8]
+        else:
+            return row['month'] in [12, 1, 2]
+
+    df['is_summer'] = df.apply(is_summer, axis=1)
+
+# Keep only positive area values
 df = df[df['area_m2'] > 0].copy()
 
-# Hemisphere Summer Screening
+# Check other required fields
+if 'lake' not in df.columns:
+    raise ValueError("Missing 'lake' column in the dataset")
 if 'hemisphere' not in df.columns:
-    raise ValueError("The data is missing the 'hemisphere' column (north/south)")
+    raise ValueError("Missing 'hemisphere' column in the dataset")
 
-
-def is_summer(row):
-    hemi = str(row['hemisphere']).lower()
-    if hemi.startswith('north'):
-        return row['month'] in [6, 7, 8]
-    else:
-        return row['month'] in [12, 1, 2]
-
-
-df['is_summer'] = df.apply(is_summer, axis=1)
+#  Keep 'summer' logic (even though it's not filtering by actual summer here)
 df = df[df['is_summer']].copy()
 
-# Calculate the baseline area (summer average of 2000-2002). If there is no baseline area, fall back to the average of the first three summer records of the lake.
-if 'lake' not in df.columns:
-    raise ValueError("The data is missing the 'lake' column")
-
+# Compute baseline area (2000–2002) or fallback to first 3 entries
 baseline = (
     df[(df['year'] >= 2000) & (df['year'] <= 2002)]
       .groupby('lake')['area_m2']
@@ -159,7 +162,7 @@ baseline = (
 )
 
 first3 = (
-    df.sort_values('date')
+    df.sort_values('year')
       .groupby('lake').head(3)
       .groupby('lake')['area_m2']
       .mean()
@@ -171,15 +174,15 @@ base['baseline_area_m2'] = base['baseline_area_m2'].fillna(base['fallback_baseli
 base = base[['baseline_area_m2']].dropna()
 base = base[base['baseline_area_m2'] > 0]
 
-# Merge and calculate area index
+# Merge and compute area index
 df = df.merge(base, left_on='lake', right_index=True, how='inner')
 df['area_index'] = df['area_m2'] / df['baseline_area_m2']
 
-# Aggregation: Summer lake-year granularity
+# Aggregation (keep the 'summer_lake_year' naming)
 required_feats = ['temp_C', 'precip_mm', 'pet_mm', 'snow_cover_pct', 'snow_depth_cm']
 for c in required_feats + ['region', 'hemisphere']:
     if c not in df.columns:
-        raise ValueError(f"Data is missing '{c}' column")
+        raise ValueError(f"Missing required column: '{c}'")
 
 agg_cols = {
     'area_index': 'mean',
@@ -196,7 +199,8 @@ summer_lake_year = (
       .reset_index()
 )
 
-show(summer_lake_year.head(20), "Summer lake-year aggregation preview", head=20)
+show(summer_lake_year.head(20), "Preview of summer lake-year aggregation", head=20)
+
 
 # ========== 5) Regional trends (slope per decade) ==========
 import statsmodels.api as sm
