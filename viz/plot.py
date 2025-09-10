@@ -11,7 +11,7 @@ from google.colab import drive
 drive.mount('/content/drive')
 
 # Choose "drive" or "upload"
-MODE = "drive"  # "drive" or "upload"
+MODE = "updolad"  # "drive" or "upload"
 
 # When MODE="drive", set your Drive root directory (modify to your path)
 DRIVE_ROOT = "/content/drive/MyDrive"  # ← modify to yours
@@ -81,7 +81,7 @@ else:
     REGION_HTML = next((k for k in uploaded if k.endswith(".html") and "region" in k.lower()), None)
     TS_CSV  = next((k for k in uploaded if k.endswith(".csv") and ("Lake" in k or "Temperature" in k or "2000" in k)), None)
     PERM_CSV = next((k for k in uploaded if k.endswith(".csv") and "Permutation" in k), None)
-    TOP3_CSV = next((k for k in uploaded if k.endswith(".csv") and ("Top-3" in k or "Top3" in k)), None)
+    TOP3_CSV = next((k for k in uploaded if k.endswith(".csv") and ("Top_3" in k or "Top3" in k)), None)
 
 print("IMG_DIR:", TEST_IMG_DIR)
 print("MSK_DIR:", TEST_MASK_DIR)
