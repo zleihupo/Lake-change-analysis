@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_b2682cb0f63706b5e12c2faaf3c2e7e5 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@main/folium/templates/leaflet_heat.min.js"></script>
+</head>
+<body>
+    
+    
+<div style="position: fixed;
+     top: 10px; left: 50px; width: 520px; z-index:9999;
+     background-color: rgba(255,255,255,0.95); padding: 8px 12px; border-radius: 6px;
+     box-shadow: 0 2px 6px rgba(0,0,0,0.2); font-size:14px;">
+<b>Global Heatmap of Lake Trends (Summer, 2000–2025)</b><br>
+Toggle layers: Area ↑(blue), Area ↓(red), Temp ↑(orange), Temp ↓(cyan). Intensity reflects magnitude.
+</div>
+    
+            <div class="folium-map" id="map_b2682cb0f63706b5e12c2faaf3c2e7e5" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_b2682cb0f63706b5e12c2faaf3c2e7e5 = L.map(
+                "map_b2682cb0f63706b5e12c2faaf3c2e7e5",
+                {
+                    center: [20.0, 0.0],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 2,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_3f22255e90bd0407f014dd76178e9aa0 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3f22255e90bd0407f014dd76178e9aa0.addTo(map_b2682cb0f63706b5e12c2faaf3c2e7e5);
+        
+    
+            var feature_group_21ddee1d8eefff64d0501ad993bdfcca = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var heat_map_ffd9137b48e0ccb337997443a834e6a8 = L.heatLayer(
+                [[30.65, 90.57499999999999, 0.038062459486121615], [29.049999999999997, 90.69999999999999, 0.0026749836857396627], [31.049999999999997, 86.57499999999999, 0.006489655164818299], [30.9, 85.6, 0.003769865856306409], [42.025, 87.02, 0.0], [44.6083, 81.1806, 0.0024149002257505764], [45.93, 85.80000000000001, 0.004619220293752372], [43.6619, 92.7715, 0.005601514045674653], [47.2225, 87.3063, 0.0005848841739853614], [37.5323, 89.5, 0.0033470347162786007], [-11.9553, 34.555800000000005, 0.013057615460364061], [1.85, 30.9, 0.0025408875601240157], [13.024999999999999, 14.2802, 0.008411133844597461], [35.2436, 136.05259999999998, 0.002236807342453678], [29.085900000000002, 116.27959999999999, 0.0008422246180296793], [29.1897, 112.9468, 0.005253051723433658], [31.218899999999998, 120.2617, 0.00215122368291242], [45.2975, 124.14330000000001, 0.00983184756167971], [24.8467, 102.719, 0.010870376277126429], [25.7831, 100.1811, 0.014571271509226479], [33.4055, 118.5222, 0.00047440928964129117], [34.8802, 117.00450000000001, 1.0], [42.4333, 77.2501, 0.0], [46.5283, 80.97999999999999, 0.0005575395294088192], [46.088300000000004, 81.69, 0.004467476662797457], [39.085, 68.36500000000001, 0.003442841663709075], [40.7662, 66.94999999999999, 0.004512798099411326], [46.37, 6.55, 0.0022070718664309965], [47.66, 9.32, 0.0026486108153056264], [60.815, 31.410000000000004, 0.006356696232608763], [61.89, 35.125, 0.014671978806593223], [47.795, 16.775, 0.00409487018591363], [57.28, -4.484999999999999, 0.01263498201595968], [54.345, -2.9450000000000003, 0.8744719500695061], [45.955, 8.675, 0.05986367989564697], [-3.55, -60.519999999999996, 0.0], [-3.48, -64.86000000000001, 0.00047341905776499503], [-2.155, -55.22, 0.005232152781954068], [-3.6100000000000003, -60.085, 0.2968716107699038], [29.21, -1.25, 1.0], [35.515, 10.445, 0.7720840393283843], [19.057499999999997, 20.505, 1.0], [19.015, 20.525, 0.4697526011678257], [18.935000000000002, 20.875, 1.0], [44.955, 132.365, 0.0022780481903232432], [54.83, 77.705, 0.011264162662338909], [72.525, 141.97500000000002, 0.004590004589641434], [62.425, 143.615, 0.00030667994433259814], [62.715, 177.215, 0.0017028704900470225], [69.185, 146.655, 0.0052246142735516915], [68.43, 102.375, 0.0], [67.155, -51.870000000000005, 0.008856885486756418], [69.224, -51.08, 0.006804209264562373], [70.1, -50.435, 0.0019646141513132813], [67.07499999999999, -50.57, 0.0072842056534616435], [67.09, -50.394999999999996, 0.0053256227179759264], [66.97, -50.64, 0.003376600543356458], [67.00999999999999, -51.825, 0.002297817176044226], [-31.69, 135.835, 0.015126410619410826], [-30.685000000000002, 139.79000000000002, 0.01002729778624322], [-23.445, 122.895, 0.02471290703647966], [-26.270000000000003, 122.575, 0.007795140724245749]],
+                {
+  "minOpacity": 0.2,
+  "maxZoom": 6,
+  "radius": 18,
+  "blur": 22,
+  "gradient": {
+  0.2: "#b3d9ff",
+  0.5: "#66b3ff",
+  0.8: "#1a8cff",
+  1.0: "#0059b3",
+},
+}
+            );
+        
+    
+            heat_map_ffd9137b48e0ccb337997443a834e6a8.addTo(feature_group_21ddee1d8eefff64d0501ad993bdfcca);
+        
+    
+            feature_group_21ddee1d8eefff64d0501ad993bdfcca.addTo(map_b2682cb0f63706b5e12c2faaf3c2e7e5);
+        
+    
+            var feature_group_40b2e03e0a174a1de20e7e97a013bebb = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var heat_map_390696a6c53a16582c3ff266ce1a72ad = L.heatLayer(
+                [[30.6735, 81.51650000000001, 0.13757157250552807], [31.8, 89.0, 0.0], [34.95, 97.275, 0.009118786135671016], [28.575000000000003, 90.375, 0.31060037890118997], [36.9, 100.2, 0.06086392452097551], [30.68675, 81.225, 0.22444290334679384], [44.855500000000006, 82.93095, 0.14394822618942069], [1.85, 33.2, 0.04655562336833914], [2.9, 30.0, 0.10383797366724795], [3.5259, 36.243, 0.0], [-2.0119, 29.1277, 0.07742044525066796], [-0.37, 29.6, 0.3154803895873465], [-9.029, 28.7422, 0.15467380902837716], [-8.0151, 32.255300000000005, 0.26368526385910246], [48.968900000000005, 117.3506, 0.14180067020743348], [45.8283, 76.372, 0.2815006930875573], [47.988, 83.8455, 0.0035427856543574863], [50.425, 69.21010000000001, 0.10336095534415657], [48.75, 85.8, 0.05891793608712133], [45.489999999999995, 59.885000000000005, 0.17227816024157283], [58.875, 13.205, 0.18221047462076392], [58.295, 14.52, 0.0723776414328174], [-3.38, -60.3, 0.08258855419068138], [-4.465, -62.25, 0.21516790165148256], [-2.5599999999999996, -64.61500000000001, 0.0697913400446244], [-2.51, -57.2, 0.04288143083712761], [33.71, 8.315000000000001, 1.0], [29.025, 0.035, 1.0], [53.735, 106.855, 0.16812025082513107], [74.53, 102.43, 0.19149992363537655], [50.33, 92.955, 0.052284510414218], [-28.66, 137.365, 0.09021774489231521], [-31.05, 137.625, 0.677456624861208], [-24.73, 130.925, 0.08801404676817645], [-22.335, 128.76, 0.08079391386719119], [-20.185, 127.38499999999999, 0.16940125216201038]],
+                {
+  "minOpacity": 0.2,
+  "maxZoom": 6,
+  "radius": 18,
+  "blur": 22,
+  "gradient": {
+  0.2: "#ffb3b3",
+  0.5: "#ff6666",
+  0.8: "#ff1a1a",
+  1.0: "#b30000",
+},
+}
+            );
+        
+    
+            heat_map_390696a6c53a16582c3ff266ce1a72ad.addTo(feature_group_40b2e03e0a174a1de20e7e97a013bebb);
+        
+    
+            feature_group_40b2e03e0a174a1de20e7e97a013bebb.addTo(map_b2682cb0f63706b5e12c2faaf3c2e7e5);
+        
+    
+            var feature_group_06f973f7dc8b2f8ddf64dd4c58789e70 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var heat_map_9ed1e6a5ae60754c9aca0f2c602a6285 = L.heatLayer(
+                [[30.65, 90.57499999999999, 0.6186004767865835], [29.049999999999997, 90.69999999999999, 0.34285632687120565], [30.6735, 81.51650000000001, 0.3608893401098717], [31.8, 89.0, 0.8143168157716751], [34.95, 97.275, 0.5164432176122269], [28.575000000000003, 90.375, 0.34334894596187965], [31.049999999999997, 86.57499999999999, 0.8334717767244335], [30.9, 85.6, 0.6842750805838971], [36.9, 100.2, 0.34759459819693017], [30.68675, 81.225, 0.33818951936912156], [42.025, 87.02, 0.39230399021001916], [44.6083, 81.1806, 0.7784377023598714], [44.855500000000006, 82.93095, 0.8571738185212131], [45.93, 85.80000000000001, 0.6918012924713348], [43.6619, 92.7715, 0.4927462381792173], [47.2225, 87.3063, 0.4870945027137234], [37.5323, 89.5, 0.38247469403381723], [1.85, 33.2, 0.14834562803052376], [2.9, 30.0, 0.0], [-11.9553, 34.555800000000005, 0.06365612494963442], [1.85, 30.9, 0.21794223810206811], [3.5259, 36.243, 0.10658939464959812], [-2.0119, 29.1277, 0.09767647862100128], [-0.37, 29.6, 0.2476254083341541], [-9.029, 28.7422, 0.0], [-8.0151, 32.255300000000005, 0.0], [35.2436, 136.05259999999998, 0.47149686382083034], [29.085900000000002, 116.27959999999999, 0.3138008633899625], [29.1897, 112.9468, 0.4846563412205805], [31.218899999999998, 120.2617, 0.21507148737328044], [24.8467, 102.719, 0.44280659605040074], [25.7831, 100.1811, 0.3743237052101686], [33.4055, 118.5222, 0.525275480186393], [34.8802, 117.00450000000001, 0.8386182345545845], [45.8283, 76.372, 0.8208681311448169], [42.4333, 77.2501, 0.45171912828363064], [47.988, 83.8455, 0.4534565793013561], [46.5283, 80.97999999999999, 1.0], [46.088300000000004, 81.69, 0.9405372706791041], [39.085, 68.36500000000001, 0.5830898789241057], [40.7662, 66.94999999999999, 0.7527665221963229], [50.425, 69.21010000000001, 0.3505829119014231], [48.75, 85.8, 0.3698137755346521], [45.489999999999995, 59.885000000000005, 0.8142789889304757], [46.37, 6.55, 0.964295655986595], [47.66, 9.32, 0.8816309712687813], [60.815, 31.410000000000004, 0.5223649993004053], [61.89, 35.125, 0.5018189927158534], [47.795, 16.775, 0.9892717790047193], [58.875, 13.205, 0.3286337901009055], [58.295, 14.52, 0.43737653634959683], [57.28, -4.484999999999999, 0.4774607185577442], [54.345, -2.9450000000000003, 0.4108582914907427], [45.955, 8.675, 0.6724858671911395], [-3.38, -60.3, 0.2933168430662934], [-3.55, -60.519999999999996, 0.2928709662627506], [-4.465, -62.25, 0.27555872051255625], [-2.5599999999999996, -64.61500000000001, 0.24487158112941848], [-3.48, -64.86000000000001, 0.2074523894723489], [-2.155, -55.22, 0.21410094736354576], [-2.51, -57.2, 0.2933910854754194], [-3.6100000000000003, -60.085, 0.45574361272539293], [29.21, -1.25, 0.0], [33.71, 8.315000000000001, 0.874114223029887], [35.515, 10.445, 0.852743483013155], [19.057499999999997, 20.505, 0.5182159398287446], [19.015, 20.525, 0.49450243369234603], [18.935000000000002, 20.875, 0.6561118029243657], [53.735, 106.855, 0.0006527488453712223], [44.955, 132.365, 0.45739169749802766], [74.53, 102.43, 1.0], [54.83, 77.705, 0.6505703262684512], [72.525, 141.97500000000002, 1.0], [62.425, 143.615, 0.7205780261492142], [62.715, 177.215, 0.18774695561085183], [50.33, 92.955, 0.3207208902068022], [69.185, 146.655, 0.9875381240808305], [68.43, 102.375, 0.9337294470107651], [-28.66, 137.365, 0.19121476560881656], [-31.05, 137.625, 0.0], [-30.685000000000002, 139.79000000000002, 0.3725089278788834], [-24.73, 130.925, 0.2507092782871819], [-23.445, 122.895, 1.0], [-26.270000000000003, 122.575, 1.0], [-22.335, 128.76, 0.9098193551471485], [-20.185, 127.38499999999999, 0.5665676231369943]],
+                {
+  "minOpacity": 0.2,
+  "maxZoom": 6,
+  "radius": 18,
+  "blur": 22,
+  "gradient": {
+  0.2: "#ffd9b3",
+  0.5: "#ffb366",
+  0.8: "#ff8c1a",
+  1.0: "#b35a00",
+},
+}
+            );
+        
+    
+            heat_map_9ed1e6a5ae60754c9aca0f2c602a6285.addTo(feature_group_06f973f7dc8b2f8ddf64dd4c58789e70);
+        
+    
+            var feature_group_4e5e7b791121bcdc24ff30e3f9abd956 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var heat_map_a3da098a37b1a77a2355e28edf018216 = L.heatLayer(
+                [[13.024999999999999, 14.2802, 0.14410049765365088], [48.968900000000005, 117.3506, 0.43670632409256555], [45.2975, 124.14330000000001, 0.007137743292129201], [16.955, 17.939999999999998, 0.0], [29.025, 0.035, 1.0], [67.155, -51.870000000000005, 0.34766448162184177], [69.224, -51.08, 0.6115968003521374], [70.1, -50.435, 0.5335727955654238], [67.07499999999999, -50.57, 0.5075574388101782], [67.09, -50.394999999999996, 0.5248974038723154], [66.97, -50.64, 0.43522129771874424], [67.00999999999999, -51.825, 0.384776490554846], [-31.69, 135.835, 0.1905381828961231]],
+                {
+  "minOpacity": 0.2,
+  "maxZoom": 6,
+  "radius": 18,
+  "blur": 22,
+  "gradient": {
+  0.2: "#b3ffff",
+  0.5: "#66ffff",
+  0.8: "#1affff",
+  1.0: "#00b3b3",
+},
+}
+            );
+        
+    
+            heat_map_a3da098a37b1a77a2355e28edf018216.addTo(feature_group_4e5e7b791121bcdc24ff30e3f9abd956);
+        
+    
+            var feature_group_5fb7e23f0dd32828d6506f00450d8164 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_208bc68876b6186cda9319b247d3736f = L.circleMarker(
+                [30.65, 90.57499999999999],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_057f98600a56ae37dac67fd6585cf56a = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_7124320891313dd29cd671ca061afa79 = $(`<div id="html_7124320891313dd29cd671ca061afa79" style="width: 100.0%; height: 100.0%;"><b>Namtso</b><br>Area trend: 2.843664061181912 /dec<br>Temp trend: 0.5524845761298901 °C/dec</div>`)[0];
+                popup_057f98600a56ae37dac67fd6585cf56a.setContent(html_7124320891313dd29cd671ca061afa79);
+            
+        
+
+        circle_marker_208bc68876b6186cda9319b247d3736f.bindPopup(popup_057f98600a56ae37dac67fd6585cf56a)
+        ;
+
+        
+    
+    
+            var circle_marker_2b4450ad566a194a650bda9c5768e79e = L.circleMarker(
+                [29.049999999999997, 90.69999999999999],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_4e41024df6218c868c3d83a4fc73f2ca = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_87f171e78dd289a94775506e139e5ac9 = $(`<div id="html_87f171e78dd289a94775506e139e5ac9" style="width: 100.0%; height: 100.0%;"><b>Yamdrok</b><br>Area trend: 0.24313038143853963 /dec<br>Temp trend: 0.34804091231451895 °C/dec</div>`)[0];
+                popup_4e41024df6218c868c3d83a4fc73f2ca.setContent(html_87f171e78dd289a94775506e139e5ac9);
+            
+        
+
+        circle_marker_2b4450ad566a194a650bda9c5768e79e.bindPopup(popup_4e41024df6218c868c3d83a4fc73f2ca)
+        ;
+
+        
+    
+    
+            var circle_marker_420bbb1019c097621c1ebe0f3131da21 = L.circleMarker(
+                [30.6735, 81.51650000000001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_be8ad45e37ebaf08fe87194d08c3b920 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_e9c8cad0e3b3f25576b7c4ed4ef24808 = $(`<div id="html_e9c8cad0e3b3f25576b7c4ed4ef24808" style="width: 100.0%; height: 100.0%;"><b>Manasarovar</b><br>Area trend: -0.2052206656040806 /dec<br>Temp trend: 0.3614110429130299 °C/dec</div>`)[0];
+                popup_be8ad45e37ebaf08fe87194d08c3b920.setContent(html_e9c8cad0e3b3f25576b7c4ed4ef24808);
+            
+        
+
+        circle_marker_420bbb1019c097621c1ebe0f3131da21.bindPopup(popup_be8ad45e37ebaf08fe87194d08c3b920)
+        ;
+
+        
+    
+    
+            var circle_marker_f1fb417d5a8c5db88386c2df455827ef = L.circleMarker(
+                [31.8, 89.0],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_01c40d8376f3e8dfc5b1d14f8cd1fdaa = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_c253a99523b102723b43e0b1aab81578 = $(`<div id="html_c253a99523b102723b43e0b1aab81578" style="width: 100.0%; height: 100.0%;"><b>Siling Lake</b><br>Area trend: -0.012732371794875047 /dec<br>Temp trend: 0.6975936035486865 °C/dec</div>`)[0];
+                popup_01c40d8376f3e8dfc5b1d14f8cd1fdaa.setContent(html_c253a99523b102723b43e0b1aab81578);
+            
+        
+
+        circle_marker_f1fb417d5a8c5db88386c2df455827ef.bindPopup(popup_01c40d8376f3e8dfc5b1d14f8cd1fdaa)
+        ;
+
+        
+    
+    
+            var circle_marker_5cc45047884972dc22e2f833f7715235 = L.circleMarker(
+                [34.95, 97.275],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_ddbb001ccd8e3737440336c8f5e54a68 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_55b0bef0bf6793903a3ba69f75dfa27d = $(`<div id="html_55b0bef0bf6793903a3ba69f75dfa27d" style="width: 100.0%; height: 100.0%;"><b>Gyaring Lake</b><br>Area trend: -0.056932153392338126 /dec<br>Temp trend: 0.4767426089572362 °C/dec</div>`)[0];
+                popup_ddbb001ccd8e3737440336c8f5e54a68.setContent(html_55b0bef0bf6793903a3ba69f75dfa27d);
+            
+        
+
+        circle_marker_5cc45047884972dc22e2f833f7715235.bindPopup(popup_ddbb001ccd8e3737440336c8f5e54a68)
+        ;
+
+        
+    
+    
+            var circle_marker_2c9dd6f468605dc7225fef1e5c6b3a03 = L.circleMarker(
+                [28.575000000000003, 90.375],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_fc1c155c58cb0be6e4fc17a60c411715 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_64f41a47bcca9551b25057b7340fd2fd = $(`<div id="html_64f41a47bcca9551b25057b7340fd2fd" style="width: 100.0%; height: 100.0%;"><b>Puma Yumco</b><br>Area trend: -0.4049686430150815 /dec<br>Temp trend: 0.34840615252648244 °C/dec</div>`)[0];
+                popup_fc1c155c58cb0be6e4fc17a60c411715.setContent(html_64f41a47bcca9551b25057b7340fd2fd);
+            
+        
+
+        circle_marker_2c9dd6f468605dc7225fef1e5c6b3a03.bindPopup(popup_fc1c155c58cb0be6e4fc17a60c411715)
+        ;
+
+        
+    
+    
+            var circle_marker_148a2ad1978808a06c802c120cf390ee = L.circleMarker(
+                [31.049999999999997, 86.57499999999999],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_56b151d89d542b0d7f02953be6d88b46 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_21cfda193a303b06f0bef1891bc21a6c = $(`<div id="html_21cfda193a303b06f0bef1891bc21a6c" style="width: 100.0%; height: 100.0%;"><b>Tangra Yumco</b><br>Area trend: 0.5234606800577304 /dec<br>Temp trend: 0.7117955744649295 °C/dec</div>`)[0];
+                popup_56b151d89d542b0d7f02953be6d88b46.setContent(html_21cfda193a303b06f0bef1891bc21a6c);
+            
+        
+
+        circle_marker_148a2ad1978808a06c802c120cf390ee.bindPopup(popup_56b151d89d542b0d7f02953be6d88b46)
+        ;
+
+        
+    
+    
+            var circle_marker_46679df43465041ea696052ed6192609 = L.circleMarker(
+                [30.9, 85.6],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_61a2eacab03f5a588d9ead64dacbb619 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ce411bb87f15114d2f8358f4c677ac33 = $(`<div id="html_ce411bb87f15114d2f8358f4c677ac33" style="width: 100.0%; height: 100.0%;"><b>Zhari Namco</b><br>Area trend: 0.32359042826331536 /dec<br>Temp trend: 0.6011773829367295 °C/dec</div>`)[0];
+                popup_61a2eacab03f5a588d9ead64dacbb619.setContent(html_ce411bb87f15114d2f8358f4c677ac33);
+            
+        
+
+        circle_marker_46679df43465041ea696052ed6192609.bindPopup(popup_61a2eacab03f5a588d9ead64dacbb619)
+        ;
+
+        
+    
+    
+            var circle_marker_ff3d8160f05fbe6b11d6e1325ab0ba37 = L.circleMarker(
+                [36.9, 100.2],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_d7198d5a7b01399c81306d1204937e22 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_4769f4db02916c3e545f525465f800c7 = $(`<div id="html_4769f4db02916c3e545f525465f800c7" style="width: 100.0%; height: 100.0%;"><b>Qinghai Lake</b><br>Area trend: -0.11666779480733928 /dec<br>Temp trend: 0.3515539861196376 °C/dec</div>`)[0];
+                popup_d7198d5a7b01399c81306d1204937e22.setContent(html_4769f4db02916c3e545f525465f800c7);
+            
+        
+
+        circle_marker_ff3d8160f05fbe6b11d6e1325ab0ba37.bindPopup(popup_d7198d5a7b01399c81306d1204937e22)
+        ;
+
+        
+    
+    
+            var circle_marker_d1a0c67515aa18fa9f4f6cc2d8ef1bfe = L.circleMarker(
+                [30.68675, 81.225],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_f26fd350503bb5a77ddd7ea1555e6c38 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_b92489a057260c915fcab26b4595df60 = $(`<div id="html_b92489a057260c915fcab26b4595df60" style="width: 100.0%; height: 100.0%;"><b>Lake Rakshastal</b><br>Area trend: -0.30550669884911946 /dec<br>Temp trend: 0.34458082358973574 °C/dec</div>`)[0];
+                popup_f26fd350503bb5a77ddd7ea1555e6c38.setContent(html_b92489a057260c915fcab26b4595df60);
+            
+        
+
+        circle_marker_d1a0c67515aa18fa9f4f6cc2d8ef1bfe.bindPopup(popup_f26fd350503bb5a77ddd7ea1555e6c38)
+        ;
+
+        
+    
+    
+            var circle_marker_3b954f1909bba43c8e60ad3a70c94b81 = L.circleMarker(
+                [42.025, 87.02],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_5532ff6690e7b8213b803dada99c18f2 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_74c1428e0ee9455b43d206ab6792cfc9 = $(`<div id="html_74c1428e0ee9455b43d206ab6792cfc9" style="width: 100.0%; height: 100.0%;"><b>Bosten Lake</b><br>Area trend: 0.04536661466458279 /dec<br>Temp trend: 0.3847026564102629 °C/dec</div>`)[0];
+                popup_5532ff6690e7b8213b803dada99c18f2.setContent(html_74c1428e0ee9455b43d206ab6792cfc9);
+            
+        
+
+        circle_marker_3b954f1909bba43c8e60ad3a70c94b81.bindPopup(popup_5532ff6690e7b8213b803dada99c18f2)
+        ;
+
+        
+    
+    
+            var circle_marker_627a7fdff5dd88434456e9a9f4480fab = L.circleMarker(
+                [44.6083, 81.1806],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_f45742d8d3e341ef4ec913df54d06eb7 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_5c87b36dd78a10c2015091d1fc1aaae4 = $(`<div id="html_5c87b36dd78a10c2015091d1fc1aaae4" style="width: 100.0%; height: 100.0%;"><b>Sayram Lake</b><br>Area trend: 0.2240175235149884 /dec<br>Temp trend: 0.6709919244102264 °C/dec</div>`)[0];
+                popup_f45742d8d3e341ef4ec913df54d06eb7.setContent(html_5c87b36dd78a10c2015091d1fc1aaae4);
+            
+        
+
+        circle_marker_627a7fdff5dd88434456e9a9f4480fab.bindPopup(popup_f45742d8d3e341ef4ec913df54d06eb7)
+        ;
+
+        
+    
+    
+            var circle_marker_c1878c3570a03a0aab8ca2cd60dc0b11 = L.circleMarker(
+                [44.855500000000006, 82.93095],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_f634ed4623c14eb7446d416417856807 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_aaa8b7ffa6d8a3ec483c1fe6cd7fff91 = $(`<div id="html_aaa8b7ffa6d8a3ec483c1fe6cd7fff91" style="width: 100.0%; height: 100.0%;"><b>Ebinur Lake</b><br>Area trend: -0.2125820044617004 /dec<br>Temp trend: 0.7293688657435504 °C/dec</div>`)[0];
+                popup_f634ed4623c14eb7446d416417856807.setContent(html_aaa8b7ffa6d8a3ec483c1fe6cd7fff91);
+            
+        
+
+        circle_marker_c1878c3570a03a0aab8ca2cd60dc0b11.bindPopup(popup_f634ed4623c14eb7446d416417856807)
+        ;
+
+        
+    
+    
+            var circle_marker_84e15821b8f48d77878ed327587b0456 = L.circleMarker(
+                [45.93, 85.80000000000001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_b833857d7946615cb0593469ea3ccc20 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_7024ca8316644b18127e7345b9bac495 = $(`<div id="html_7024ca8316644b18127e7345b9bac495" style="width: 100.0%; height: 100.0%;"><b>Ailik Lake</b><br>Area trend: 0.3860072797244719 /dec<br>Temp trend: 0.6067575061538161 °C/dec</div>`)[0];
+                popup_b833857d7946615cb0593469ea3ccc20.setContent(html_7024ca8316644b18127e7345b9bac495);
+            
+        
+
+        circle_marker_84e15821b8f48d77878ed327587b0456.bindPopup(popup_b833857d7946615cb0593469ea3ccc20)
+        ;
+
+        
+    
+    
+            var circle_marker_5fa458887e13522d27d9a025800ff85f = L.circleMarker(
+                [43.6619, 92.7715],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_7f224c01ee1529ce7c59c089e9d3e010 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_b024145e95853d9760505d8f9147f2bc = $(`<div id="html_b024145e95853d9760505d8f9147f2bc" style="width: 100.0%; height: 100.0%;"><b>Lake Barkol</b><br>Area trend: 0.45819349610466936 /dec<br>Temp trend: 0.4591730710427283 °C/dec</div>`)[0];
+                popup_7f224c01ee1529ce7c59c089e9d3e010.setContent(html_b024145e95853d9760505d8f9147f2bc);
+            
+        
+
+        circle_marker_5fa458887e13522d27d9a025800ff85f.bindPopup(popup_7f224c01ee1529ce7c59c089e9d3e010)
+        ;
+
+        
+    
+    
+            var circle_marker_4896e5f9956ea38fa69453ba1701a7f8 = L.circleMarker(
+                [43.885, 88.13],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_36d7e4e5c8bdd7fceceae3fa32f888c6 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3de6f257852be85d29245805cab82696 = $(`<div id="html_3de6f257852be85d29245805cab82696" style="width: 100.0%; height: 100.0%;"><b>Tianchi </b><br>Area trend: NA /dec<br>Temp trend: NA °C/dec</div>`)[0];
+                popup_36d7e4e5c8bdd7fceceae3fa32f888c6.setContent(html_3de6f257852be85d29245805cab82696);
+            
+        
+
+        circle_marker_4896e5f9956ea38fa69453ba1701a7f8.bindPopup(popup_36d7e4e5c8bdd7fceceae3fa32f888c6)
+        ;
+
+        
+    
+    
+            var circle_marker_8178892d700d87dc5e26f5ce044f6bc6 = L.circleMarker(
+                [47.2225, 87.3063],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_22cd5d95c512173e598bc9da4e0428b5 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_8065b7bd8f1289f5a163ff544885098d = $(`<div id="html_8065b7bd8f1289f5a163ff544885098d" style="width: 100.0%; height: 100.0%;"><b>Lake Ulungur</b><br>Area trend: 0.08953439722670237 /dec<br>Temp trend: 0.45498273189741756 °C/dec</div>`)[0];
+                popup_22cd5d95c512173e598bc9da4e0428b5.setContent(html_8065b7bd8f1289f5a163ff544885098d);
+            
+        
+
+        circle_marker_8178892d700d87dc5e26f5ce044f6bc6.bindPopup(popup_22cd5d95c512173e598bc9da4e0428b5)
+        ;
+
+        
+    
+    
+            var circle_marker_280c18a62aa4716204baa598cd95dde5 = L.circleMarker(
+                [37.5323, 89.5],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_904a20cb101b22895ab2c9cbc3de4add = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_55f68e59512dd297b09e6a91cfaf225c = $(`<div id="html_55f68e59512dd297b09e6a91cfaf225c" style="width: 100.0%; height: 100.0%;"><b>Lake Ayakkum</b><br>Area trend: 0.2925176660609677 /dec<br>Temp trend: 0.3774149684444227 °C/dec</div>`)[0];
+                popup_904a20cb101b22895ab2c9cbc3de4add.setContent(html_55f68e59512dd297b09e6a91cfaf225c);
+            
+        
+
+        circle_marker_280c18a62aa4716204baa598cd95dde5.bindPopup(popup_904a20cb101b22895ab2c9cbc3de4add)
+        ;
+
+        
+    
+    
+            var circle_marker_8d310546db7b2b2c24227fbd7324dce1 = L.circleMarker(
+                [1.85, 33.2],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_41fac314d23f5ec2d34bb7373f65f951 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3173322d210c886e27a5ca2098ecd130 = $(`<div id="html_3173322d210c886e27a5ca2098ecd130" style="width: 100.0%; height: 100.0%;"><b>Lake Victoria</b><br>Area trend: -0.1001500006032277 /dec<br>Temp trend: 0.2038257768910437 °C/dec</div>`)[0];
+                popup_41fac314d23f5ec2d34bb7373f65f951.setContent(html_3173322d210c886e27a5ca2098ecd130);
+            
+        
+
+        circle_marker_8d310546db7b2b2c24227fbd7324dce1.bindPopup(popup_41fac314d23f5ec2d34bb7373f65f951)
+        ;
+
+        
+    
+    
+            var circle_marker_2adc4c28e1f7a39787cacdbc1aa3a9f1 = L.circleMarker(
+                [2.9, 30.0],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_a0d978cc17cdcac8f53de0eac38e52cb = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_95515045e1eb2d966e7d239be4b24085 = $(`<div id="html_95515045e1eb2d966e7d239be4b24085" style="width: 100.0%; height: 100.0%;"><b>Lake Tanganyika</b><br>Area trend: -0.1662779122030522 /dec<br>Temp trend: 0.09367726723076689 °C/dec</div>`)[0];
+                popup_a0d978cc17cdcac8f53de0eac38e52cb.setContent(html_95515045e1eb2d966e7d239be4b24085);
+            
+        
+
+        circle_marker_2adc4c28e1f7a39787cacdbc1aa3a9f1.bindPopup(popup_a0d978cc17cdcac8f53de0eac38e52cb)
+        ;
+
+        
+    
+    
+            var circle_marker_fc830a6c8261122d219c3cbdfd711bb4 = L.circleMarker(
+                [-11.9553, 34.555800000000005],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_52d88fdd16a19ef73511f653cf39d963 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_f84d88acf1630281448b14150b075138 = $(`<div id="html_f84d88acf1630281448b14150b075138" style="width: 100.0%; height: 100.0%;"><b>Lake Malawi</b><br>Area trend: 1.006123022298022 /dec<br>Temp trend: 0.14103484442022363 °C/dec</div>`)[0];
+                popup_52d88fdd16a19ef73511f653cf39d963.setContent(html_f84d88acf1630281448b14150b075138);
+            
+        
+
+        circle_marker_fc830a6c8261122d219c3cbdfd711bb4.bindPopup(popup_52d88fdd16a19ef73511f653cf39d963)
+        ;
+
+        
+    
+    
+            var circle_marker_35ba8bd41e8790d676bb29ccd90ccce3 = L.circleMarker(
+                [1.85, 30.9],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_d59b3e91d9fbb1544592d2c5da10279c = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_d6f1b031e9e36448936c00dca06b0ce2 = $(`<div id="html_d6f1b031e9e36448936c00dca06b0ce2" style="width: 100.0%; height: 100.0%;"><b>Lake Albert</b><br>Area trend: 0.23327600547361635 /dec<br>Temp trend: 0.25542645801709063 °C/dec</div>`)[0];
+                popup_d59b3e91d9fbb1544592d2c5da10279c.setContent(html_d6f1b031e9e36448936c00dca06b0ce2);
+            
+        
+
+        circle_marker_35ba8bd41e8790d676bb29ccd90ccce3.bindPopup(popup_d59b3e91d9fbb1544592d2c5da10279c)
+        ;
+
+        
+    
+    
+            var circle_marker_fdd8efc045d80f4b77876e77ff359859 = L.circleMarker(
+                [13.024999999999999, 14.2802],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_58503eb338bdf154285e312cb7372fe3 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ec502519b17348c4d60afe4e0a77802f = $(`<div id="html_ec502519b17348c4d60afe4e0a77802f" style="width: 100.0%; height: 100.0%;"><b>Lake Chad</b><br>Area trend: 0.6646651573101205 /dec<br>Temp trend: -0.09680472192365092 °C/dec</div>`)[0];
+                popup_58503eb338bdf154285e312cb7372fe3.setContent(html_ec502519b17348c4d60afe4e0a77802f);
+            
+        
+
+        circle_marker_fdd8efc045d80f4b77876e77ff359859.bindPopup(popup_58503eb338bdf154285e312cb7372fe3)
+        ;
+
+        
+    
+    
+            var circle_marker_ff6657227a8c4f9a6ed85abf802eb03d = L.circleMarker(
+                [3.5259, 36.243],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_69babc4ae0de8570912299199247ad63 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_7cff2252b5591df94cb5d67faa125acf = $(`<div id="html_7cff2252b5591df94cb5d67faa125acf" style="width: 100.0%; height: 100.0%;"><b>Lake Turkana</b><br>Area trend: -0.034135649296945444 /dec<br>Temp trend: 0.1728666528547007 °C/dec</div>`)[0];
+                popup_69babc4ae0de8570912299199247ad63.setContent(html_7cff2252b5591df94cb5d67faa125acf);
+            
+        
+
+        circle_marker_ff6657227a8c4f9a6ed85abf802eb03d.bindPopup(popup_69babc4ae0de8570912299199247ad63)
+        ;
+
+        
+    
+    
+            var circle_marker_ec28f76606f0f5ef677ccc305a34ac6e = L.circleMarker(
+                [-2.0119, 29.1277],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_1036b519af34b7d67b5a450049de9d31 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_9c15a75dcec59dc5dbc4ca25b0f31de5 = $(`<div id="html_9c15a75dcec59dc5dbc4ca25b0f31de5" style="width: 100.0%; height: 100.0%;"><b>Lake Kivu</b><br>Area trend: -0.1357809794706896 /dec<br>Temp trend: 0.16625839223076982 °C/dec</div>`)[0];
+                popup_1036b519af34b7d67b5a450049de9d31.setContent(html_9c15a75dcec59dc5dbc4ca25b0f31de5);
+            
+        
+
+        circle_marker_ec28f76606f0f5ef677ccc305a34ac6e.bindPopup(popup_1036b519af34b7d67b5a450049de9d31)
+        ;
+
+        
+    
+    
+            var circle_marker_b480321387d0aad09c40007d8d0e354d = L.circleMarker(
+                [-0.37, 29.6],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_1e04e26332e7d0375faedce11af853fe = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_28de207446dd2ce19077e4aa15133d92 = $(`<div id="html_28de207446dd2ce19077e4aa15133d92" style="width: 100.0%; height: 100.0%;"><b>Lake Edward</b><br>Area trend: -0.4106022267206458 /dec<br>Temp trend: 0.2774343086923103 °C/dec</div>`)[0];
+                popup_1e04e26332e7d0375faedce11af853fe.setContent(html_28de207446dd2ce19077e4aa15133d92);
+            
+        
+
+        circle_marker_b480321387d0aad09c40007d8d0e354d.bindPopup(popup_1e04e26332e7d0375faedce11af853fe)
+        ;
+
+        
+    
+    
+            var circle_marker_79b813a21de50540b00da1c2e23455e3 = L.circleMarker(
+                [-9.029, 28.7422],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_67bbf203bb527223f7feba1f280fec6b = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_f8060065a7e6e0caaa5cdc292c4c6d9e = $(`<div id="html_f8060065a7e6e0caaa5cdc292c4c6d9e" style="width: 100.0%; height: 100.0%;"><b>Lake Mweru</b><br>Area trend: -0.22496383569121645 /dec<br>Temp trend: 0.08731016484615169 °C/dec</div>`)[0];
+                popup_67bbf203bb527223f7feba1f280fec6b.setContent(html_f8060065a7e6e0caaa5cdc292c4c6d9e);
+            
+        
+
+        circle_marker_79b813a21de50540b00da1c2e23455e3.bindPopup(popup_67bbf203bb527223f7feba1f280fec6b)
+        ;
+
+        
+    
+    
+            var circle_marker_9c41816f1ba9d715b672e9d9ee4d404c = L.circleMarker(
+                [-8.0151, 32.255300000000005],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_47c93472f7b505b691f7df02b2f6cab2 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_a4c1f627db3898350baa66c3d13ad91f = $(`<div id="html_a4c1f627db3898350baa66c3d13ad91f" style="width: 100.0%; height: 100.0%;"><b>Lake Rukwa</b><br>Area trend: -0.3508088788990854 /dec<br>Temp trend: 0.0055167439999981496 °C/dec</div>`)[0];
+                popup_47c93472f7b505b691f7df02b2f6cab2.setContent(html_a4c1f627db3898350baa66c3d13ad91f);
+            
+        
+
+        circle_marker_9c41816f1ba9d715b672e9d9ee4d404c.bindPopup(popup_47c93472f7b505b691f7df02b2f6cab2)
+        ;
+
+        
+    
+    
+            var circle_marker_bd5155ab365877e90f3cc6483cc5dfcf = L.circleMarker(
+                [35.2436, 136.05259999999998],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_86ddb608abfb9f7b30bbf7588422284c = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_28d1b211d55d38963d3bd590feaa710c = $(`<div id="html_28d1b211d55d38963d3bd590feaa710c" style="width: 100.0%; height: 100.0%;"><b>Lake Biwa</b><br>Area trend: 0.2109299401069853 /dec<br>Temp trend: 0.443418249230747 °C/dec</div>`)[0];
+                popup_86ddb608abfb9f7b30bbf7588422284c.setContent(html_28d1b211d55d38963d3bd590feaa710c);
+            
+        
+
+        circle_marker_bd5155ab365877e90f3cc6483cc5dfcf.bindPopup(popup_86ddb608abfb9f7b30bbf7588422284c)
+        ;
+
+        
+    
+    
+            var circle_marker_6800eaa270ad3671b8d042e48184ac00 = L.circleMarker(
+                [29.085900000000002, 116.27959999999999],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_329c943faed658a64bc968ae700204b5 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_60ec90b5ca49035b11244adaa0f4eb7e = $(`<div id="html_60ec90b5ca49035b11244adaa0f4eb7e" style="width: 100.0%; height: 100.0%;"><b>Poyang Lake</b><br>Area trend: 0.10844567803329044 /dec<br>Temp trend: 0.32649845924785537 °C/dec</div>`)[0];
+                popup_329c943faed658a64bc968ae700204b5.setContent(html_60ec90b5ca49035b11244adaa0f4eb7e);
+            
+        
+
+        circle_marker_6800eaa270ad3671b8d042e48184ac00.bindPopup(popup_329c943faed658a64bc968ae700204b5)
+        ;
+
+        
+    
+    
+            var circle_marker_eb14c7bb75a9eb791f2db2128ac927cc = L.circleMarker(
+                [29.1897, 112.9468],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_05e2fb9f3e2de12875989b1d143f1d98 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_e4ac3a9b27b293597d518ea41950d939 = $(`<div id="html_e4ac3a9b27b293597d518ea41950d939" style="width: 100.0%; height: 100.0%;"><b>Dongting Lake</b><br>Area trend: 0.4325859051529713 /dec<br>Temp trend: 0.4531750175042576 °C/dec</div>`)[0];
+                popup_05e2fb9f3e2de12875989b1d143f1d98.setContent(html_e4ac3a9b27b293597d518ea41950d939);
+            
+        
+
+        circle_marker_eb14c7bb75a9eb791f2db2128ac927cc.bindPopup(popup_05e2fb9f3e2de12875989b1d143f1d98)
+        ;
+
+        
+    
+    
+            var circle_marker_237494b980df33a2048fbe44d5231522 = L.circleMarker(
+                [31.218899999999998, 120.2617],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_7b3015bb837f0e9747717f4e45e82921 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_d198abb0f0ec6a4440d95ad6d83c5c8c = $(`<div id="html_d198abb0f0ec6a4440d95ad6d83c5c8c" style="width: 100.0%; height: 100.0%;"><b>Taihu Lake</b><br>Area trend: 0.20464061926567428 /dec<br>Temp trend: 0.25329801105974226 °C/dec</div>`)[0];
+                popup_7b3015bb837f0e9747717f4e45e82921.setContent(html_d198abb0f0ec6a4440d95ad6d83c5c8c);
+            
+        
+
+        circle_marker_237494b980df33a2048fbe44d5231522.bindPopup(popup_7b3015bb837f0e9747717f4e45e82921)
+        ;
+
+        
+    
+    
+            var circle_marker_a1b4ca86dfa2b0c2e6935f42fefd3293 = L.circleMarker(
+                [48.968900000000005, 117.3506],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_011792da3f20c79a4dd5ec2203bb6f40 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_7efc5e02084a71a2c10571504c03cffa = $(`<div id="html_7efc5e02084a71a2c10571504c03cffa" style="width: 100.0%; height: 100.0%;"><b>Hulun Lake</b><br>Area trend: -0.21010282210637668 /dec<br>Temp trend: -0.23693241767520523 °C/dec</div>`)[0];
+                popup_011792da3f20c79a4dd5ec2203bb6f40.setContent(html_7efc5e02084a71a2c10571504c03cffa);
+            
+        
+
+        circle_marker_a1b4ca86dfa2b0c2e6935f42fefd3293.bindPopup(popup_011792da3f20c79a4dd5ec2203bb6f40)
+        ;
+
+        
+    
+    
+            var circle_marker_edb8b7d3e68f926554f1df549fb9f24b = L.circleMarker(
+                [45.2975, 124.14330000000001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_f8247f8f5dbe0222e5de97fd1438ef21 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_f64a61602ad32ef642d092dee21272e4 = $(`<div id="html_f64a61602ad32ef642d092dee21272e4" style="width: 100.0%; height: 100.0%;"><b>Chagan Lake</b><br>Area trend: 0.7690697181605982 /dec<br>Temp trend: -0.03121383671797706 °C/dec</div>`)[0];
+                popup_f8247f8f5dbe0222e5de97fd1438ef21.setContent(html_f64a61602ad32ef642d092dee21272e4);
+            
+        
+
+        circle_marker_edb8b7d3e68f926554f1df549fb9f24b.bindPopup(popup_f8247f8f5dbe0222e5de97fd1438ef21)
+        ;
+
+        
+    
+    
+            var circle_marker_2803f703c252551806085cae6c6ef37a = L.circleMarker(
+                [24.8467, 102.719],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_3613cf13fe5e941087cb87cbfd4fb433 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_0d36309f9183f3601ee35226947f096f = $(`<div id="html_0d36309f9183f3601ee35226947f096f" style="width: 100.0%; height: 100.0%;"><b>Dianchi Lake</b><br>Area trend: 0.8453884959432924 /dec<br>Temp trend: 0.42214656147007923 °C/dec</div>`)[0];
+                popup_3613cf13fe5e941087cb87cbfd4fb433.setContent(html_0d36309f9183f3601ee35226947f096f);
+            
+        
+
+        circle_marker_2803f703c252551806085cae6c6ef37a.bindPopup(popup_3613cf13fe5e941087cb87cbfd4fb433)
+        ;
+
+        
+    
+    
+            var circle_marker_d70f2a68e705403831d81246a3bfc021 = L.circleMarker(
+                [25.7831, 100.1811],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_8cebdfa1c3e8fa2decc5017b965e33f0 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_2f35b386e9dc717c394ea6bda0fb7579 = $(`<div id="html_2f35b386e9dc717c394ea6bda0fb7579" style="width: 100.0%; height: 100.0%;"><b>Erhai Lake</b><br>Area trend: 1.1173576736989423 /dec<br>Temp trend: 0.3713716198572042 °C/dec</div>`)[0];
+                popup_8cebdfa1c3e8fa2decc5017b965e33f0.setContent(html_2f35b386e9dc717c394ea6bda0fb7579);
+            
+        
+
+        circle_marker_d70f2a68e705403831d81246a3bfc021.bindPopup(popup_8cebdfa1c3e8fa2decc5017b965e33f0)
+        ;
+
+        
+    
+    
+            var circle_marker_0a8e5e7bb35eefe1e0fed47914677e0d = L.circleMarker(
+                [33.4055, 118.5222],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_17fa2b970f51c97adf2992aa50aa929a = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3d548a6d301f3182d35d675a0af156fe = $(`<div id="html_3d548a6d301f3182d35d675a0af156fe" style="width: 100.0%; height: 100.0%;"><b>Hongze Lake</b><br>Area trend: 0.08141588492808265 /dec<br>Temp trend: 0.48329107107690783 °C/dec</div>`)[0];
+                popup_17fa2b970f51c97adf2992aa50aa929a.setContent(html_3d548a6d301f3182d35d675a0af156fe);
+            
+        
+
+        circle_marker_0a8e5e7bb35eefe1e0fed47914677e0d.bindPopup(popup_17fa2b970f51c97adf2992aa50aa929a)
+        ;
+
+        
+    
+    
+            var circle_marker_f45b5e46292920b5c2712d429d1d2e34 = L.circleMarker(
+                [34.8802, 117.00450000000001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_3e71650242af38c1b9b51b89cbf0589e = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_d1bd64df9c4e7833ff67ce642e971f56 = $(`<div id="html_d1bd64df9c4e7833ff67ce642e971f56" style="width: 100.0%; height: 100.0%;"><b>Nansi Lake</b><br>Area trend: 74.01946746204935 /dec<br>Temp trend: 0.7156112880341575 °C/dec</div>`)[0];
+                popup_3e71650242af38c1b9b51b89cbf0589e.setContent(html_d1bd64df9c4e7833ff67ce642e971f56);
+            
+        
+
+        circle_marker_f45b5e46292920b5c2712d429d1d2e34.bindPopup(popup_3e71650242af38c1b9b51b89cbf0589e)
+        ;
+
+        
+    
+    
+            var circle_marker_0a929f8523e6a709bf5e52bf76063c0a = L.circleMarker(
+                [45.8283, 76.372],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_d2d773abb1d3dd3aa0b9704692761c4b = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_99f171918f4d5ba251fd631d31c700e9 = $(`<div id="html_99f171918f4d5ba251fd631d31c700e9" style="width: 100.0%; height: 100.0%;"><b>Lake Balkhash</b><br>Area trend: -0.37137537316799524 /dec<br>Temp trend: 0.7024509139144952 °C/dec</div>`)[0];
+                popup_d2d773abb1d3dd3aa0b9704692761c4b.setContent(html_99f171918f4d5ba251fd631d31c700e9);
+            
+        
+
+        circle_marker_0a929f8523e6a709bf5e52bf76063c0a.bindPopup(popup_d2d773abb1d3dd3aa0b9704692761c4b)
+        ;
+
+        
+    
+    
+            var circle_marker_d7e07b911894803ce33de1908ad20290 = L.circleMarker(
+                [42.4333, 77.2501],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_05dfcbde867b040182ab503e9d00ed5f = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_7abe17b36db4ae62e0ea2f0fd200ca8d = $(`<div id="html_7abe17b36db4ae62e0ea2f0fd200ca8d" style="width: 100.0%; height: 100.0%;"><b>Issyk-Kul</b><br>Area trend: 0.02897873186246019 /dec<br>Temp trend: 0.4287545375384502 °C/dec</div>`)[0];
+                popup_05dfcbde867b040182ab503e9d00ed5f.setContent(html_7abe17b36db4ae62e0ea2f0fd200ca8d);
+            
+        
+
+        circle_marker_d7e07b911894803ce33de1908ad20290.bindPopup(popup_05dfcbde867b040182ab503e9d00ed5f)
+        ;
+
+        
+    
+    
+            var circle_marker_7a0c04b19935a5f59faa20bc61ebeec1 = L.circleMarker(
+                [47.988, 83.8455],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_4c238f780b5382eab15f56a6e4d266a5 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_0ed24bf33de02cacf6a0a3e4febf3c2c = $(`<div id="html_0ed24bf33de02cacf6a0a3e4febf3c2c" style="width: 100.0%; height: 100.0%;"><b>Lake Zaysan</b><br>Area trend: -0.05049510489511709 /dec<br>Temp trend: 0.43004272752134753 °C/dec</div>`)[0];
+                popup_4c238f780b5382eab15f56a6e4d266a5.setContent(html_0ed24bf33de02cacf6a0a3e4febf3c2c);
+            
+        
+
+        circle_marker_7a0c04b19935a5f59faa20bc61ebeec1.bindPopup(popup_4c238f780b5382eab15f56a6e4d266a5)
+        ;
+
+        
+    
+    
+            var circle_marker_f844c026eb71e5f29eb009062fd00a56 = L.circleMarker(
+                [46.5283, 80.97999999999999],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_dd8c2a9af973556d94cc10654bffa283 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_4e2d8490d977e87c2767e0a85efc0033 = $(`<div id="html_4e2d8490d977e87c2767e0a85efc0033" style="width: 100.0%; height: 100.0%;"><b>Lake Sasykkol</b><br>Area trend: 0.08752491032283163 /dec<br>Temp trend: 0.8379151882734504 °C/dec</div>`)[0];
+                popup_dd8c2a9af973556d94cc10654bffa283.setContent(html_4e2d8490d977e87c2767e0a85efc0033);
+            
+        
+
+        circle_marker_f844c026eb71e5f29eb009062fd00a56.bindPopup(popup_dd8c2a9af973556d94cc10654bffa283)
+        ;
+
+        
+    
+    
+            var circle_marker_b179bf42a424e0ba1e7e3978688bd49b = L.circleMarker(
+                [46.088300000000004, 81.69],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_ed05e65e57becd71b14d3b0d126321e8 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_dff0ee04d13da351762c498beab2c5c5 = $(`<div id="html_dff0ee04d13da351762c498beab2c5c5" style="width: 100.0%; height: 100.0%;"><b>Lake Alakol</b><br>Area trend: 0.3748560344304929 /dec<br>Temp trend: 0.7911766306324408 °C/dec</div>`)[0];
+                popup_ed05e65e57becd71b14d3b0d126321e8.setContent(html_dff0ee04d13da351762c498beab2c5c5);
+            
+        
+
+        circle_marker_b179bf42a424e0ba1e7e3978688bd49b.bindPopup(popup_ed05e65e57becd71b14d3b0d126321e8)
+        ;
+
+        
+    
+    
+            var circle_marker_0744d9c7a9e4b338843218ca662d52bb = L.circleMarker(
+                [39.085, 68.36500000000001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_f95fc39cecc9d1374ead94349b5fb042 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_e43c5a0897a15245e80a7d0468f1e1c4 = $(`<div id="html_e43c5a0897a15245e80a7d0468f1e1c4" style="width: 100.0%; height: 100.0%;"><b>Iskanderkul</b><br>Area trend: 0.29955826977488564 /dec<br>Temp trend: 0.5261561237093865 °C/dec</div>`)[0];
+                popup_f95fc39cecc9d1374ead94349b5fb042.setContent(html_e43c5a0897a15245e80a7d0468f1e1c4);
+            
+        
+
+        circle_marker_0744d9c7a9e4b338843218ca662d52bb.bindPopup(popup_f95fc39cecc9d1374ead94349b5fb042)
+        ;
+
+        
+    
+    
+            var circle_marker_b5af9c5c4af36404d639292cdb5af220 = L.circleMarker(
+                [40.7662, 66.94999999999999],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_8affe39e00e6a55ab4cc6c1a88eb5d34 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ffbff2d96d2716eb22b92ffcb1d17f6e = $(`<div id="html_ffbff2d96d2716eb22b92ffcb1d17f6e" style="width: 100.0%; height: 100.0%;"><b>Aydar Lake</b><br>Area trend: 0.3781865890875574 /dec<br>Temp trend: 0.6519586643076603 °C/dec</div>`)[0];
+                popup_8affe39e00e6a55ab4cc6c1a88eb5d34.setContent(html_ffbff2d96d2716eb22b92ffcb1d17f6e);
+            
+        
+
+        circle_marker_b5af9c5c4af36404d639292cdb5af220.bindPopup(popup_8affe39e00e6a55ab4cc6c1a88eb5d34)
+        ;
+
+        
+    
+    
+            var circle_marker_b07cdf41088800452450309a3a9158a6 = L.circleMarker(
+                [50.425, 69.21010000000001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_5cf5b49d91543d088e3572c5a3a0e8ee = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_286c1c861eac8d6828635204d678e36d = $(`<div id="html_286c1c861eac8d6828635204d678e36d" style="width: 100.0%; height: 100.0%;"><b>Lake Tengiz</b><br>Area trend: -0.16572723253756572 /dec<br>Temp trend: 0.3537695972307481 °C/dec</div>`)[0];
+                popup_5cf5b49d91543d088e3572c5a3a0e8ee.setContent(html_286c1c861eac8d6828635204d678e36d);
+            
+        
+
+        circle_marker_b07cdf41088800452450309a3a9158a6.bindPopup(popup_5cf5b49d91543d088e3572c5a3a0e8ee)
+        ;
+
+        
+    
+    
+            var circle_marker_7b6abb4d702515872dc9f9bcecf0df2a = L.circleMarker(
+                [48.75, 85.8],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_1763a6cc2e300e46d0b15bd1484b6441 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_50a5e9376e8f72bb6f29454eb7640f69 = $(`<div id="html_50a5e9376e8f72bb6f29454eb7640f69" style="width: 100.0%; height: 100.0%;"><b>Lake Markakol</b><br>Area trend: -0.1144213061340098 /dec<br>Temp trend: 0.36802784430767677 °C/dec</div>`)[0];
+                popup_1763a6cc2e300e46d0b15bd1484b6441.setContent(html_50a5e9376e8f72bb6f29454eb7640f69);
+            
+        
+
+        circle_marker_7b6abb4d702515872dc9f9bcecf0df2a.bindPopup(popup_1763a6cc2e300e46d0b15bd1484b6441)
+        ;
+
+        
+    
+    
+            var circle_marker_e8b3de133d02d2dbbaa66bcf325accde = L.circleMarker(
+                [45.489999999999995, 59.885000000000005],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_46df11ed56681f59d5368447ee173c0b = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_fc847eda2e1268400ae11c8081ad2bba = $(`<div id="html_fc847eda2e1268400ae11c8081ad2bba" style="width: 100.0%; height: 100.0%;"><b>Aral Sea</b><br>Area trend: -0.24528665720122425 /dec<br>Temp trend: 0.6975655577750673 °C/dec</div>`)[0];
+                popup_46df11ed56681f59d5368447ee173c0b.setContent(html_fc847eda2e1268400ae11c8081ad2bba);
+            
+        
+
+        circle_marker_e8b3de133d02d2dbbaa66bcf325accde.bindPopup(popup_46df11ed56681f59d5368447ee173c0b)
+        ;
+
+        
+    
+    
+            var circle_marker_0c55d4634daff30a4ece45cf3d9d1a21 = L.circleMarker(
+                [46.37, 6.55],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_03c88776740eb25ca3c489faf64fcf10 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_d0e339bad39437a202b97de182133d2f = $(`<div id="html_d0e339bad39437a202b97de182133d2f" style="width: 100.0%; height: 100.0%;"><b>Lake Geneva</b><br>Area trend: 0.20874475721017777 /dec<br>Temp trend: 0.8087916964102329 °C/dec</div>`)[0];
+                popup_03c88776740eb25ca3c489faf64fcf10.setContent(html_d0e339bad39437a202b97de182133d2f);
+            
+        
+
+        circle_marker_0c55d4634daff30a4ece45cf3d9d1a21.bindPopup(popup_03c88776740eb25ca3c489faf64fcf10)
+        ;
+
+        
+    
+    
+            var circle_marker_10d03b89d0a52184395d8f171ffb5fa5 = L.circleMarker(
+                [47.66, 9.32],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_138cc766f84f0a1df74cddcce43af3cb = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_fd85ab5539670516cb0c986e4691ed25 = $(`<div id="html_fd85ab5539670516cb0c986e4691ed25" style="width: 100.0%; height: 100.0%;"><b>Lake Constance</b><br>Area trend: 0.24119230769227715 /dec<br>Temp trend: 0.7475020153162232 °C/dec</div>`)[0];
+                popup_138cc766f84f0a1df74cddcce43af3cb.setContent(html_fd85ab5539670516cb0c986e4691ed25);
+            
+        
+
+        circle_marker_10d03b89d0a52184395d8f171ffb5fa5.bindPopup(popup_138cc766f84f0a1df74cddcce43af3cb)
+        ;
+
+        
+    
+    
+            var circle_marker_c11cd087644f2a9c77c3d368a37bd22e = L.circleMarker(
+                [60.815, 31.410000000000004],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_266dab99dc9ef34d73a2ec68cd6370bd = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3f7ee5a4461841ea8e3cd71cc547a3b9 = $(`<div id="html_3f7ee5a4461841ea8e3cd71cc547a3b9" style="width: 100.0%; height: 100.0%;"><b>Lake Ladoga</b><br>Area trend: 0.5136898734824311 /dec<br>Temp trend: 0.48113316717947774 °C/dec</div>`)[0];
+                popup_266dab99dc9ef34d73a2ec68cd6370bd.setContent(html_3f7ee5a4461841ea8e3cd71cc547a3b9);
+            
+        
+
+        circle_marker_c11cd087644f2a9c77c3d368a37bd22e.bindPopup(popup_266dab99dc9ef34d73a2ec68cd6370bd)
+        ;
+
+        
+    
+    
+            var circle_marker_5e71292c7cc7abc32ef84b6e81f40310 = L.circleMarker(
+                [61.89, 35.125],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_225b139ba0374caa4daa26f68f5f7c9f = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_7729d5e57d1d2d8d4f5807a2d8dca057 = $(`<div id="html_7729d5e57d1d2d8d4f5807a2d8dca057" style="width: 100.0%; height: 100.0%;"><b>Lake Onega</b><br>Area trend: 1.1247583914013144 /dec<br>Temp trend: 0.4658998399657921 °C/dec</div>`)[0];
+                popup_225b139ba0374caa4daa26f68f5f7c9f.setContent(html_7729d5e57d1d2d8d4f5807a2d8dca057);
+            
+        
+
+        circle_marker_5e71292c7cc7abc32ef84b6e81f40310.bindPopup(popup_225b139ba0374caa4daa26f68f5f7c9f)
+        ;
+
+        
+    
+    
+            var circle_marker_3e5b570b0789c9eaf712f443a0d3879f = L.circleMarker(
+                [47.795, 16.775],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_3d58cf0d5b84055e4a714720439c9807 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3e7d91a379ec760c71ab739d30dc79d4 = $(`<div id="html_3e7d91a379ec760c71ab739d30dc79d4" style="width: 100.0%; height: 100.0%;"><b>Lake Neusiedl</b><br>Area trend: 0.34747415226707357 /dec<br>Temp trend: 0.8273096236239047 °C/dec</div>`)[0];
+                popup_3d58cf0d5b84055e4a714720439c9807.setContent(html_3e7d91a379ec760c71ab739d30dc79d4);
+            
+        
+
+        circle_marker_3e5b570b0789c9eaf712f443a0d3879f.bindPopup(popup_3d58cf0d5b84055e4a714720439c9807)
+        ;
+
+        
+    
+    
+            var circle_marker_70c9930add96d3cf3569c8a3c17882f8 = L.circleMarker(
+                [58.875, 13.205],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_766e6030ee07e00c4e24ed7da3a03e00 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_f2bd24f8ab66fac0009c6ec18e8e703c = $(`<div id="html_f2bd24f8ab66fac0009c6ec18e8e703c" style="width: 100.0%; height: 100.0%;"><b>Lake Vänern</b><br>Area trend: -0.25675272316781794 /dec<br>Temp trend: 0.33749596502565954 °C/dec</div>`)[0];
+                popup_766e6030ee07e00c4e24ed7da3a03e00.setContent(html_f2bd24f8ab66fac0009c6ec18e8e703c);
+            
+        
+
+        circle_marker_70c9930add96d3cf3569c8a3c17882f8.bindPopup(popup_766e6030ee07e00c4e24ed7da3a03e00)
+        ;
+
+        
+    
+    
+            var circle_marker_70ca1802f337cce28334228e678e12a5 = L.circleMarker(
+                [58.295, 14.52],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_2d45992db0100efd56da9df5a500907b = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_88262917a0f77ad80772600b1717edf1 = $(`<div id="html_88262917a0f77ad80772600b1717edf1" style="width: 100.0%; height: 100.0%;"><b>Lake Vättern</b><br>Area trend: -0.12995946405901432 /dec<br>Temp trend: 0.41812057832480043 °C/dec</div>`)[0];
+                popup_2d45992db0100efd56da9df5a500907b.setContent(html_88262917a0f77ad80772600b1717edf1);
+            
+        
+
+        circle_marker_70ca1802f337cce28334228e678e12a5.bindPopup(popup_2d45992db0100efd56da9df5a500907b)
+        ;
+
+        
+    
+    
+            var circle_marker_91423f813f29b7ab6a95aab61d5ee0ef = L.circleMarker(
+                [57.28, -4.484999999999999],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_cd55f31ea951c5731685fbdd221cd0b5 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_13bc2abcf96a15adb49f925fa9b35d4f = $(`<div id="html_13bc2abcf96a15adb49f925fa9b35d4f" style="width: 100.0%; height: 100.0%;"><b>Loch Ness</b><br>Area trend: 0.9750647882335375 /dec<br>Temp trend: 0.44784000147191516 °C/dec</div>`)[0];
+                popup_cd55f31ea951c5731685fbdd221cd0b5.setContent(html_13bc2abcf96a15adb49f925fa9b35d4f);
+            
+        
+
+        circle_marker_91423f813f29b7ab6a95aab61d5ee0ef.bindPopup(popup_cd55f31ea951c5731685fbdd221cd0b5)
+        ;
+
+        
+    
+    
+            var circle_marker_7296b748540c7b3db2564f03fd1773c6 = L.circleMarker(
+                [54.345, -2.9450000000000003],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_0c52adc68a459963d6aea29e0b439291 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_1671e39e0906e5db2566a103a78e6bdb = $(`<div id="html_1671e39e0906e5db2566a103a78e6bdb" style="width: 100.0%; height: 100.0%;"><b>Lake Windermere</b><br>Area trend: 64.3092250011236 /dec<br>Temp trend: 0.39845928310399137 °C/dec</div>`)[0];
+                popup_0c52adc68a459963d6aea29e0b439291.setContent(html_1671e39e0906e5db2566a103a78e6bdb);
+            
+        
+
+        circle_marker_7296b748540c7b3db2564f03fd1773c6.bindPopup(popup_0c52adc68a459963d6aea29e0b439291)
+        ;
+
+        
+    
+    
+            var circle_marker_52ba4292eca950499d787f7f1a99213e = L.circleMarker(
+                [45.955, 8.675],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_12f8adf44abeee8cc1110c8aee17af8f = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_e9437c7493463e35f9901f4a55e9b069 = $(`<div id="html_e9437c7493463e35f9901f4a55e9b069" style="width: 100.0%; height: 100.0%;"><b>Lake Maggiore</b><br>Area trend: 4.4457791217273535 /dec<br>Temp trend: 0.5924365629401629 °C/dec</div>`)[0];
+                popup_12f8adf44abeee8cc1110c8aee17af8f.setContent(html_e9437c7493463e35f9901f4a55e9b069);
+            
+        
+
+        circle_marker_52ba4292eca950499d787f7f1a99213e.bindPopup(popup_12f8adf44abeee8cc1110c8aee17af8f)
+        ;
+
+        
+    
+    
+            var circle_marker_650e6c251e86b27c81948b736c726cbb = L.circleMarker(
+                [-3.38, -60.3],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_74427a28225bcdf3ae6e90522784592a = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_63d047ff46309033ea336eee5fe7e537 = $(`<div id="html_63d047ff46309033ea336eee5fe7e537" style="width: 100.0%; height: 100.0%;"><b>Lago Janauacá</b><br>Area trend: -0.1417471496669216 /dec<br>Temp trend: 0.3113110902105626 °C/dec</div>`)[0];
+                popup_74427a28225bcdf3ae6e90522784592a.setContent(html_63d047ff46309033ea336eee5fe7e537);
+            
+        
+
+        circle_marker_650e6c251e86b27c81948b736c726cbb.bindPopup(popup_74427a28225bcdf3ae6e90522784592a)
+        ;
+
+        
+    
+    
+            var circle_marker_d7e839d5709c88ed805f082ced9458fa = L.circleMarker(
+                [-3.55, -60.519999999999996],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_823f8dea9d448035fbb58c32a4cb04af = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_430b4c362ae5c5ac95846a02fc15cefe = $(`<div id="html_430b4c362ae5c5ac95846a02fc15cefe" style="width: 100.0%; height: 100.0%;"><b>Lago Mirauá</b><br>Area trend: 0.03310404189787345 /dec<br>Temp trend: 0.3109805059085763 °C/dec</div>`)[0];
+                popup_823f8dea9d448035fbb58c32a4cb04af.setContent(html_430b4c362ae5c5ac95846a02fc15cefe);
+            
+        
+
+        circle_marker_d7e839d5709c88ed805f082ced9458fa.bindPopup(popup_823f8dea9d448035fbb58c32a4cb04af)
+        ;
+
+        
+    
+    
+            var circle_marker_482a5ca37b8d6e3f254d47b2866d6f3d = L.circleMarker(
+                [-4.465, -62.25],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_58631e9c8592994b55d7abb10c9a91e4 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_749ab01617ebb15ab354c9cb9b8e40ed = $(`<div id="html_749ab01617ebb15ab354c9cb9b8e40ed" style="width: 100.0%; height: 100.0%;"><b>Lake Ayapuá</b><br>Area trend: -0.29479944802935953 /dec<br>Temp trend: 0.29814477049541155 °C/dec</div>`)[0];
+                popup_58631e9c8592994b55d7abb10c9a91e4.setContent(html_749ab01617ebb15ab354c9cb9b8e40ed);
+            
+        
+
+        circle_marker_482a5ca37b8d6e3f254d47b2866d6f3d.bindPopup(popup_58631e9c8592994b55d7abb10c9a91e4)
+        ;
+
+        
+    
+    
+            var circle_marker_ee5c053d3c97bfc291836439794fbf50 = L.circleMarker(
+                [-2.5599999999999996, -64.61500000000001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_e5bde06e108e03d0df16b7f03bc2d619 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ac6a6411baa85a822e14b3816ecb1cf9 = $(`<div id="html_ac6a6411baa85a822e14b3816ecb1cf9" style="width: 100.0%; height: 100.0%;"><b>Lake Amanã</b><br>Area trend: -0.12697378507279108 /dec<br>Temp trend: 0.27539255178314875 °C/dec</div>`)[0];
+                popup_e5bde06e108e03d0df16b7f03bc2d619.setContent(html_ac6a6411baa85a822e14b3816ecb1cf9);
+            
+        
+
+        circle_marker_ee5c053d3c97bfc291836439794fbf50.bindPopup(popup_e5bde06e108e03d0df16b7f03bc2d619)
+        ;
+
+        
+    
+    
+            var circle_marker_f50ed38dbb2b0aa5960a1555d8b4cca4 = L.circleMarker(
+                [-3.48, -64.86000000000001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_d97b5eba80ed8080d0e09a717e672040 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ee3d45c3128801d70e94d0452707c282 = $(`<div id="html_ee3d45c3128801d70e94d0452707c282" style="width: 100.0%; height: 100.0%;"><b>Lago Tefé</b><br>Area trend: 0.08134311535956101 /dec<br>Temp trend: 0.24764901981074394 °C/dec</div>`)[0];
+                popup_d97b5eba80ed8080d0e09a717e672040.setContent(html_ee3d45c3128801d70e94d0452707c282);
+            
+        
+
+        circle_marker_f50ed38dbb2b0aa5960a1555d8b4cca4.bindPopup(popup_d97b5eba80ed8080d0e09a717e672040)
+        ;
+
+        
+    
+    
+            var circle_marker_04cf69371ef94a96eec2ccf01a527024 = L.circleMarker(
+                [-2.155, -55.22],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_9184c3ac3b447216b5272013136bbb39 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_bc91a651b53102d2b62e4512e2e6d792 = $(`<div id="html_bc91a651b53102d2b62e4512e2e6d792" style="width: 100.0%; height: 100.0%;"><b>Lago Grande de Curuai</b><br>Area trend: 0.4310500962273719 /dec<br>Temp trend: 0.2525784282307667 °C/dec</div>`)[0];
+                popup_9184c3ac3b447216b5272013136bbb39.setContent(html_bc91a651b53102d2b62e4512e2e6d792);
+            
+        
+
+        circle_marker_04cf69371ef94a96eec2ccf01a527024.bindPopup(popup_9184c3ac3b447216b5272013136bbb39)
+        ;
+
+        
+    
+    
+            var circle_marker_bf946c2250c655f93a35a23e0b38f843 = L.circleMarker(
+                [-2.51, -57.2],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_2766ecd8cfe10c3a32bf59c689db2f33 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_01eecb804a5195aa987c49503579cafa = $(`<div id="html_01eecb804a5195aa987c49503579cafa" style="width: 100.0%; height: 100.0%;"><b>Lago do Arari</b><br>Area trend: -0.09590843792926529 /dec<br>Temp trend: 0.31136613540422076 °C/dec</div>`)[0];
+                popup_2766ecd8cfe10c3a32bf59c689db2f33.setContent(html_01eecb804a5195aa987c49503579cafa);
+            
+        
+
+        circle_marker_bf946c2250c655f93a35a23e0b38f843.bindPopup(popup_2766ecd8cfe10c3a32bf59c689db2f33)
+        ;
+
+        
+    
+    
+            var circle_marker_0388be878e7351556bba5d1b42a789a9 = L.circleMarker(
+                [-3.6100000000000003, -60.085],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_d1e2743f3fb7841f2480b94ed4411a12 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_9b49697a13987d960ef34720ec124fea = $(`<div id="html_9b49697a13987d960ef34720ec124fea" style="width: 100.0%; height: 100.0%;"><b>Lago Mamori</b><br>Area trend: 21.862876347920057 /dec<br>Temp trend: 0.4317383917543759 °C/dec</div>`)[0];
+                popup_d1e2743f3fb7841f2480b94ed4411a12.setContent(html_9b49697a13987d960ef34720ec124fea);
+            
+        
+
+        circle_marker_0388be878e7351556bba5d1b42a789a9.bindPopup(popup_d1e2743f3fb7841f2480b94ed4411a12)
+        ;
+
+        
+    
+    
+            var circle_marker_4ade65dcfeefc57d8fde8e8e472ebd35 = L.circleMarker(
+                [29.21, -1.25],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_e76a593ea093ee42f1439437935c21b0 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_769acb73c47c7e8b47858af8c2739ff8 = $(`<div id="html_769acb73c47c7e8b47858af8c2739ff8" style="width: 100.0%; height: 100.0%;"><b>Sebkha el Melah</b><br>Area trend: 35546.90949762697 /dec<br>Temp trend: 0.04150409674706966 °C/dec</div>`)[0];
+                popup_e76a593ea093ee42f1439437935c21b0.setContent(html_769acb73c47c7e8b47858af8c2739ff8);
+            
+        
+
+        circle_marker_4ade65dcfeefc57d8fde8e8e472ebd35.bindPopup(popup_e76a593ea093ee42f1439437935c21b0)
+        ;
+
+        
+    
+    
+            var circle_marker_ad552101b27c9e567497479d6426db3c = L.circleMarker(
+                [33.71, 8.315000000000001],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_2db98bdee48ca4fc171aabb980461923 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_d5c1f972c1687466e017a749c8f779b9 = $(`<div id="html_d5c1f972c1687466e017a749c8f779b9" style="width: 100.0%; height: 100.0%;"><b>Chott el Djerid</b><br>Area trend: -453.2955638402905 /dec<br>Temp trend: 0.74192890868673 °C/dec</div>`)[0];
+                popup_2db98bdee48ca4fc171aabb980461923.setContent(html_d5c1f972c1687466e017a749c8f779b9);
+            
+        
+
+        circle_marker_ad552101b27c9e567497479d6426db3c.bindPopup(popup_2db98bdee48ca4fc171aabb980461923)
+        ;
+
+        
+    
+    
+            var circle_marker_fc640d76afbf7af27d8c92e5c7091b0d = L.circleMarker(
+                [16.955, 17.939999999999998],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_7f8437818484e30cf07c0d25fac552e0 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_fa2576316eeb1408ed986a51ff678ad6 = $(`<div id="html_fa2576316eeb1408ed986a51ff678ad6" style="width: 100.0%; height: 100.0%;"><b>Lake Bodélé</b><br>Area trend: NA /dec<br>Temp trend: -0.02266824884841201 °C/dec</div>`)[0];
+                popup_7f8437818484e30cf07c0d25fac552e0.setContent(html_fa2576316eeb1408ed986a51ff678ad6);
+            
+        
+
+        circle_marker_fc640d76afbf7af27d8c92e5c7091b0d.bindPopup(popup_7f8437818484e30cf07c0d25fac552e0)
+        ;
+
+        
+    
+    
+            var circle_marker_ebd31782b2f0c1ff44b6b9409fab6f72 = L.circleMarker(
+                [35.515, 10.445],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_a7863f763c2e27d186b5866edd2c1413 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_cdc52729cf97576b7e6b023f6e4678c8 = $(`<div id="html_cdc52729cf97576b7e6b023f6e4678c8" style="width: 100.0%; height: 100.0%;"><b>Sebkha Sidi El Hani</b><br>Area trend: 56.78500338716006 /dec<br>Temp trend: 0.726084103316218 °C/dec</div>`)[0];
+                popup_a7863f763c2e27d186b5866edd2c1413.setContent(html_cdc52729cf97576b7e6b023f6e4678c8);
+            
+        
+
+        circle_marker_ebd31782b2f0c1ff44b6b9409fab6f72.bindPopup(popup_a7863f763c2e27d186b5866edd2c1413)
+        ;
+
+        
+    
+    
+            var circle_marker_ba3b3a19ab7c548c70839e9a08a8343d = L.circleMarker(
+                [29.025, 0.035],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_a45941861d3cf7d81d9554695ace344b = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_58734719c3f1b106e85a7f57261f627e = $(`<div id="html_58734719c3f1b106e85a7f57261f627e" style="width: 100.0%; height: 100.0%;"><b>Sebkha de Timimoun</b><br>Area trend: -2.317877523744495 /dec<br>Temp trend: -0.7856983628865954 °C/dec</div>`)[0];
+                popup_a45941861d3cf7d81d9554695ace344b.setContent(html_58734719c3f1b106e85a7f57261f627e);
+            
+        
+
+        circle_marker_ba3b3a19ab7c548c70839e9a08a8343d.bindPopup(popup_a45941861d3cf7d81d9554695ace344b)
+        ;
+
+        
+    
+    
+            var circle_marker_5b57d45cbc08dd3baa909b20aa0bbd20 = L.circleMarker(
+                [19.057499999999997, 20.505],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_84d5fcd5bd984d0349d52314760bcef0 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ad96a88dd23746aa13a0e3947f24f46c = $(`<div id="html_ad96a88dd23746aa13a0e3947f24f46c" style="width: 100.0%; height: 100.0%;"><b>Lake Yoa</b><br>Area trend: 228.04216116158162 /dec<br>Temp trend: 0.4780569498960485 °C/dec</div>`)[0];
+                popup_84d5fcd5bd984d0349d52314760bcef0.setContent(html_ad96a88dd23746aa13a0e3947f24f46c);
+            
+        
+
+        circle_marker_5b57d45cbc08dd3baa909b20aa0bbd20.bindPopup(popup_84d5fcd5bd984d0349d52314760bcef0)
+        ;
+
+        
+    
+    
+            var circle_marker_ec55339ae0352a42620ebdc821d52037 = L.circleMarker(
+                [19.015, 20.525],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_68d12d9b083d84dffdcdcc654833c1de = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_b8175a26feb9a2ec902382034e357771 = $(`<div id="html_b8175a26feb9a2ec902382034e357771" style="width: 100.0%; height: 100.0%;"><b>Lake Katam</b><br>Area trend: 34.56745128435375 /dec<br>Temp trend: 0.46047515866703637 °C/dec</div>`)[0];
+                popup_68d12d9b083d84dffdcdcc654833c1de.setContent(html_b8175a26feb9a2ec902382034e357771);
+            
+        
+
+        circle_marker_ec55339ae0352a42620ebdc821d52037.bindPopup(popup_68d12d9b083d84dffdcdcc654833c1de)
+        ;
+
+        
+    
+    
+            var circle_marker_ac45027ad5244ac4883d7b1f7ed9a54d = L.circleMarker(
+                [18.935000000000002, 20.875],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_30bf5a0b30d43405fa29d1694b4d5140 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ddbae38ddd29f56e554876abe57e24a6 = $(`<div id="html_ddbae38ddd29f56e554876abe57e24a6" style="width: 100.0%; height: 100.0%;"><b>Lake Ounianga Serir</b><br>Area trend: 1002.9328324215944 /dec<br>Temp trend: 0.5802964189288579 °C/dec</div>`)[0];
+                popup_30bf5a0b30d43405fa29d1694b4d5140.setContent(html_ddbae38ddd29f56e554876abe57e24a6);
+            
+        
+
+        circle_marker_ac45027ad5244ac4883d7b1f7ed9a54d.bindPopup(popup_30bf5a0b30d43405fa29d1694b4d5140)
+        ;
+
+        
+    
+    
+            var circle_marker_99dd3cd8e8e23a2aec69e099a2613494 = L.circleMarker(
+                [53.735, 106.855],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_cb70bf315abeda7bab580c2a9fb3550e = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_836a52f8c88ba9b4fb89584fd945bbec = $(`<div id="html_836a52f8c88ba9b4fb89584fd945bbec" style="width: 100.0%; height: 100.0%;"><b>Lake Baikal</b><br>Area trend: -0.24048668190524247 /dec<br>Temp trend: 0.09432255316238092 °C/dec</div>`)[0];
+                popup_cb70bf315abeda7bab580c2a9fb3550e.setContent(html_836a52f8c88ba9b4fb89584fd945bbec);
+            
+        
+
+        circle_marker_99dd3cd8e8e23a2aec69e099a2613494.bindPopup(popup_cb70bf315abeda7bab580c2a9fb3550e)
+        ;
+
+        
+    
+    
+            var circle_marker_16c5d4020c8c2971e71c6fe44bf16a96 = L.circleMarker(
+                [44.955, 132.365],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_3b8ad30ded16e4dd751206a18559e7f0 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_2bd13abf8157d55b992e748302427ee5 = $(`<div id="html_2bd13abf8157d55b992e748302427ee5" style="width: 100.0%; height: 100.0%;"><b>Lake Khanka</b><br>Area trend: 0.21396062289631326 /dec<br>Temp trend: 0.43296032335038315 °C/dec</div>`)[0];
+                popup_3b8ad30ded16e4dd751206a18559e7f0.setContent(html_2bd13abf8157d55b992e748302427ee5);
+            
+        
+
+        circle_marker_16c5d4020c8c2971e71c6fe44bf16a96.bindPopup(popup_3b8ad30ded16e4dd751206a18559e7f0)
+        ;
+
+        
+    
+    
+            var circle_marker_71f62a72709a7a9dfb3a934dedada725 = L.circleMarker(
+                [74.53, 102.43],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_aceeb44bce3cc1d7c2934ed9e5647808 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_735e14847f233c3ee1059c7faf837d4e = $(`<div id="html_735e14847f233c3ee1059c7faf837d4e" style="width: 100.0%; height: 100.0%;"><b>Lake Taimyr</b><br>Area trend: -0.2674766522671636 /dec<br>Temp trend: 1.011833259251234 °C/dec</div>`)[0];
+                popup_aceeb44bce3cc1d7c2934ed9e5647808.setContent(html_735e14847f233c3ee1059c7faf837d4e);
+            
+        
+
+        circle_marker_71f62a72709a7a9dfb3a934dedada725.bindPopup(popup_aceeb44bce3cc1d7c2934ed9e5647808)
+        ;
+
+        
+    
+    
+            var circle_marker_31fac8f2ad66e6a4a7d0782212047626 = L.circleMarker(
+                [54.83, 77.705],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_38b018056995866d541d5bc70f4ebdab = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_da58abd9792244c91d13057c0d0c24ff = $(`<div id="html_da58abd9792244c91d13057c0d0c24ff" style="width: 100.0%; height: 100.0%;"><b>Lake Chany</b><br>Area trend: 0.8743268345562544 /dec<br>Temp trend: 0.5761878284444172 °C/dec</div>`)[0];
+                popup_38b018056995866d541d5bc70f4ebdab.setContent(html_da58abd9792244c91d13057c0d0c24ff);
+            
+        
+
+        circle_marker_31fac8f2ad66e6a4a7d0782212047626.bindPopup(popup_38b018056995866d541d5bc70f4ebdab)
+        ;
+
+        
+    
+    
+            var circle_marker_67ebaf82a9f2262d4696a2e414bf9c97 = L.circleMarker(
+                [72.525, 141.97500000000002],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_cdcee3da15910f7151ddcc12201472a9 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_45c2501fbb426f8df834087a7cbde64a = $(`<div id="html_45c2501fbb426f8df834087a7cbde64a" style="width: 100.0%; height: 100.0%;"><b>Lake Bustakh</b><br>Area trend: 0.3838602935153823 /dec<br>Temp trend: 1.0032290797333088 °C/dec</div>`)[0];
+                popup_cdcee3da15910f7151ddcc12201472a9.setContent(html_45c2501fbb426f8df834087a7cbde64a);
+            
+        
+
+        circle_marker_67ebaf82a9f2262d4696a2e414bf9c97.bindPopup(popup_cdcee3da15910f7151ddcc12201472a9)
+        ;
+
+        
+    
+    
+            var circle_marker_e5eee3e0b2c87424b7871ff1ebbe5347 = L.circleMarker(
+                [62.425, 143.615],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_4df4599bf903aa1a7af5222622594e68 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_8fb4c998c2253107c0111ea75a094735 = $(`<div id="html_8fb4c998c2253107c0111ea75a094735" style="width: 100.0%; height: 100.0%;"><b>Lake Labynkyr</b><br>Area trend: 0.06908989100817005 /dec<br>Temp trend: 0.6280933019179341 °C/dec</div>`)[0];
+                popup_4df4599bf903aa1a7af5222622594e68.setContent(html_8fb4c998c2253107c0111ea75a094735);
+            
+        
+
+        circle_marker_e5eee3e0b2c87424b7871ff1ebbe5347.bindPopup(popup_4df4599bf903aa1a7af5222622594e68)
+        ;
+
+        
+    
+    
+            var circle_marker_affa5e5d4bd421d72fc57037f96653a6 = L.circleMarker(
+                [62.715, 177.215],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_1f0a60b86d44bbeac09d2290c94db154 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_a4a3f64d37371d05148c7d6c21427146 = $(`<div id="html_a4a3f64d37371d05148c7d6c21427146" style="width: 100.0%; height: 100.0%;"><b>Lake Pekulney</b><br>Area trend: 0.1716923076922798 /dec<br>Temp trend: 0.23303891440342242 °C/dec</div>`)[0];
+                popup_1f0a60b86d44bbeac09d2290c94db154.setContent(html_a4a3f64d37371d05148c7d6c21427146);
+            
+        
+
+        circle_marker_affa5e5d4bd421d72fc57037f96653a6.bindPopup(popup_1f0a60b86d44bbeac09d2290c94db154)
+        ;
+
+        
+    
+    
+            var circle_marker_c86e92e681f6abb4b22577a023f4ba60 = L.circleMarker(
+                [50.33, 92.955],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_63202ae53ececff5debf39f6513872a9 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_304eb4d981587e99c836957a330453b4 = $(`<div id="html_304eb4d981587e99c836957a330453b4" style="width: 100.0%; height: 100.0%;"><b>Lake Uvs</b><br>Area trend: -0.10676354446374339 /dec<br>Temp trend: 0.33162914157264634 °C/dec</div>`)[0];
+                popup_63202ae53ececff5debf39f6513872a9.setContent(html_304eb4d981587e99c836957a330453b4);
+            
+        
+
+        circle_marker_c86e92e681f6abb4b22577a023f4ba60.bindPopup(popup_63202ae53ececff5debf39f6513872a9)
+        ;
+
+        
+    
+    
+            var circle_marker_65eb70793ba32f91b451595e5d9b3b02 = L.circleMarker(
+                [69.185, 146.655],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_d46e60e660deff07d7a5ab875e61b15a = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_15dff49c6756edcde4032268f69c9bec = $(`<div id="html_15dff49c6756edcde4032268f69c9bec" style="width: 100.0%; height: 100.0%;"><b>Lake Ozhogino</b><br>Area trend: 0.4304961108257006 /dec<br>Temp trend: 0.8260242481606712 °C/dec</div>`)[0];
+                popup_d46e60e660deff07d7a5ab875e61b15a.setContent(html_15dff49c6756edcde4032268f69c9bec);
+            
+        
+
+        circle_marker_65eb70793ba32f91b451595e5d9b3b02.bindPopup(popup_d46e60e660deff07d7a5ab875e61b15a)
+        ;
+
+        
+    
+    
+            var circle_marker_2f852e28b250b308cc91c7a1f9ec94e7 = L.circleMarker(
+                [68.43, 102.375],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_4824babbb7739842c8adcc1220c1f3cc = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_f200f3574e6d039df94aabc379beb4a8 = $(`<div id="html_f200f3574e6d039df94aabc379beb4a8" style="width: 100.0%; height: 100.0%;"><b>Lake Yessey</b><br>Area trend: 0.02757471692876049 /dec<br>Temp trend: 0.7861291385504099 °C/dec</div>`)[0];
+                popup_4824babbb7739842c8adcc1220c1f3cc.setContent(html_f200f3574e6d039df94aabc379beb4a8);
+            
+        
+
+        circle_marker_2f852e28b250b308cc91c7a1f9ec94e7.bindPopup(popup_4824babbb7739842c8adcc1220c1f3cc)
+        ;
+
+        
+    
+    
+            var circle_marker_42b104c4705cda21c24a88dca2305d41 = L.circleMarker(
+                [67.155, -51.870000000000005],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_68f0f7a9a4cd98b559d7143c59f6d468 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_9c8220bd3a3b5478ec5ad7b8ad43d30d = $(`<div id="html_9c8220bd3a3b5478ec5ad7b8ad43d30d" style="width: 100.0%; height: 100.0%;"><b>Supraglacial Lakes</b><br>Area trend: 0.6974222876794693 /dec<br>Temp trend: -0.1942906549914393 °C/dec</div>`)[0];
+                popup_68f0f7a9a4cd98b559d7143c59f6d468.setContent(html_9c8220bd3a3b5478ec5ad7b8ad43d30d);
+            
+        
+
+        circle_marker_42b104c4705cda21c24a88dca2305d41.bindPopup(popup_68f0f7a9a4cd98b559d7143c59f6d468)
+        ;
+
+        
+    
+    
+            var circle_marker_58cbacb715d2a5071c01bd29d6d53ad2 = L.circleMarker(
+                [69.224, -51.08],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_135ba9f87a984179b3c09a9326606936 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_92717ce885ae311d05238a58bc14497a = $(`<div id="html_92717ce885ae311d05238a58bc14497a" style="width: 100.0%; height: 100.0%;"><b>Lake Ilulissat</b><br>Area trend: 0.5465764438126856 /dec<br>Temp trend: -0.32068672887741867 °C/dec</div>`)[0];
+                popup_135ba9f87a984179b3c09a9326606936.setContent(html_92717ce885ae311d05238a58bc14497a);
+            
+        
+
+        circle_marker_58cbacb715d2a5071c01bd29d6d53ad2.bindPopup(popup_135ba9f87a984179b3c09a9326606936)
+        ;
+
+        
+    
+    
+            var circle_marker_2c7d9ce58fb0bfb084192ff522bf65fc = L.circleMarker(
+                [70.1, -50.435],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_df5acfb9cf8863abcc54296e82dd9bf4 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ed57f109a581a653661a81a333d72574 = $(`<div id="html_ed57f109a581a653661a81a333d72574" style="width: 100.0%; height: 100.0%;"><b>Lake Amitsup Tasia</b><br>Area trend: 0.19092716949541805 /dec<br>Temp trend: -0.28332136217528675 °C/dec</div>`)[0];
+                popup_df5acfb9cf8863abcc54296e82dd9bf4.setContent(html_ed57f109a581a653661a81a333d72574);
+            
+        
+
+        circle_marker_2c7d9ce58fb0bfb084192ff522bf65fc.bindPopup(popup_df5acfb9cf8863abcc54296e82dd9bf4)
+        ;
+
+        
+    
+    
+            var circle_marker_4b03725cc5bcabcfb19b3fb34e038608 = L.circleMarker(
+                [67.07499999999999, -50.57],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_b27940401b9634e9fc805215bd6c06b1 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_cad16f083a5cc23d70c332d1a63f407b = $(`<div id="html_cad16f083a5cc23d70c332d1a63f407b" style="width: 100.0%; height: 100.0%;"><b>Lake Sanningasoq</b><br>Area trend: 0.5818501316713227 /dec<br>Temp trend: -0.2708627175863068 °C/dec</div>`)[0];
+                popup_b27940401b9634e9fc805215bd6c06b1.setContent(html_cad16f083a5cc23d70c332d1a63f407b);
+            
+        
+
+        circle_marker_4b03725cc5bcabcfb19b3fb34e038608.bindPopup(popup_b27940401b9634e9fc805215bd6c06b1)
+        ;
+
+        
+    
+    
+            var circle_marker_924ab7367ce2758e7e6e2270ddcafad6 = L.circleMarker(
+                [67.09, -50.394999999999996],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_c7327bdf2cc6a7a4c24d4347ded444a4 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_7c898e6a53120c700df6e86e3ec98e5d = $(`<div id="html_7c898e6a53120c700df6e86e3ec98e5d" style="width: 100.0%; height: 100.0%;"><b>Lake Aajuitsup Tasia</b><br>Area trend: 0.4379189590431164 /dec<br>Temp trend: -0.27916675369570737 °C/dec</div>`)[0];
+                popup_c7327bdf2cc6a7a4c24d4347ded444a4.setContent(html_7c898e6a53120c700df6e86e3ec98e5d);
+            
+        
+
+        circle_marker_924ab7367ce2758e7e6e2270ddcafad6.bindPopup(popup_c7327bdf2cc6a7a4c24d4347ded444a4)
+        ;
+
+        
+    
+    
+            var circle_marker_90996293b6bda668fe55e123f1f3ba22 = L.circleMarker(
+                [66.97, -50.64],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_8e43d8e46e88e5ef5a809f366f591f86 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_73f651165a5a634de0dfa5d7764789a3 = $(`<div id="html_73f651165a5a634de0dfa5d7764789a3" style="width: 100.0%; height: 100.0%;"><b>Lake Ferguson</b><br>Area trend: 0.29469038189747293 /dec<br>Temp trend: -0.23622124481024076 °C/dec</div>`)[0];
+                popup_8e43d8e46e88e5ef5a809f366f591f86.setContent(html_73f651165a5a634de0dfa5d7764789a3);
+            
+        
+
+        circle_marker_90996293b6bda668fe55e123f1f3ba22.bindPopup(popup_8e43d8e46e88e5ef5a809f366f591f86)
+        ;
+
+        
+    
+    
+            var circle_marker_8b1e6b7e389f4df9b97ec20ea6078599 = L.circleMarker(
+                [67.00999999999999, -51.825],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_bc625e0d040cb3f2a7b13d75db042f1b = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_f59581bcc72b05382ac563387c2e2dcf = $(`<div id="html_f59581bcc72b05382ac563387c2e2dcf" style="width: 100.0%; height: 100.0%;"><b>Lake Tasersuaq</b><br>Area trend: 0.21541339430820428 /dec<br>Temp trend: -0.21206343949058404 °C/dec</div>`)[0];
+                popup_bc625e0d040cb3f2a7b13d75db042f1b.setContent(html_f59581bcc72b05382ac563387c2e2dcf);
+            
+        
+
+        circle_marker_8b1e6b7e389f4df9b97ec20ea6078599.bindPopup(popup_bc625e0d040cb3f2a7b13d75db042f1b)
+        ;
+
+        
+    
+    
+            var circle_marker_72186ae654d6c0a46c8e3ea91933b43e = L.circleMarker(
+                [-28.66, 137.365],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_dddd12bc20e9d737f2bf6a260af477f3 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_49e2c2c50937b8ebdcc311a83b8fe38f = $(`<div id="html_49e2c2c50937b8ebdcc311a83b8fe38f" style="width: 100.0%; height: 100.0%;"><b>Lake Eyre</b><br>Area trend: -0.1505544427626704 /dec<br>Temp trend: 0.235610036153846 °C/dec</div>`)[0];
+                popup_dddd12bc20e9d737f2bf6a260af477f3.setContent(html_49e2c2c50937b8ebdcc311a83b8fe38f);
+            
+        
+
+        circle_marker_72186ae654d6c0a46c8e3ea91933b43e.bindPopup(popup_dddd12bc20e9d737f2bf6a260af477f3)
+        ;
+
+        
+    
+    
+            var circle_marker_da1630de135b89c6009fc22072b3fc19 = L.circleMarker(
+                [-31.05, 137.625],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_7d07d6b7650c87f77ab6812cf78bd6f6 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_678bb7b06a270f88c1a564539dd4c058 = $(`<div id="html_678bb7b06a270f88c1a564539dd4c058" style="width: 100.0%; height: 100.0%;"><b>Lake Torrens</b><br>Area trend: -0.828474963480247 /dec<br>Temp trend: 0.0725172524615367 °C/dec</div>`)[0];
+                popup_7d07d6b7650c87f77ab6812cf78bd6f6.setContent(html_678bb7b06a270f88c1a564539dd4c058);
+            
+        
+
+        circle_marker_da1630de135b89c6009fc22072b3fc19.bindPopup(popup_7d07d6b7650c87f77ab6812cf78bd6f6)
+        ;
+
+        
+    
+    
+            var circle_marker_9730f10248be251af8ac04b89f8a5c50 = L.circleMarker(
+                [-31.69, 135.835],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_b496945e606ffb4d8d76113264e1deb2 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_f79d97c50ea66870139d32b30b8c3201 = $(`<div id="html_f79d97c50ea66870139d32b30b8c3201" style="width: 100.0%; height: 100.0%;"><b>Lake Gairdner</b><br>Area trend: 1.158153404966149 /dec<br>Temp trend: -0.11904353346154098 °C/dec</div>`)[0];
+                popup_b496945e606ffb4d8d76113264e1deb2.setContent(html_f79d97c50ea66870139d32b30b8c3201);
+            
+        
+
+        circle_marker_9730f10248be251af8ac04b89f8a5c50.bindPopup(popup_b496945e606ffb4d8d76113264e1deb2)
+        ;
+
+        
+    
+    
+            var circle_marker_fcf82059e5cd3800fc4d358b8f497368 = L.circleMarker(
+                [-30.685000000000002, 139.79000000000002],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_adbfc19778d1250c1a0584ac6d7de8c6 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ef2b3dc05432b4e5abd4580d1563efae = $(`<div id="html_ef2b3dc05432b4e5abd4580d1563efae" style="width: 100.0%; height: 100.0%;"><b>Lake Frome</b><br>Area trend: 0.7834328474936413 /dec<br>Temp trend: 0.37002609819616117 °C/dec</div>`)[0];
+                popup_adbfc19778d1250c1a0584ac6d7de8c6.setContent(html_ef2b3dc05432b4e5abd4580d1563efae);
+            
+        
+
+        circle_marker_fcf82059e5cd3800fc4d358b8f497368.bindPopup(popup_adbfc19778d1250c1a0584ac6d7de8c6)
+        ;
+
+        
+    
+    
+            var circle_marker_d61d9705a144e9795758ddd86d96cc37 = L.circleMarker(
+                [-24.73, 130.925],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_bd8dafdee40d6c6c2bc3f79c6ae08224 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_9fab6242d1d41436d6da4359937fd843 = $(`<div id="html_9fab6242d1d41436d6da4359937fd843" style="width: 100.0%; height: 100.0%;"><b>Lake Amadeus</b><br>Area trend: -0.14801044877524977 /dec<br>Temp trend: 0.2797207676149044 °C/dec</div>`)[0];
+                popup_bd8dafdee40d6c6c2bc3f79c6ae08224.setContent(html_9fab6242d1d41436d6da4359937fd843);
+            
+        
+
+        circle_marker_d61d9705a144e9795758ddd86d96cc37.bindPopup(popup_bd8dafdee40d6c6c2bc3f79c6ae08224)
+        ;
+
+        
+    
+    
+            var circle_marker_c8227a98d399946ff2de15b323925953 = L.circleMarker(
+                [-23.445, 122.895],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_4108ac50d89b2689ac72fa3c930652fc = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_6ed4462808b9244d6e7f8fb59bb08b43 = $(`<div id="html_6ed4462808b9244d6e7f8fb59bb08b43" style="width: 100.0%; height: 100.0%;"><b>Lake Disappointment</b><br>Area trend: 1.862640126312281 /dec<br>Temp trend: 1.068208984344583 °C/dec</div>`)[0];
+                popup_4108ac50d89b2689ac72fa3c930652fc.setContent(html_6ed4462808b9244d6e7f8fb59bb08b43);
+            
+        
+
+        circle_marker_c8227a98d399946ff2de15b323925953.bindPopup(popup_4108ac50d89b2689ac72fa3c930652fc)
+        ;
+
+        
+    
+    
+            var circle_marker_b803b637d617ac19be4234dc6839df49 = L.circleMarker(
+                [-26.270000000000003, 122.575],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_bb485cf5c574166560c46b7b37886eb0 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_8589be640a0542bb80088ba59c8c07ac = $(`<div id="html_8589be640a0542bb80088ba59c8c07ac" style="width: 100.0%; height: 100.0%;"><b>Lake Carnegie</b><br>Area trend: 0.6193974229003227 /dec<br>Temp trend: 0.8411189951538596 °C/dec</div>`)[0];
+                popup_bb485cf5c574166560c46b7b37886eb0.setContent(html_8589be640a0542bb80088ba59c8c07ac);
+            
+        
+
+        circle_marker_b803b637d617ac19be4234dc6839df49.bindPopup(popup_bb485cf5c574166560c46b7b37886eb0)
+        ;
+
+        
+    
+    
+            var circle_marker_81a847ae7bd8818bb2db7463855f06f5 = L.circleMarker(
+                [-22.335, 128.76],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_b9b213e3756b0f8736a68acd89d495a2 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3578d0be6563c0ccffa56057e2189ab6 = $(`<div id="html_3578d0be6563c0ccffa56057e2189ab6" style="width: 100.0%; height: 100.0%;"><b>Lake Mackay</b><br>Area trend: -0.13967538033402987 /dec<br>Temp trend: 0.7684015937076272 °C/dec</div>`)[0];
+                popup_b9b213e3756b0f8736a68acd89d495a2.setContent(html_3578d0be6563c0ccffa56057e2189ab6);
+            
+        
+
+        circle_marker_81a847ae7bd8818bb2db7463855f06f5.bindPopup(popup_b9b213e3756b0f8736a68acd89d495a2)
+        ;
+
+        
+    
+    
+            var circle_marker_1d5d37783bb15a25e1603e69f785788b = L.circleMarker(
+                [-20.185, 127.38499999999999],
+                {"bubblingMouseEvents": true, "color": "#444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5fb7e23f0dd32828d6506f00450d8164);
+        
+    
+        var popup_9ab7909051fede8fe84fb6f5d6c0d04c = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_a94c1eb535975ee0b362b167e08e94ab = $(`<div id="html_a94c1eb535975ee0b362b167e08e94ab" style="width: 100.0%; height: 100.0%;"><b>Lake Gregory</b><br>Area trend: -0.24196549593299066 /dec<br>Temp trend: 0.5139061067692323 °C/dec</div>`)[0];
+                popup_9ab7909051fede8fe84fb6f5d6c0d04c.setContent(html_a94c1eb535975ee0b362b167e08e94ab);
+            
+        
+
+        circle_marker_1d5d37783bb15a25e1603e69f785788b.bindPopup(popup_9ab7909051fede8fe84fb6f5d6c0d04c)
+        ;
+
+        
+    
+    
+            var layer_control_0732793351daf6e90df527011358b8e9_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_3f22255e90bd0407f014dd76178e9aa0,
+                },
+                overlays :  {
+                    "Area Trend \u2191 (per decade)" : feature_group_21ddee1d8eefff64d0501ad993bdfcca,
+                    "Area Trend \u2193 (per decade)" : feature_group_40b2e03e0a174a1de20e7e97a013bebb,
+                    "Temp Trend \u2191 (\u00b0C per decade)" : feature_group_06f973f7dc8b2f8ddf64dd4c58789e70,
+                    "Temp Trend \u2193 (\u00b0C per decade)" : feature_group_4e5e7b791121bcdc24ff30e3f9abd956,
+                    "Lake Points" : feature_group_5fb7e23f0dd32828d6506f00450d8164,
+                },
+            };
+            let layer_control_0732793351daf6e90df527011358b8e9 = L.control.layers(
+                layer_control_0732793351daf6e90df527011358b8e9_layers.base_layers,
+                layer_control_0732793351daf6e90df527011358b8e9_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": false,
+  "autoZIndex": true,
+}
+            ).addTo(map_b2682cb0f63706b5e12c2faaf3c2e7e5);
+
+        
+</script>
+</html>
