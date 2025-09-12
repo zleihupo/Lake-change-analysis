@@ -21,12 +21,8 @@ Lake-Change-Analysis/
 │ └── download_lake_dataset.py             # Bulk download of lake imagery datasets
 │
 ├── gee_scripts/earthengine/               # JavaScript scripts for GEE Code Editor
-│ ├── lake_area_gsw.js                     # Lake area extraction from GSW (2000–2021)
-│ ├── lake_area_s2_landsat.js              # Lake area (2000–2025) using Sentinel-2 (primary) and Landsat (fallback)
-│ ├── temperature_era5_gldas_merged.js     # Summer temperature derived from ERA5 + GLDAS
 │ ├── lake_area.js                         # Lake area (2000–2025) using Sentinel-2 (primary) and Landsat (fallback) and GSW(fallback)
-│ ├── lake_climate.js                      # ERA5 summer climate variables with standardized units
-│ └── climate_era5_summer_units.js         # ERA5 summer climate variables with standardized units
+│ └── lake_climate.js                      # ERA5 summer climate variables with standardized units
 │
 ├── training/                              # Model training and evaluation
 │ ├── train_all.py                         # Training of U-Net, SegNet, and FCN models
@@ -52,7 +48,7 @@ Lake-Change-Analysis/
 │ ├── grid_search_ensemble_results.csv
 │ │
 │ ├── lake_climate/                        # Results of lake–climate relationship analysis
-│ │ ├── 100Lake_area_Temperature_2000-2025.csv
+│ │ ├── Lake_Area_and_Climate_2000_2025.csv
 │ │ ├── Regional-Decade_Trend_Temperature_Area.csv
 │ │ ├── GBR_Regional_Performance_(Summer).csv
 │ │ ├── Permutation_Importance_(By_Region,Summer).csv
@@ -113,13 +109,9 @@ dataset/
 The following scripts are executed within the Google Earth Engine Code Editor
 :
 
-lake_area_gsw.js → Lake area estimation using GSW (2000–2021).
+lake_area.js → Lake area estimation with Sentinel-2 priority and Landsat fallback and GSW fallback (2000–2025).
 
-lake_area_s2_landsat.js → Lake area estimation with Sentinel-2 priority and Landsat fallback (2000–2025).
-
-temperature_era5_gldas_merged.js → Summer temperature data from ERA5 and GLDAS.
-
-climate_era5_summer_units.js → Summer climate variables (precipitation, evapotranspiration, snow cover) with harmonized units.
+lake_climate.js → Summer climate variables (temperature, precipitation, evapotranspiration, snow cover) with harmonized units.
 
 Upon execution, results can be exported as CSV files via the Tasks panel in GEE, and downloaded to Result/lake_climate/100Lake_area_Temperature_2000-2025.csv.
 ---
