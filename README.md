@@ -181,8 +181,8 @@ see [grid_search_ensemble_results.csv](results/grid_search_ensemble_results.csv)
 ## 🌡️ Lake–Climate Analysis Results
 
 ### Time Series
-- [100Lake_area_Temperature_2000-2025.csv](results/lake_climate/100Lake_area_Temperature_2000-2025.csv)  
-  Summer lake area and temperature time series for 100 lakes (2000–2025).
+- [Lake_Area_and_Climate_2000_2025.csv](results/lake_climate/Lake_Area_and_Climate_2000_2025.csv)  
+  Summer lake area and climate time series for 100 lakes (2000–2025).
 
 ### Regional Trends
 - [Regional-Decade_Trend_Temperature_Area.csv](results/lake_climate/Regional-Decade_Trend_Temperature_Area.csv)  
