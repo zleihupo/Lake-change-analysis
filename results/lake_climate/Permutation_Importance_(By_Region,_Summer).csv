@@ -1,0 +1,57 @@
+region,feature,perm_importance
+Africa,precip_mm,0.2037
+Africa,pet_mm,0.075
+Africa,snow_cover_pct,0.0
+Africa,snow_depth_cm,0.0
+Africa,hemisphere_south,-0.0426
+Africa,temp_C,-0.0845
+Amazon,precip_mm,0.2741
+Amazon,pet_mm,0.087
+Amazon,temp_C,0.0521
+Amazon,snow_cover_pct,0.0
+Amazon,snow_depth_cm,0.0
+Australia,precip_mm,0.3556
+Australia,pet_mm,0.1847
+Australia,snow_cover_pct,0.0
+Australia,snow_depth_cm,0.0
+Australia,temp_C,-0.4368
+Central Asia,precip_mm,0.1149
+Central Asia,pet_mm,0.0973
+Central Asia,temp_C,0.0848
+Central Asia,snow_cover_pct,0.0278
+Central Asia,snow_depth_cm,0.0171
+East Asia,pet_mm,0.3958
+East Asia,temp_C,0.1708
+East Asia,snow_cover_pct,0.0
+East Asia,snow_depth_cm,0.0
+East Asia,precip_mm,-0.12
+Europe,pet_mm,1.8945
+Europe,precip_mm,0.1571
+Europe,snow_depth_cm,0.0192
+Europe,temp_C,0.0063
+Europe,snow_cover_pct,0.0025
+Greenland,precip_mm,0.1038
+Greenland,snow_cover_pct,0.039
+Greenland,snow_depth_cm,0.0248
+Greenland,pet_mm,0.0152
+Greenland,temp_C,-0.0355
+Sahara,temp_C,202.6861
+Sahara,pet_mm,160.4417
+Sahara,precip_mm,89.4759
+Sahara,snow_cover_pct,0.0
+Sahara,snow_depth_cm,0.0
+Siberia,pet_mm,0.0192
+Siberia,temp_C,0.0021
+Siberia,precip_mm,-0.0054
+Siberia,snow_cover_pct,-0.0079
+Siberia,snow_depth_cm,-0.0081
+Tibetan Plateau,snow_depth_cm,1.3188
+Tibetan Plateau,temp_C,1.0439
+Tibetan Plateau,snow_cover_pct,0.5678
+Tibetan Plateau,precip_mm,0.0429
+Tibetan Plateau,pet_mm,0.0428
+Xinjiang,pet_mm,0.1939
+Xinjiang,temp_C,0.0177
+Xinjiang,snow_cover_pct,-0.0021
+Xinjiang,snow_depth_cm,-0.0502
+Xinjiang,precip_mm,-0.0537

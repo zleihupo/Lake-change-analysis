@@ -1,0 +1,57 @@
+region,feature,dir_metric,dir_type
+Africa,hemisphere_south,0.836,rho(shap)
+Africa,pet_mm,-0.7162,rho(shap)
+Africa,precip_mm,0.0605,rho(shap)
+Africa,snow_cover_pct,,
+Africa,snow_depth_cm,,
+Africa,temp_C,-0.8128,rho(shap)
+Amazon,pet_mm,0.0391,rho(shap)
+Amazon,precip_mm,0.9063,rho(shap)
+Amazon,snow_cover_pct,,
+Amazon,snow_depth_cm,,
+Amazon,temp_C,0.7139,rho(shap)
+Australia,pet_mm,0.4558,rho(shap)
+Australia,precip_mm,0.1818,rho(shap)
+Australia,snow_cover_pct,,
+Australia,snow_depth_cm,,
+Australia,temp_C,0.7338,rho(shap)
+Central Asia,pet_mm,0.3941,rho(shap)
+Central Asia,precip_mm,0.7227,rho(shap)
+Central Asia,snow_cover_pct,-0.3618,rho(shap)
+Central Asia,snow_depth_cm,-0.7467,rho(shap)
+Central Asia,temp_C,-0.2564,rho(shap)
+East Asia,pet_mm,-0.6919,rho(shap)
+East Asia,precip_mm,0.3269,rho(shap)
+East Asia,snow_cover_pct,,
+East Asia,snow_depth_cm,,
+East Asia,temp_C,-0.4952,rho(shap)
+Europe,pet_mm,0.409,rho(shap)
+Europe,precip_mm,0.3571,rho(shap)
+Europe,snow_cover_pct,-0.1894,rho(shap)
+Europe,snow_depth_cm,0.5326,rho(shap)
+Europe,temp_C,0.8803,rho(shap)
+Greenland,pet_mm,0.5805,rho(shap)
+Greenland,precip_mm,0.7178,rho(shap)
+Greenland,snow_cover_pct,-0.3506,rho(shap)
+Greenland,snow_depth_cm,-0.7982,rho(shap)
+Greenland,temp_C,-0.6312,rho(shap)
+Sahara,pet_mm,-0.8709,rho(shap)
+Sahara,precip_mm,-0.6531,rho(shap)
+Sahara,snow_cover_pct,,
+Sahara,snow_depth_cm,,
+Sahara,temp_C,0.0717,rho(shap)
+Siberia,pet_mm,-0.5174,rho(shap)
+Siberia,precip_mm,0.4859,rho(shap)
+Siberia,snow_cover_pct,-0.6141,rho(shap)
+Siberia,snow_depth_cm,-0.2917,rho(shap)
+Siberia,temp_C,-0.2505,rho(shap)
+Tibetan Plateau,pet_mm,0.0994,rho(shap)
+Tibetan Plateau,precip_mm,0.5045,rho(shap)
+Tibetan Plateau,snow_cover_pct,0.5948,rho(shap)
+Tibetan Plateau,snow_depth_cm,0.174,rho(shap)
+Tibetan Plateau,temp_C,0.3577,rho(shap)
+Xinjiang,pet_mm,-0.7223,rho(shap)
+Xinjiang,precip_mm,-0.594,rho(shap)
+Xinjiang,snow_cover_pct,0.0646,rho(shap)
+Xinjiang,snow_depth_cm,-0.4755,rho(shap)
+Xinjiang,temp_C,-0.2427,rho(shap)
