@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_d8040520967775ee59d7d56a55b51b33 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+</head>
+<body>
+    
+    
+<div style="position: fixed;
+     top: 10px; left: 50px; width: 420px; z-index:9999;
+     background-color: rgba(255,255,255,0.9); padding: 8px 12px; border-radius: 6px;
+     box-shadow: 0 2px 6px rgba(0,0,0,0.2); font-size:14px;">
+<b>Lake Summer Area Trend & Climate Factor Trends (2000–2025)</b><br>
+Color = Area trend per decade (red ↑, blue ↓). Click points for detailed climate trends.
+</div>
+    
+            <div class="folium-map" id="map_d8040520967775ee59d7d56a55b51b33" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_d8040520967775ee59d7d56a55b51b33 = L.map(
+                "map_d8040520967775ee59d7d56a55b51b33",
+                {
+                    center: [20.0, 0.0],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 2,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_3394e29091e8862e07250cfc50e98a8a = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3394e29091e8862e07250cfc50e98a8a.addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+            var circle_marker_a58d89645bd3b8780654cb587cb0c9e3 = L.circleMarker(
+                [30.65, 90.57499999999999],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_6ef19c71cae4b14ed470f98fca293b76 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7fa889380eed386f0ada52f82705bf4f = $(`<div id="html_7fa889380eed386f0ada52f82705bf4f" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Namtso</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>2.844</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.552 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-7.576 mm/dec</td></tr>       <tr><td>PET trend</td><td>-6.150 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-148.742 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.283 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_6ef19c71cae4b14ed470f98fca293b76.setContent(html_7fa889380eed386f0ada52f82705bf4f);
+            
+        
+
+        circle_marker_a58d89645bd3b8780654cb587cb0c9e3.bindPopup(popup_6ef19c71cae4b14ed470f98fca293b76)
+        ;
+
+        
+    
+    
+            var circle_marker_c7e847b133152a733dd79b14b468fbc3 = L.circleMarker(
+                [29.049999999999997, 90.69999999999999],
+                {"bubblingMouseEvents": true, "color": "#ffc1c1ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffc1c1ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_cf01336d5edc68e3ae48b8fa39ac9190 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cced22fecb375ef047b5ca67e37daac1 = $(`<div id="html_cced22fecb375ef047b5ca67e37daac1" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Yamdrok</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.243</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.348 °C/dec</td></tr>       <tr><td>Precip trend</td><td>3.030 mm/dec</td></tr>       <tr><td>PET trend</td><td>-0.468 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-24.471 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.022 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_cf01336d5edc68e3ae48b8fa39ac9190.setContent(html_cced22fecb375ef047b5ca67e37daac1);
+            
+        
+
+        circle_marker_c7e847b133152a733dd79b14b468fbc3.bindPopup(popup_cf01336d5edc68e3ae48b8fa39ac9190)
+        ;
+
+        
+    
+    
+            var circle_marker_f51c1c20408c3e1eb476c617cb334510 = L.circleMarker(
+                [30.6735, 81.51650000000001],
+                {"bubblingMouseEvents": true, "color": "#cacaffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#cacaffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_83485c77082f1b4cff836056a6dc7736 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d98322d0f9f72e12ae8d009309cd37cc = $(`<div id="html_d98322d0f9f72e12ae8d009309cd37cc" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Manasarovar</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.205</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.361 °C/dec</td></tr>       <tr><td>Precip trend</td><td>4.216 mm/dec</td></tr>       <tr><td>PET trend</td><td>0.423 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>9.812 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.152 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_83485c77082f1b4cff836056a6dc7736.setContent(html_d98322d0f9f72e12ae8d009309cd37cc);
+            
+        
+
+        circle_marker_f51c1c20408c3e1eb476c617cb334510.bindPopup(popup_83485c77082f1b4cff836056a6dc7736)
+        ;
+
+        
+    
+    
+            var circle_marker_f1da4207b357227fb205bbe220d5a11b = L.circleMarker(
+                [31.8, 89.0],
+                {"bubblingMouseEvents": true, "color": "#fcfcffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fcfcffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_e757ef82244b957883c6d955d39e935a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2038dafb1ae8e4a818186d99d140ecf3 = $(`<div id="html_2038dafb1ae8e4a818186d99d140ecf3" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Siling Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.013</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.698 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-8.107 mm/dec</td></tr>       <tr><td>PET trend</td><td>-6.750 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-24.398 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.026 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_e757ef82244b957883c6d955d39e935a.setContent(html_2038dafb1ae8e4a818186d99d140ecf3);
+            
+        
+
+        circle_marker_f1da4207b357227fb205bbe220d5a11b.bindPopup(popup_e757ef82244b957883c6d955d39e935a)
+        ;
+
+        
+    
+    
+            var circle_marker_a480bf93e7fce8610a336d67a8ed9fcb = L.circleMarker(
+                [34.95, 97.275],
+                {"bubblingMouseEvents": true, "color": "#f1f1ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1f1ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_6f188cef29eb17697b7b31787b0e11c0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b43476438f33f2cee2e90d30ac977e56 = $(`<div id="html_b43476438f33f2cee2e90d30ac977e56" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Gyaring Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.057</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.477 °C/dec</td></tr>       <tr><td>Precip trend</td><td>4.141 mm/dec</td></tr>       <tr><td>PET trend</td><td>-1.393 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-15.614 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.023 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_6f188cef29eb17697b7b31787b0e11c0.setContent(html_b43476438f33f2cee2e90d30ac977e56);
+            
+        
+
+        circle_marker_a480bf93e7fce8610a336d67a8ed9fcb.bindPopup(popup_6f188cef29eb17697b7b31787b0e11c0)
+        ;
+
+        
+    
+    
+            var circle_marker_4c30db0daba2229ad03c05128eccf76e = L.circleMarker(
+                [28.575000000000003, 90.375],
+                {"bubblingMouseEvents": true, "color": "#9797ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9797ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_b76f0e80f41f9c000d70e1614df1f374 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_789ae34788b675834e6a7f13b545fac3 = $(`<div id="html_789ae34788b675834e6a7f13b545fac3" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Puma Yumco</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.405</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.348 °C/dec</td></tr>       <tr><td>Precip trend</td><td>4.577 mm/dec</td></tr>       <tr><td>PET trend</td><td>-0.925 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-93.221 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.103 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_b76f0e80f41f9c000d70e1614df1f374.setContent(html_789ae34788b675834e6a7f13b545fac3);
+            
+        
+
+        circle_marker_4c30db0daba2229ad03c05128eccf76e.bindPopup(popup_b76f0e80f41f9c000d70e1614df1f374)
+        ;
+
+        
+    
+    
+            var circle_marker_8e78780df6a1bd6dc8b04f18a9f0191b = L.circleMarker(
+                [31.049999999999997, 86.57499999999999],
+                {"bubblingMouseEvents": true, "color": "#ff7878ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7878ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_06a44bde09c448237b3c0336176c6937 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ce8fd655cdad80e954ac5a7fee5f4f35 = $(`<div id="html_ce8fd655cdad80e954ac5a7fee5f4f35" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Tangra Yumco</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.523</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.712 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-4.557 mm/dec</td></tr>       <tr><td>PET trend</td><td>-5.682 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-66.347 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.070 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_06a44bde09c448237b3c0336176c6937.setContent(html_ce8fd655cdad80e954ac5a7fee5f4f35);
+            
+        
+
+        circle_marker_8e78780df6a1bd6dc8b04f18a9f0191b.bindPopup(popup_06a44bde09c448237b3c0336176c6937)
+        ;
+
+        
+    
+    
+            var circle_marker_2f6e5a02e63bdf9f5ae3c64a60cfc353 = L.circleMarker(
+                [30.9, 85.6],
+                {"bubblingMouseEvents": true, "color": "#ffacacff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffacacff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_37a4a9786f3cd0207dec4827124c1a64 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_be882a155bdb1642f019633a37780a66 = $(`<div id="html_be882a155bdb1642f019633a37780a66" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Zhari Namco</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.324</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.601 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-1.215 mm/dec</td></tr>       <tr><td>PET trend</td><td>-4.278 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-20.916 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.021 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_37a4a9786f3cd0207dec4827124c1a64.setContent(html_be882a155bdb1642f019633a37780a66);
+            
+        
+
+        circle_marker_2f6e5a02e63bdf9f5ae3c64a60cfc353.bindPopup(popup_37a4a9786f3cd0207dec4827124c1a64)
+        ;
+
+        
+    
+    
+            var circle_marker_5d490c8a1889d639f8b1537946afb8e8 = L.circleMarker(
+                [36.9, 100.2],
+                {"bubblingMouseEvents": true, "color": "#e1e1ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e1e1ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_171a1377ee70f00c27bd96a6b9da974e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2871aa7cee176c7c0f6b2cd06e111613 = $(`<div id="html_2871aa7cee176c7c0f6b2cd06e111613" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Qinghai Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.117</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.352 °C/dec</td></tr>       <tr><td>Precip trend</td><td>6.573 mm/dec</td></tr>       <tr><td>PET trend</td><td>0.874 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-2.983 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.003 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_171a1377ee70f00c27bd96a6b9da974e.setContent(html_2871aa7cee176c7c0f6b2cd06e111613);
+            
+        
+
+        circle_marker_5d490c8a1889d639f8b1537946afb8e8.bindPopup(popup_171a1377ee70f00c27bd96a6b9da974e)
+        ;
+
+        
+    
+    
+            var circle_marker_44160f077fddfa368e3f6a40de0acf95 = L.circleMarker(
+                [30.68675, 81.225],
+                {"bubblingMouseEvents": true, "color": "#b0b0ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#b0b0ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_ee332b94e0c13a46b89e3951ad32345f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4c491669ec1588112aa8f6e34902a1e7 = $(`<div id="html_4c491669ec1588112aa8f6e34902a1e7" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Rakshastal</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.306</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.345 °C/dec</td></tr>       <tr><td>Precip trend</td><td>4.510 mm/dec</td></tr>       <tr><td>PET trend</td><td>0.827 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-14.798 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.022 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_ee332b94e0c13a46b89e3951ad32345f.setContent(html_4c491669ec1588112aa8f6e34902a1e7);
+            
+        
+
+        circle_marker_44160f077fddfa368e3f6a40de0acf95.bindPopup(popup_ee332b94e0c13a46b89e3951ad32345f)
+        ;
+
+        
+    
+    
+            var circle_marker_acd1bd33530ab236f5eda74f77e48388 = L.circleMarker(
+                [42.025, 87.02],
+                {"bubblingMouseEvents": true, "color": "#fff4f4ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fff4f4ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_c1907595b661a10efa370e5b28ce2347 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bef0118834d9557e63563d1df09ef96a = $(`<div id="html_bef0118834d9557e63563d1df09ef96a" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Bosten Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.045</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.385 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-1.818 mm/dec</td></tr>       <tr><td>PET trend</td><td>-1.788 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.008 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_c1907595b661a10efa370e5b28ce2347.setContent(html_bef0118834d9557e63563d1df09ef96a);
+            
+        
+
+        circle_marker_acd1bd33530ab236f5eda74f77e48388.bindPopup(popup_c1907595b661a10efa370e5b28ce2347)
+        ;
+
+        
+    
+    
+            var circle_marker_a9401885e3599813b9b01cb74b994507 = L.circleMarker(
+                [44.6083, 81.1806],
+                {"bubblingMouseEvents": true, "color": "#ffc6c6ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffc6c6ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_0e1f8fa2be650c0852c83eec506b67f4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0299b6ad5b321658a63baf40421d5a79 = $(`<div id="html_0299b6ad5b321658a63baf40421d5a79" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Sayram Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.224</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.671 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-8.925 mm/dec</td></tr>       <tr><td>PET trend</td><td>-9.252 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.108 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_0e1f8fa2be650c0852c83eec506b67f4.setContent(html_0299b6ad5b321658a63baf40421d5a79);
+            
+        
+
+        circle_marker_a9401885e3599813b9b01cb74b994507.bindPopup(popup_0e1f8fa2be650c0852c83eec506b67f4)
+        ;
+
+        
+    
+    
+            var circle_marker_4604fc62b567694e02a1274cdf22466c = L.circleMarker(
+                [44.855500000000006, 82.93095],
+                {"bubblingMouseEvents": true, "color": "#c8c8ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#c8c8ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_a084f2fe9382c71b67f00f28bf88e088 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c589f8eaa196a558e5a4a1c9b86baf8d = $(`<div id="html_c589f8eaa196a558e5a4a1c9b86baf8d" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Ebinur Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.213</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.729 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-3.966 mm/dec</td></tr>       <tr><td>PET trend</td><td>-5.748 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_a084f2fe9382c71b67f00f28bf88e088.setContent(html_c589f8eaa196a558e5a4a1c9b86baf8d);
+            
+        
+
+        circle_marker_4604fc62b567694e02a1274cdf22466c.bindPopup(popup_a084f2fe9382c71b67f00f28bf88e088)
+        ;
+
+        
+    
+    
+            var circle_marker_d995daefb472d3007a52fad4d9111b4c = L.circleMarker(
+                [45.93, 85.80000000000001],
+                {"bubblingMouseEvents": true, "color": "#ff9c9cff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9c9cff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_b181deafbd3d89be39d67af3746b98e9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5e8287cbe1399dcbe5d526637555e915 = $(`<div id="html_5e8287cbe1399dcbe5d526637555e915" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Ailik Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.386</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.607 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-2.737 mm/dec</td></tr>       <tr><td>PET trend</td><td>-4.634 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_b181deafbd3d89be39d67af3746b98e9.setContent(html_5e8287cbe1399dcbe5d526637555e915);
+            
+        
+
+        circle_marker_d995daefb472d3007a52fad4d9111b4c.bindPopup(popup_b181deafbd3d89be39d67af3746b98e9)
+        ;
+
+        
+    
+    
+            var circle_marker_b1415a672323e31fe554412bc18d9b77 = L.circleMarker(
+                [43.6619, 92.7715],
+                {"bubblingMouseEvents": true, "color": "#ff8989ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff8989ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_14f75c2501844c8c7faf66daf99cfbf1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e68fe10815e83dda78de7fbbafab1dcd = $(`<div id="html_e68fe10815e83dda78de7fbbafab1dcd" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Barkol</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.458</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.459 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-3.718 mm/dec</td></tr>       <tr><td>PET trend</td><td>-5.477 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.883 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.001 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_14f75c2501844c8c7faf66daf99cfbf1.setContent(html_e68fe10815e83dda78de7fbbafab1dcd);
+            
+        
+
+        circle_marker_b1415a672323e31fe554412bc18d9b77.bindPopup(popup_14f75c2501844c8c7faf66daf99cfbf1)
+        ;
+
+        
+    
+    
+            var circle_marker_cc592e95bee897716aadb86c35cae79f = L.circleMarker(
+                [43.885, 88.13],
+                {"bubblingMouseEvents": true, "color": "#888888", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#888888", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_056e9eadb26e62b586d4d2357fff85c5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4554054a1e2b89db8ba8d166c089c6bc = $(`<div id="html_4554054a1e2b89db8ba8d166c089c6bc" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Tianchi </b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>NA</b> / decade</td></tr>       <tr><td>Temp trend</td><td>NA</td></tr>       <tr><td>Precip trend</td><td>NA</td></tr>       <tr><td>PET trend</td><td>NA</td></tr>       <tr><td>Snow cover trend</td><td>NA</td></tr>       <tr><td>Snow depth trend</td><td>NA</td></tr>     </table>     </div>     </div>`)[0];
+                popup_056e9eadb26e62b586d4d2357fff85c5.setContent(html_4554054a1e2b89db8ba8d166c089c6bc);
+            
+        
+
+        circle_marker_cc592e95bee897716aadb86c35cae79f.bindPopup(popup_056e9eadb26e62b586d4d2357fff85c5)
+        ;
+
+        
+    
+    
+            var circle_marker_9bb69c7b529e6a835f19467750fd29b4 = L.circleMarker(
+                [47.2225, 87.3063],
+                {"bubblingMouseEvents": true, "color": "#ffe8e8ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffe8e8ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_57be44325351ab75356f1f7fcd3158fa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_59764d3777dda89895bf38f0a1280512 = $(`<div id="html_59764d3777dda89895bf38f0a1280512" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Ulungur</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.090</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.455 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-3.622 mm/dec</td></tr>       <tr><td>PET trend</td><td>-2.841 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_57be44325351ab75356f1f7fcd3158fa.setContent(html_59764d3777dda89895bf38f0a1280512);
+            
+        
+
+        circle_marker_9bb69c7b529e6a835f19467750fd29b4.bindPopup(popup_57be44325351ab75356f1f7fcd3158fa)
+        ;
+
+        
+    
+    
+            var circle_marker_e2797264ca32c932387e7fb7445b851d = L.circleMarker(
+                [37.5323, 89.5],
+                {"bubblingMouseEvents": true, "color": "#ffb4b4ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffb4b4ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_a8320240941c1a9ecf33c9bb1352237f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b2bbb7085c8f7205d9d2c77e46ae743d = $(`<div id="html_b2bbb7085c8f7205d9d2c77e46ae743d" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Ayakkum</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.293</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.377 °C/dec</td></tr>       <tr><td>Precip trend</td><td>0.469 mm/dec</td></tr>       <tr><td>PET trend</td><td>-0.926 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-6.633 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.006 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_a8320240941c1a9ecf33c9bb1352237f.setContent(html_b2bbb7085c8f7205d9d2c77e46ae743d);
+            
+        
+
+        circle_marker_e2797264ca32c932387e7fb7445b851d.bindPopup(popup_a8320240941c1a9ecf33c9bb1352237f)
+        ;
+
+        
+    
+    
+            var circle_marker_75c4c228ef6aae91495ea96b9e14b856 = L.circleMarker(
+                [1.85, 33.2],
+                {"bubblingMouseEvents": true, "color": "#e6e6ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e6e6ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_0b8806bbabcd4851bfcf4ee1e40bcc2a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b43486eaed15a95467c99f38c1b0a476 = $(`<div id="html_b43486eaed15a95467c99f38c1b0a476" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Victoria</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.100</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.204 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-4.253 mm/dec</td></tr>       <tr><td>PET trend</td><td>1.135 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_0b8806bbabcd4851bfcf4ee1e40bcc2a.setContent(html_b43486eaed15a95467c99f38c1b0a476);
+            
+        
+
+        circle_marker_75c4c228ef6aae91495ea96b9e14b856.bindPopup(popup_0b8806bbabcd4851bfcf4ee1e40bcc2a)
+        ;
+
+        
+    
+    
+            var circle_marker_dcc76e44c6320267d6d635834e8ce7e4 = L.circleMarker(
+                [2.9, 30.0],
+                {"bubblingMouseEvents": true, "color": "#d4d4ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d4d4ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_43e3033d37bb85c580ebab7456562e36 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2e4b9cecefa7a3de70cc45dff623d307 = $(`<div id="html_2e4b9cecefa7a3de70cc45dff623d307" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Tanganyika</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.166</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.094 °C/dec</td></tr>       <tr><td>Precip trend</td><td>16.576 mm/dec</td></tr>       <tr><td>PET trend</td><td>7.539 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_43e3033d37bb85c580ebab7456562e36.setContent(html_2e4b9cecefa7a3de70cc45dff623d307);
+            
+        
+
+        circle_marker_dcc76e44c6320267d6d635834e8ce7e4.bindPopup(popup_43e3033d37bb85c580ebab7456562e36)
+        ;
+
+        
+    
+    
+            var circle_marker_1aed4ab87cfe05de541206df87f913d8 = L.circleMarker(
+                [-11.9553, 34.555800000000005],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_7f45a11da33ff0177cf3d234106252a5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c348d46fb439e760f6d60e0f42d5e35d = $(`<div id="html_c348d46fb439e760f6d60e0f42d5e35d" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Malawi</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>1.006</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.141 °C/dec</td></tr>       <tr><td>Precip trend</td><td>26.796 mm/dec</td></tr>       <tr><td>PET trend</td><td>3.313 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_7f45a11da33ff0177cf3d234106252a5.setContent(html_c348d46fb439e760f6d60e0f42d5e35d);
+            
+        
+
+        circle_marker_1aed4ab87cfe05de541206df87f913d8.bindPopup(popup_7f45a11da33ff0177cf3d234106252a5)
+        ;
+
+        
+    
+    
+            var circle_marker_f7a349f3653f5ab25b4c8fe02c7219c7 = L.circleMarker(
+                [1.85, 30.9],
+                {"bubblingMouseEvents": true, "color": "#ffc3c3ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffc3c3ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_7125f9103d0dc024a3528e04429047e8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_145867f7f62888c299c012522710760e = $(`<div id="html_145867f7f62888c299c012522710760e" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Albert</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.233</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.255 °C/dec</td></tr>       <tr><td>Precip trend</td><td>11.134 mm/dec</td></tr>       <tr><td>PET trend</td><td>-3.446 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_7125f9103d0dc024a3528e04429047e8.setContent(html_145867f7f62888c299c012522710760e);
+            
+        
+
+        circle_marker_f7a349f3653f5ab25b4c8fe02c7219c7.bindPopup(popup_7125f9103d0dc024a3528e04429047e8)
+        ;
+
+        
+    
+    
+            var circle_marker_ad24acf497f2b16be882e5c637595239 = L.circleMarker(
+                [13.024999999999999, 14.2802],
+                {"bubblingMouseEvents": true, "color": "#ff5353ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff5353ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_8a9eaddcb62c0d3650c8ac9af0dd8235 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ab583f2d9052e5fc61f1bd23ee1850b7 = $(`<div id="html_ab583f2d9052e5fc61f1bd23ee1850b7" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Chad</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.665</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.097 °C/dec</td></tr>       <tr><td>Precip trend</td><td>14.339 mm/dec</td></tr>       <tr><td>PET trend</td><td>6.138 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_8a9eaddcb62c0d3650c8ac9af0dd8235.setContent(html_ab583f2d9052e5fc61f1bd23ee1850b7);
+            
+        
+
+        circle_marker_ad24acf497f2b16be882e5c637595239.bindPopup(popup_8a9eaddcb62c0d3650c8ac9af0dd8235)
+        ;
+
+        
+    
+    
+            var circle_marker_8c327b3b3d235f6335cefe5c4f922287 = L.circleMarker(
+                [3.5259, 36.243],
+                {"bubblingMouseEvents": true, "color": "#f7f7ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f7f7ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_743ca1a61161eb039182c2f1e0b7a8df = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a72603e5357f6c302daf141e2baa2d50 = $(`<div id="html_a72603e5357f6c302daf141e2baa2d50" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Turkana</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.034</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.173 °C/dec</td></tr>       <tr><td>Precip trend</td><td>5.140 mm/dec</td></tr>       <tr><td>PET trend</td><td>7.402 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_743ca1a61161eb039182c2f1e0b7a8df.setContent(html_a72603e5357f6c302daf141e2baa2d50);
+            
+        
+
+        circle_marker_8c327b3b3d235f6335cefe5c4f922287.bindPopup(popup_743ca1a61161eb039182c2f1e0b7a8df)
+        ;
+
+        
+    
+    
+            var circle_marker_e6f8f2fb7dfe6ffd7ea115063fa71209 = L.circleMarker(
+                [-2.0119, 29.1277],
+                {"bubblingMouseEvents": true, "color": "#dcdcffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dcdcffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_dc801231a816bda557e29eea14306d87 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a4248347f4210305a3db8e1030f342c4 = $(`<div id="html_a4248347f4210305a3db8e1030f342c4" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Kivu</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.136</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.166 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-1.607 mm/dec</td></tr>       <tr><td>PET trend</td><td>3.425 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_dc801231a816bda557e29eea14306d87.setContent(html_a4248347f4210305a3db8e1030f342c4);
+            
+        
+
+        circle_marker_e6f8f2fb7dfe6ffd7ea115063fa71209.bindPopup(popup_dc801231a816bda557e29eea14306d87)
+        ;
+
+        
+    
+    
+            var circle_marker_af2643ce09e49c3ae8a33685cca78fda = L.circleMarker(
+                [-0.37, 29.6],
+                {"bubblingMouseEvents": true, "color": "#9595ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9595ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_2111c282981741f95eed516bda270c40 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_62576548fae31d46dcd4503580d18f32 = $(`<div id="html_62576548fae31d46dcd4503580d18f32" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Edward</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.411</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.277 °C/dec</td></tr>       <tr><td>Precip trend</td><td>3.284 mm/dec</td></tr>       <tr><td>PET trend</td><td>-2.839 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_2111c282981741f95eed516bda270c40.setContent(html_62576548fae31d46dcd4503580d18f32);
+            
+        
+
+        circle_marker_af2643ce09e49c3ae8a33685cca78fda.bindPopup(popup_2111c282981741f95eed516bda270c40)
+        ;
+
+        
+    
+    
+            var circle_marker_00f6aa9e1d1d9f64a3e588a9bfede977 = L.circleMarker(
+                [-9.029, 28.7422],
+                {"bubblingMouseEvents": true, "color": "#c5c5ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#c5c5ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_90bc2f968f39f50648a19ff87bd00b5a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_70b09e199b56d416fbe12d519884ddcb = $(`<div id="html_70b09e199b56d416fbe12d519884ddcb" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Mweru</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.225</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.087 °C/dec</td></tr>       <tr><td>Precip trend</td><td>12.110 mm/dec</td></tr>       <tr><td>PET trend</td><td>7.642 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_90bc2f968f39f50648a19ff87bd00b5a.setContent(html_70b09e199b56d416fbe12d519884ddcb);
+            
+        
+
+        circle_marker_00f6aa9e1d1d9f64a3e588a9bfede977.bindPopup(popup_90bc2f968f39f50648a19ff87bd00b5a)
+        ;
+
+        
+    
+    
+            var circle_marker_e84559e2fcce9cb70833fca1f6eeeab6 = L.circleMarker(
+                [-8.0151, 32.255300000000005],
+                {"bubblingMouseEvents": true, "color": "#a5a5ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#a5a5ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_decc449bc0243790dc0d3bcfbc10ee6e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2253446f1fee8a48c3de60779e3a0c0a = $(`<div id="html_2253446f1fee8a48c3de60779e3a0c0a" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Rukwa</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.351</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.006 °C/dec</td></tr>       <tr><td>Precip trend</td><td>25.325 mm/dec</td></tr>       <tr><td>PET trend</td><td>10.563 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_decc449bc0243790dc0d3bcfbc10ee6e.setContent(html_2253446f1fee8a48c3de60779e3a0c0a);
+            
+        
+
+        circle_marker_e84559e2fcce9cb70833fca1f6eeeab6.bindPopup(popup_decc449bc0243790dc0d3bcfbc10ee6e)
+        ;
+
+        
+    
+    
+            var circle_marker_a3d87d68b3caeea9b654e0f569f3b92b = L.circleMarker(
+                [35.2436, 136.05259999999998],
+                {"bubblingMouseEvents": true, "color": "#ffc9c9ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffc9c9ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_78b3020646ee9c1ba19eaddd5e97bfb4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7ab2d192e3d0f80dd9f0579d0c46e137 = $(`<div id="html_7ab2d192e3d0f80dd9f0579d0c46e137" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Biwa</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.211</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.443 °C/dec</td></tr>       <tr><td>Precip trend</td><td>23.832 mm/dec</td></tr>       <tr><td>PET trend</td><td>0.830 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_78b3020646ee9c1ba19eaddd5e97bfb4.setContent(html_7ab2d192e3d0f80dd9f0579d0c46e137);
+            
+        
+
+        circle_marker_a3d87d68b3caeea9b654e0f569f3b92b.bindPopup(popup_78b3020646ee9c1ba19eaddd5e97bfb4)
+        ;
+
+        
+    
+    
+            var circle_marker_66d4136be35d420da685c29864e41bcd = L.circleMarker(
+                [29.085900000000002, 116.27959999999999],
+                {"bubblingMouseEvents": true, "color": "#ffe3e3ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffe3e3ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_c65977dcdcd0bcd297bf5eb6211d009d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_689449c093ffe11b3e90bce05ed7a713 = $(`<div id="html_689449c093ffe11b3e90bce05ed7a713" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Poyang Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.108</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.326 °C/dec</td></tr>       <tr><td>Precip trend</td><td>8.045 mm/dec</td></tr>       <tr><td>PET trend</td><td>1.802 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_c65977dcdcd0bcd297bf5eb6211d009d.setContent(html_689449c093ffe11b3e90bce05ed7a713);
+            
+        
+
+        circle_marker_66d4136be35d420da685c29864e41bcd.bindPopup(popup_c65977dcdcd0bcd297bf5eb6211d009d)
+        ;
+
+        
+    
+    
+            var circle_marker_404b9931dd9eb90764736f9721c4bed8 = L.circleMarker(
+                [29.1897, 112.9468],
+                {"bubblingMouseEvents": true, "color": "#ff9090ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9090ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_4f0bff379c85549a2011ce108505cd18 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_01cf9329e69989eabd00ce7487e3a1b6 = $(`<div id="html_01cf9329e69989eabd00ce7487e3a1b6" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Dongting Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.433</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.453 °C/dec</td></tr>       <tr><td>Precip trend</td><td>0.829 mm/dec</td></tr>       <tr><td>PET trend</td><td>-3.868 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_4f0bff379c85549a2011ce108505cd18.setContent(html_01cf9329e69989eabd00ce7487e3a1b6);
+            
+        
+
+        circle_marker_404b9931dd9eb90764736f9721c4bed8.bindPopup(popup_4f0bff379c85549a2011ce108505cd18)
+        ;
+
+        
+    
+    
+            var circle_marker_cd2eea9bbcdf5b5aa51b45b445ccc9de = L.circleMarker(
+                [31.218899999999998, 120.2617],
+                {"bubblingMouseEvents": true, "color": "#ffcbcbff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffcbcbff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_ee365e48cb16a2bf11f8c5fd2d926c47 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f7943e66090880a7185cea3b89aeaf63 = $(`<div id="html_f7943e66090880a7185cea3b89aeaf63" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Taihu Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.205</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.253 °C/dec</td></tr>       <tr><td>Precip trend</td><td>21.892 mm/dec</td></tr>       <tr><td>PET trend</td><td>4.391 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_ee365e48cb16a2bf11f8c5fd2d926c47.setContent(html_f7943e66090880a7185cea3b89aeaf63);
+            
+        
+
+        circle_marker_cd2eea9bbcdf5b5aa51b45b445ccc9de.bindPopup(popup_ee365e48cb16a2bf11f8c5fd2d926c47)
+        ;
+
+        
+    
+    
+            var circle_marker_ad703390524b5f4aba8566150d0a437b = L.circleMarker(
+                [48.968900000000005, 117.3506],
+                {"bubblingMouseEvents": true, "color": "#c9c9ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#c9c9ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_1ecc933a245adbb98ba33fd4ecead4a3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_be3d3f37a9651804dcac70fb8e2d8ac8 = $(`<div id="html_be3d3f37a9651804dcac70fb8e2d8ac8" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Hulun Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.210</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.237 °C/dec</td></tr>       <tr><td>Precip trend</td><td>11.636 mm/dec</td></tr>       <tr><td>PET trend</td><td>9.341 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_1ecc933a245adbb98ba33fd4ecead4a3.setContent(html_be3d3f37a9651804dcac70fb8e2d8ac8);
+            
+        
+
+        circle_marker_ad703390524b5f4aba8566150d0a437b.bindPopup(popup_1ecc933a245adbb98ba33fd4ecead4a3)
+        ;
+
+        
+    
+    
+            var circle_marker_01aae10aafd59bbedbfc1b66573cc0ff = L.circleMarker(
+                [45.2975, 124.14330000000001],
+                {"bubblingMouseEvents": true, "color": "#ff3838ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff3838ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_b263f98b505a9583fcc6ae9550f641af = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9c13e1882c9dd19bdd7ce3f6f9d8a846 = $(`<div id="html_9c13e1882c9dd19bdd7ce3f6f9d8a846" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Chagan Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.769</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.031 °C/dec</td></tr>       <tr><td>Precip trend</td><td>15.840 mm/dec</td></tr>       <tr><td>PET trend</td><td>12.122 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_b263f98b505a9583fcc6ae9550f641af.setContent(html_9c13e1882c9dd19bdd7ce3f6f9d8a846);
+            
+        
+
+        circle_marker_01aae10aafd59bbedbfc1b66573cc0ff.bindPopup(popup_b263f98b505a9583fcc6ae9550f641af)
+        ;
+
+        
+    
+    
+            var circle_marker_4ccb625da6b15af339be2517243d5168 = L.circleMarker(
+                [24.8467, 102.719],
+                {"bubblingMouseEvents": true, "color": "#ff2525ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff2525ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_2dfdf64b29426472aab52d3aeeb6e50a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5799279192c5843238566ea0dabbaf04 = $(`<div id="html_5799279192c5843238566ea0dabbaf04" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Dianchi Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.845</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.422 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-6.487 mm/dec</td></tr>       <tr><td>PET trend</td><td>-4.318 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_2dfdf64b29426472aab52d3aeeb6e50a.setContent(html_5799279192c5843238566ea0dabbaf04);
+            
+        
+
+        circle_marker_4ccb625da6b15af339be2517243d5168.bindPopup(popup_2dfdf64b29426472aab52d3aeeb6e50a)
+        ;
+
+        
+    
+    
+            var circle_marker_a43ff6e132f33483f6c301c6ef6b29c0 = L.circleMarker(
+                [25.7831, 100.1811],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_0e0a46108a184627260f7bc798337347 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fbac9d4345bdc2f28a5a1370c3115775 = $(`<div id="html_fbac9d4345bdc2f28a5a1370c3115775" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Erhai Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>1.117</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.371 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-0.728 mm/dec</td></tr>       <tr><td>PET trend</td><td>-9.097 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_0e0a46108a184627260f7bc798337347.setContent(html_fbac9d4345bdc2f28a5a1370c3115775);
+            
+        
+
+        circle_marker_a43ff6e132f33483f6c301c6ef6b29c0.bindPopup(popup_0e0a46108a184627260f7bc798337347)
+        ;
+
+        
+    
+    
+            var circle_marker_636c1e0db22379eae20b2e3f69e2ccbb = L.circleMarker(
+                [33.4055, 118.5222],
+                {"bubblingMouseEvents": true, "color": "#ffeaeaff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffeaeaff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_27b155e0eb5eab0d84d5d0b4e961cbf4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0ea678f3ee7af5d30089ce8f5de51eea = $(`<div id="html_0ea678f3ee7af5d30089ce8f5de51eea" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Hongze Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.081</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.483 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-15.098 mm/dec</td></tr>       <tr><td>PET trend</td><td>-4.441 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_27b155e0eb5eab0d84d5d0b4e961cbf4.setContent(html_0ea678f3ee7af5d30089ce8f5de51eea);
+            
+        
+
+        circle_marker_636c1e0db22379eae20b2e3f69e2ccbb.bindPopup(popup_27b155e0eb5eab0d84d5d0b4e961cbf4)
+        ;
+
+        
+    
+    
+            var circle_marker_3e0e29f59640f5cff219cd2b4022e043 = L.circleMarker(
+                [34.8802, 117.00450000000001],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_51c4e76bc44e20d8e840c04526273db3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3c10dcc15e43107ab65aa44823f5a068 = $(`<div id="html_3c10dcc15e43107ab65aa44823f5a068" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Nansi Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>74.019</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.716 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-14.361 mm/dec</td></tr>       <tr><td>PET trend</td><td>-10.471 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_51c4e76bc44e20d8e840c04526273db3.setContent(html_3c10dcc15e43107ab65aa44823f5a068);
+            
+        
+
+        circle_marker_3e0e29f59640f5cff219cd2b4022e043.bindPopup(popup_51c4e76bc44e20d8e840c04526273db3)
+        ;
+
+        
+    
+    
+            var circle_marker_d1f45e01cf15088bd95fcb75d3e1de2d = L.circleMarker(
+                [45.8283, 76.372],
+                {"bubblingMouseEvents": true, "color": "#9f9fffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9f9fffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_0fdb91005ace23fc358c3f0934679a6e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0a3c501aea7145afa666a164226bb1f4 = $(`<div id="html_0a3c501aea7145afa666a164226bb1f4" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Balkhash</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.371</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.702 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-4.568 mm/dec</td></tr>       <tr><td>PET trend</td><td>-8.742 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.376 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.001 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_0fdb91005ace23fc358c3f0934679a6e.setContent(html_0a3c501aea7145afa666a164226bb1f4);
+            
+        
+
+        circle_marker_d1f45e01cf15088bd95fcb75d3e1de2d.bindPopup(popup_0fdb91005ace23fc358c3f0934679a6e)
+        ;
+
+        
+    
+    
+            var circle_marker_dba51a52ad08d8592131c660a8ab312b = L.circleMarker(
+                [42.4333, 77.2501],
+                {"bubblingMouseEvents": true, "color": "#fff8f8ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fff8f8ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_feb347767f9ec25383e65c452ead6ecc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2ecfc1e6e301ffa9ab3033de94a5a8c0 = $(`<div id="html_2ecfc1e6e301ffa9ab3033de94a5a8c0" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Issyk-Kul</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.029</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.429 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-7.051 mm/dec</td></tr>       <tr><td>PET trend</td><td>-3.126 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-40.695 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.198 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_feb347767f9ec25383e65c452ead6ecc.setContent(html_2ecfc1e6e301ffa9ab3033de94a5a8c0);
+            
+        
+
+        circle_marker_dba51a52ad08d8592131c660a8ab312b.bindPopup(popup_feb347767f9ec25383e65c452ead6ecc)
+        ;
+
+        
+    
+    
+            var circle_marker_8812ade960f8b54f730447ff3c18dec9 = L.circleMarker(
+                [47.988, 83.8455],
+                {"bubblingMouseEvents": true, "color": "#f2f2ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f2f2ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_6bcc383501655f338a09f73e00e11d2c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_42ddc5c8a4838953bb584bf55baee1a2 = $(`<div id="html_42ddc5c8a4838953bb584bf55baee1a2" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Zaysan</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.050</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.430 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-3.042 mm/dec</td></tr>       <tr><td>PET trend</td><td>-2.675 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.004 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_6bcc383501655f338a09f73e00e11d2c.setContent(html_42ddc5c8a4838953bb584bf55baee1a2);
+            
+        
+
+        circle_marker_8812ade960f8b54f730447ff3c18dec9.bindPopup(popup_6bcc383501655f338a09f73e00e11d2c)
+        ;
+
+        
+    
+    
+            var circle_marker_761bce6f66e996ee04c50918a846ce49 = L.circleMarker(
+                [46.5283, 80.97999999999999],
+                {"bubblingMouseEvents": true, "color": "#ffe9e9ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffe9e9ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_f5195212de5e441948c99c21604d5577 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_458595ab8a80fe45f2916458722bb254 = $(`<div id="html_458595ab8a80fe45f2916458722bb254" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Sasykkol</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.088</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.838 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-6.770 mm/dec</td></tr>       <tr><td>PET trend</td><td>-9.410 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_f5195212de5e441948c99c21604d5577.setContent(html_458595ab8a80fe45f2916458722bb254);
+            
+        
+
+        circle_marker_761bce6f66e996ee04c50918a846ce49.bindPopup(popup_f5195212de5e441948c99c21604d5577)
+        ;
+
+        
+    
+    
+            var circle_marker_4a4f772f325598fe554a66b2e3ba218d = L.circleMarker(
+                [46.088300000000004, 81.69],
+                {"bubblingMouseEvents": true, "color": "#ff9e9eff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9e9eff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_2a3009a87c083d8bb88586e2f41dc3c6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5fd706f696d37d756879568d84ca6c83 = $(`<div id="html_5fd706f696d37d756879568d84ca6c83" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Alakol</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.375</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.791 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-7.899 mm/dec</td></tr>       <tr><td>PET trend</td><td>-9.168 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.206 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_2a3009a87c083d8bb88586e2f41dc3c6.setContent(html_5fd706f696d37d756879568d84ca6c83);
+            
+        
+
+        circle_marker_4a4f772f325598fe554a66b2e3ba218d.bindPopup(popup_2a3009a87c083d8bb88586e2f41dc3c6)
+        ;
+
+        
+    
+    
+            var circle_marker_164c5d144055ad707fbcec22c54d41b6 = L.circleMarker(
+                [39.085, 68.36500000000001],
+                {"bubblingMouseEvents": true, "color": "#ffb2b2ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffb2b2ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_bd3ba48a92c2b24cd74270b894e8e2bb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d3dc32ddcee244a65817f6467dd13184 = $(`<div id="html_d3dc32ddcee244a65817f6467dd13184" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Iskanderkul</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.300</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.526 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-9.244 mm/dec</td></tr>       <tr><td>PET trend</td><td>-6.699 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-256.070 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-3.614 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_bd3ba48a92c2b24cd74270b894e8e2bb.setContent(html_d3dc32ddcee244a65817f6467dd13184);
+            
+        
+
+        circle_marker_164c5d144055ad707fbcec22c54d41b6.bindPopup(popup_bd3ba48a92c2b24cd74270b894e8e2bb)
+        ;
+
+        
+    
+    
+            var circle_marker_533f599efc994a38e1155866764c2f59 = L.circleMarker(
+                [40.7662, 66.94999999999999],
+                {"bubblingMouseEvents": true, "color": "#ff9e9eff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9e9eff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_16f4c525815b50d5ce6942129cdbaa8d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_66874af781c3dafcfa0dad7f1cd68525 = $(`<div id="html_66874af781c3dafcfa0dad7f1cd68525" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Aydar Lake</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.378</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.652 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-1.634 mm/dec</td></tr>       <tr><td>PET trend</td><td>-9.118 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_16f4c525815b50d5ce6942129cdbaa8d.setContent(html_66874af781c3dafcfa0dad7f1cd68525);
+            
+        
+
+        circle_marker_533f599efc994a38e1155866764c2f59.bindPopup(popup_16f4c525815b50d5ce6942129cdbaa8d)
+        ;
+
+        
+    
+    
+            var circle_marker_82cdc6c8d7f760aed3c53464aa5a0dfc = L.circleMarker(
+                [50.425, 69.21010000000001],
+                {"bubblingMouseEvents": true, "color": "#d5d5ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d5d5ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_11a60276eb2a9ad7daefb0960c306015 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2db223e561258a6e587502e5ab13daa2 = $(`<div id="html_2db223e561258a6e587502e5ab13daa2" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Tengiz</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.166</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.354 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-3.983 mm/dec</td></tr>       <tr><td>PET trend</td><td>-4.749 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_11a60276eb2a9ad7daefb0960c306015.setContent(html_2db223e561258a6e587502e5ab13daa2);
+            
+        
+
+        circle_marker_82cdc6c8d7f760aed3c53464aa5a0dfc.bindPopup(popup_11a60276eb2a9ad7daefb0960c306015)
+        ;
+
+        
+    
+    
+            var circle_marker_68e83d8cbfa8349304b48470ac34509c = L.circleMarker(
+                [48.75, 85.8],
+                {"bubblingMouseEvents": true, "color": "#e2e2ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e2e2ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_17a258d6822fc827047d2a61f69aad65 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3a8790ce6e4d9d1e4dbcde7a63c5be88 = $(`<div id="html_3a8790ce6e4d9d1e4dbcde7a63c5be88" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Markakol</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.114</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.368 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-0.276 mm/dec</td></tr>       <tr><td>PET trend</td><td>-3.347 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>21.871 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.118 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_17a258d6822fc827047d2a61f69aad65.setContent(html_3a8790ce6e4d9d1e4dbcde7a63c5be88);
+            
+        
+
+        circle_marker_68e83d8cbfa8349304b48470ac34509c.bindPopup(popup_17a258d6822fc827047d2a61f69aad65)
+        ;
+
+        
+    
+    
+            var circle_marker_6b66b8fe0a779eeb0202bb1eeb5909a2 = L.circleMarker(
+                [45.489999999999995, 59.885000000000005],
+                {"bubblingMouseEvents": true, "color": "#c0c0ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#c0c0ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_bd31f10bbc7554fe9e5d1cc50c6bd9f0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8d9d77a4a637db2f6aec9d2237ad3af1 = $(`<div id="html_8d9d77a4a637db2f6aec9d2237ad3af1" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Aral Sea</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.245</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.698 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-2.685 mm/dec</td></tr>       <tr><td>PET trend</td><td>-9.895 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_bd31f10bbc7554fe9e5d1cc50c6bd9f0.setContent(html_8d9d77a4a637db2f6aec9d2237ad3af1);
+            
+        
+
+        circle_marker_6b66b8fe0a779eeb0202bb1eeb5909a2.bindPopup(popup_bd31f10bbc7554fe9e5d1cc50c6bd9f0)
+        ;
+
+        
+    
+    
+            var circle_marker_2845e2712e8ff7b542788367af5a43c8 = L.circleMarker(
+                [46.37, 6.55],
+                {"bubblingMouseEvents": true, "color": "#ffc9c9ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffc9c9ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_28976c67d5cfa5750055202ff437668d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_248678bb495d2672afa4a121f98af3f5 = $(`<div id="html_248678bb495d2672afa4a121f98af3f5" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Geneva</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.209</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.809 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-8.819 mm/dec</td></tr>       <tr><td>PET trend</td><td>-12.466 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-6.627 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.008 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_28976c67d5cfa5750055202ff437668d.setContent(html_248678bb495d2672afa4a121f98af3f5);
+            
+        
+
+        circle_marker_2845e2712e8ff7b542788367af5a43c8.bindPopup(popup_28976c67d5cfa5750055202ff437668d)
+        ;
+
+        
+    
+    
+            var circle_marker_bd121d65d2499d2064f31eb7811b1458 = L.circleMarker(
+                [47.66, 9.32],
+                {"bubblingMouseEvents": true, "color": "#ffc1c1ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffc1c1ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_1aef07e7c48c98f67f63efdaa6726638 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5a936d5e32c65cbe8886d19dc00f6f65 = $(`<div id="html_5a936d5e32c65cbe8886d19dc00f6f65" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Constance</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.241</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.748 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-1.371 mm/dec</td></tr>       <tr><td>PET trend</td><td>-6.330 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.632 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.001 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_1aef07e7c48c98f67f63efdaa6726638.setContent(html_5a936d5e32c65cbe8886d19dc00f6f65);
+            
+        
+
+        circle_marker_bd121d65d2499d2064f31eb7811b1458.bindPopup(popup_1aef07e7c48c98f67f63efdaa6726638)
+        ;
+
+        
+    
+    
+            var circle_marker_d9b3a754b4c7e0019f503175f23cddb4 = L.circleMarker(
+                [60.815, 31.410000000000004],
+                {"bubblingMouseEvents": true, "color": "#ff7b7bff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7b7bff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_b054cef0cf84b65450b680a82e128377 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_75a0715805c4b0dca67a6d3508707bd6 = $(`<div id="html_75a0715805c4b0dca67a6d3508707bd6" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Ladoga</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.514</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.481 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-0.016 mm/dec</td></tr>       <tr><td>PET trend</td><td>-11.968 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.003 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_b054cef0cf84b65450b680a82e128377.setContent(html_75a0715805c4b0dca67a6d3508707bd6);
+            
+        
+
+        circle_marker_d9b3a754b4c7e0019f503175f23cddb4.bindPopup(popup_b054cef0cf84b65450b680a82e128377)
+        ;
+
+        
+    
+    
+            var circle_marker_4abf11a1a7bddbf99fffea2b9874dfd0 = L.circleMarker(
+                [61.89, 35.125],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_5c4842e0161fe19ac2444c7257da6d93 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c45019c7b6e5f325115b856322ce6761 = $(`<div id="html_c45019c7b6e5f325115b856322ce6761" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Onega</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>1.125</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.466 °C/dec</td></tr>       <tr><td>Precip trend</td><td>1.941 mm/dec</td></tr>       <tr><td>PET trend</td><td>-6.135 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>1.450 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.002 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_5c4842e0161fe19ac2444c7257da6d93.setContent(html_c45019c7b6e5f325115b856322ce6761);
+            
+        
+
+        circle_marker_4abf11a1a7bddbf99fffea2b9874dfd0.bindPopup(popup_5c4842e0161fe19ac2444c7257da6d93)
+        ;
+
+        
+    
+    
+            var circle_marker_c491402faed15d065ea7c2142b290063 = L.circleMarker(
+                [47.795, 16.775],
+                {"bubblingMouseEvents": true, "color": "#ffa6a6ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffa6a6ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_597c9a1bbb6b9059b42e2302aab173c2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1ed41acbc09f2ed3dc8a3c547a2789b5 = $(`<div id="html_1ed41acbc09f2ed3dc8a3c547a2789b5" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Neusiedl</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.347</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.827 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-3.219 mm/dec</td></tr>       <tr><td>PET trend</td><td>-9.495 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_597c9a1bbb6b9059b42e2302aab173c2.setContent(html_1ed41acbc09f2ed3dc8a3c547a2789b5);
+            
+        
+
+        circle_marker_c491402faed15d065ea7c2142b290063.bindPopup(popup_597c9a1bbb6b9059b42e2302aab173c2)
+        ;
+
+        
+    
+    
+            var circle_marker_35cf9ed47197a00830b372e834ad98d4 = L.circleMarker(
+                [58.875, 13.205],
+                {"bubblingMouseEvents": true, "color": "#bdbdffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#bdbdffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_611fd1a62445cf6115076d8ae29b4e3b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5f1b7a8c1aff9c28376332550afbffa7 = $(`<div id="html_5f1b7a8c1aff9c28376332550afbffa7" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Vänern</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.257</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.337 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-2.249 mm/dec</td></tr>       <tr><td>PET trend</td><td>-24.284 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_611fd1a62445cf6115076d8ae29b4e3b.setContent(html_5f1b7a8c1aff9c28376332550afbffa7);
+            
+        
+
+        circle_marker_35cf9ed47197a00830b372e834ad98d4.bindPopup(popup_611fd1a62445cf6115076d8ae29b4e3b)
+        ;
+
+        
+    
+    
+            var circle_marker_4aabaf570a54a313fd4ffd46e9566e0f = L.circleMarker(
+                [58.295, 14.52],
+                {"bubblingMouseEvents": true, "color": "#dedeffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dedeffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_bfa9c42b520d46650616f42d2e0b0b73 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ef7ec79e764a50a9e1e96d3db63a9bfe = $(`<div id="html_ef7ec79e764a50a9e1e96d3db63a9bfe" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Vättern</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.130</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.418 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-5.281 mm/dec</td></tr>       <tr><td>PET trend</td><td>-39.538 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_bfa9c42b520d46650616f42d2e0b0b73.setContent(html_ef7ec79e764a50a9e1e96d3db63a9bfe);
+            
+        
+
+        circle_marker_4aabaf570a54a313fd4ffd46e9566e0f.bindPopup(popup_bfa9c42b520d46650616f42d2e0b0b73)
+        ;
+
+        
+    
+    
+            var circle_marker_ce7293e47ba475be1a8cf1d09c08e55e = L.circleMarker(
+                [57.28, -4.484999999999999],
+                {"bubblingMouseEvents": true, "color": "#ff0303ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0303ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_81ec8050907fa68b6625261880ba80a4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_550780ef19848f71a0e3090d8ffb0f77 = $(`<div id="html_550780ef19848f71a0e3090d8ffb0f77" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Loch Ness</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.975</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.448 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-2.732 mm/dec</td></tr>       <tr><td>PET trend</td><td>-6.341 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.059 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_81ec8050907fa68b6625261880ba80a4.setContent(html_550780ef19848f71a0e3090d8ffb0f77);
+            
+        
+
+        circle_marker_ce7293e47ba475be1a8cf1d09c08e55e.bindPopup(popup_81ec8050907fa68b6625261880ba80a4)
+        ;
+
+        
+    
+    
+            var circle_marker_d511d8a1aafdc656b67821f0dd038fbe = L.circleMarker(
+                [54.345, -2.9450000000000003],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_537e70d03179ad30670ed2510a670270 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c80ba922e376aedce482cfe0db3ad917 = $(`<div id="html_c80ba922e376aedce482cfe0db3ad917" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Windermere</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>64.309</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.398 °C/dec</td></tr>       <tr><td>Precip trend</td><td>1.993 mm/dec</td></tr>       <tr><td>PET trend</td><td>-6.358 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.005 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_537e70d03179ad30670ed2510a670270.setContent(html_c80ba922e376aedce482cfe0db3ad917);
+            
+        
+
+        circle_marker_d511d8a1aafdc656b67821f0dd038fbe.bindPopup(popup_537e70d03179ad30670ed2510a670270)
+        ;
+
+        
+    
+    
+            var circle_marker_2c2903f1429a46daf4ba0a98b7b455fb = L.circleMarker(
+                [45.955, 8.675],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_3b9fe89c0fbec6efef962246bdca04a0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1cd2f0b0def8c6beb429eb802539b9dd = $(`<div id="html_1cd2f0b0def8c6beb429eb802539b9dd" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Maggiore</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>4.446</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.592 °C/dec</td></tr>       <tr><td>Precip trend</td><td>7.011 mm/dec</td></tr>       <tr><td>PET trend</td><td>0.914 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-5.380 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.019 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_3b9fe89c0fbec6efef962246bdca04a0.setContent(html_1cd2f0b0def8c6beb429eb802539b9dd);
+            
+        
+
+        circle_marker_2c2903f1429a46daf4ba0a98b7b455fb.bindPopup(popup_3b9fe89c0fbec6efef962246bdca04a0)
+        ;
+
+        
+    
+    
+            var circle_marker_8437190cfff494fa0f05964c7099b36b = L.circleMarker(
+                [-3.38, -60.3],
+                {"bubblingMouseEvents": true, "color": "#dbdbffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dbdbffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_88ed846635b346ada62377f066310ef6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_510608657aeae9d93347cc8018b0c854 = $(`<div id="html_510608657aeae9d93347cc8018b0c854" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lago Janauacá</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.142</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.311 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-5.510 mm/dec</td></tr>       <tr><td>PET trend</td><td>-22.965 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_88ed846635b346ada62377f066310ef6.setContent(html_510608657aeae9d93347cc8018b0c854);
+            
+        
+
+        circle_marker_8437190cfff494fa0f05964c7099b36b.bindPopup(popup_88ed846635b346ada62377f066310ef6)
+        ;
+
+        
+    
+    
+            var circle_marker_e303b2ced0ae3218be41164830a34a46 = L.circleMarker(
+                [-3.55, -60.519999999999996],
+                {"bubblingMouseEvents": true, "color": "#fff7f7ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fff7f7ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_4288f9c651b34d00a000526c331e9777 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b5dd415dd4adcef6d91d644df33b402e = $(`<div id="html_b5dd415dd4adcef6d91d644df33b402e" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lago Mirauá</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.033</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.311 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-3.224 mm/dec</td></tr>       <tr><td>PET trend</td><td>-19.651 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_4288f9c651b34d00a000526c331e9777.setContent(html_b5dd415dd4adcef6d91d644df33b402e);
+            
+        
+
+        circle_marker_e303b2ced0ae3218be41164830a34a46.bindPopup(popup_4288f9c651b34d00a000526c331e9777)
+        ;
+
+        
+    
+    
+            var circle_marker_4d51da0204ed435a2afcc4e7ee46cdd8 = L.circleMarker(
+                [-4.465, -62.25],
+                {"bubblingMouseEvents": true, "color": "#b3b3ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#b3b3ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_3f78b0f92b0580548cfba8ca0a844b53 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_955b0e6a4a0089da674d24a8c16610d7 = $(`<div id="html_955b0e6a4a0089da674d24a8c16610d7" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Ayapuá</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.295</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.298 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-3.757 mm/dec</td></tr>       <tr><td>PET trend</td><td>-17.627 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_3f78b0f92b0580548cfba8ca0a844b53.setContent(html_955b0e6a4a0089da674d24a8c16610d7);
+            
+        
+
+        circle_marker_4d51da0204ed435a2afcc4e7ee46cdd8.bindPopup(popup_3f78b0f92b0580548cfba8ca0a844b53)
+        ;
+
+        
+    
+    
+            var circle_marker_584b5dc1dd1a4feac03b633940eda6e4 = L.circleMarker(
+                [-2.5599999999999996, -64.61500000000001],
+                {"bubblingMouseEvents": true, "color": "#dfdfffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dfdfffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_673c061401a86b6bd12e95f6f0521e58 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_582ae989bcba5165024b64e3af0a89ed = $(`<div id="html_582ae989bcba5165024b64e3af0a89ed" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Amanã</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.127</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.275 °C/dec</td></tr>       <tr><td>Precip trend</td><td>0.644 mm/dec</td></tr>       <tr><td>PET trend</td><td>-17.411 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_673c061401a86b6bd12e95f6f0521e58.setContent(html_582ae989bcba5165024b64e3af0a89ed);
+            
+        
+
+        circle_marker_584b5dc1dd1a4feac03b633940eda6e4.bindPopup(popup_673c061401a86b6bd12e95f6f0521e58)
+        ;
+
+        
+    
+    
+            var circle_marker_444b5dce08febbcacfffa3d178f9f4ed = L.circleMarker(
+                [-3.48, -64.86000000000001],
+                {"bubblingMouseEvents": true, "color": "#ffeaeaff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffeaeaff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_5b8c5f14171cc851ca5c5a7310d03d5b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_18dd9a54465c80903f9049a8f6aed104 = $(`<div id="html_18dd9a54465c80903f9049a8f6aed104" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lago Tefé</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.081</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.248 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-0.184 mm/dec</td></tr>       <tr><td>PET trend</td><td>-12.459 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_5b8c5f14171cc851ca5c5a7310d03d5b.setContent(html_18dd9a54465c80903f9049a8f6aed104);
+            
+        
+
+        circle_marker_444b5dce08febbcacfffa3d178f9f4ed.bindPopup(popup_5b8c5f14171cc851ca5c5a7310d03d5b)
+        ;
+
+        
+    
+    
+            var circle_marker_cf0b0757e5ab7886d108fee2edb9518b = L.circleMarker(
+                [-2.155, -55.22],
+                {"bubblingMouseEvents": true, "color": "#ff9090ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9090ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_b3cfe4881dda6227c8ae431c8b23def1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_715b505d510db60f1c157a9d3868006d = $(`<div id="html_715b505d510db60f1c157a9d3868006d" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lago Grande de Curuai</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.431</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.253 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-21.920 mm/dec</td></tr>       <tr><td>PET trend</td><td>-7.157 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_b3cfe4881dda6227c8ae431c8b23def1.setContent(html_715b505d510db60f1c157a9d3868006d);
+            
+        
+
+        circle_marker_cf0b0757e5ab7886d108fee2edb9518b.bindPopup(popup_b3cfe4881dda6227c8ae431c8b23def1)
+        ;
+
+        
+    
+    
+            var circle_marker_ed8e44a53ecc8a7cd6508bedf2eb5ebb = L.circleMarker(
+                [-2.51, -57.2],
+                {"bubblingMouseEvents": true, "color": "#e7e7ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e7e7ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_35d15f500f9649c1f14f5f6c8e85f779 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_eca993140abdb8d679fab1ab667344e9 = $(`<div id="html_eca993140abdb8d679fab1ab667344e9" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lago do Arari</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.096</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.311 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-17.679 mm/dec</td></tr>       <tr><td>PET trend</td><td>-13.655 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_35d15f500f9649c1f14f5f6c8e85f779.setContent(html_eca993140abdb8d679fab1ab667344e9);
+            
+        
+
+        circle_marker_ed8e44a53ecc8a7cd6508bedf2eb5ebb.bindPopup(popup_35d15f500f9649c1f14f5f6c8e85f779)
+        ;
+
+        
+    
+    
+            var circle_marker_6202fc4755e13c23e40175c9865ee7cd = L.circleMarker(
+                [-3.6100000000000003, -60.085],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_523fc499b230920e7ff8de9e1f9d7541 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9325a41e74acf345736ff12ee9058fcd = $(`<div id="html_9325a41e74acf345736ff12ee9058fcd" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lago Mamori</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>21.863</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.432 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-13.642 mm/dec</td></tr>       <tr><td>PET trend</td><td>-30.105 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_523fc499b230920e7ff8de9e1f9d7541.setContent(html_9325a41e74acf345736ff12ee9058fcd);
+            
+        
+
+        circle_marker_6202fc4755e13c23e40175c9865ee7cd.bindPopup(popup_523fc499b230920e7ff8de9e1f9d7541)
+        ;
+
+        
+    
+    
+            var circle_marker_167f172f1f626bcbcf79e11b82754ae7 = L.circleMarker(
+                [29.21, -1.25],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_08f461012fd6dd4671996eac0b733467 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a96c278266139141f6d5865f0c373a48 = $(`<div id="html_a96c278266139141f6d5865f0c373a48" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Sebkha el Melah</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>35546.909</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.042 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-0.098 mm/dec</td></tr>       <tr><td>PET trend</td><td>-8.409 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_08f461012fd6dd4671996eac0b733467.setContent(html_a96c278266139141f6d5865f0c373a48);
+            
+        
+
+        circle_marker_167f172f1f626bcbcf79e11b82754ae7.bindPopup(popup_08f461012fd6dd4671996eac0b733467)
+        ;
+
+        
+    
+    
+            var circle_marker_43eb45acfa1ddf04a9c081991ca02cf1 = L.circleMarker(
+                [33.71, 8.315000000000001],
+                {"bubblingMouseEvents": true, "color": "#0000ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#0000ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_acc8c602e298a4d66cb79c8a2dd1695b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_41267af7fe3f977e2d8ad758df314178 = $(`<div id="html_41267af7fe3f977e2d8ad758df314178" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Chott el Djerid</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-453.296</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.742 °C/dec</td></tr>       <tr><td>Precip trend</td><td>0.010 mm/dec</td></tr>       <tr><td>PET trend</td><td>-4.900 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_acc8c602e298a4d66cb79c8a2dd1695b.setContent(html_41267af7fe3f977e2d8ad758df314178);
+            
+        
+
+        circle_marker_43eb45acfa1ddf04a9c081991ca02cf1.bindPopup(popup_acc8c602e298a4d66cb79c8a2dd1695b)
+        ;
+
+        
+    
+    
+            var circle_marker_8aedebd28af955d5e085a721a82f1e24 = L.circleMarker(
+                [16.955, 17.939999999999998],
+                {"bubblingMouseEvents": true, "color": "#888888", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#888888", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_c41fe7a4ead34e983c5b6280d5357359 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_854c1fa611bfb393923be3241414a35c = $(`<div id="html_854c1fa611bfb393923be3241414a35c" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Bodélé</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>NA</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.023 °C/dec</td></tr>       <tr><td>Precip trend</td><td>7.777 mm/dec</td></tr>       <tr><td>PET trend</td><td>6.602 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_c41fe7a4ead34e983c5b6280d5357359.setContent(html_854c1fa611bfb393923be3241414a35c);
+            
+        
+
+        circle_marker_8aedebd28af955d5e085a721a82f1e24.bindPopup(popup_c41fe7a4ead34e983c5b6280d5357359)
+        ;
+
+        
+    
+    
+            var circle_marker_2d8f949c72debd01bcc8247c0d55533f = L.circleMarker(
+                [35.515, 10.445],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_fc00ac6179ab5e62ee50de5de934a747 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_97d7a670640c1011b5e9734682f73eb8 = $(`<div id="html_97d7a670640c1011b5e9734682f73eb8" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Sebkha Sidi El Hani</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>56.785</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.726 °C/dec</td></tr>       <tr><td>Precip trend</td><td>1.720 mm/dec</td></tr>       <tr><td>PET trend</td><td>-10.187 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_fc00ac6179ab5e62ee50de5de934a747.setContent(html_97d7a670640c1011b5e9734682f73eb8);
+            
+        
+
+        circle_marker_2d8f949c72debd01bcc8247c0d55533f.bindPopup(popup_fc00ac6179ab5e62ee50de5de934a747)
+        ;
+
+        
+    
+    
+            var circle_marker_722cd71695f3f43dcc1017d3d05377fd = L.circleMarker(
+                [29.025, 0.035],
+                {"bubblingMouseEvents": true, "color": "#0000ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#0000ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_a35472aa51af9f2f3b4ac2bb5f5eb3f1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e0398844701a23d8b1bd954a4def10ca = $(`<div id="html_e0398844701a23d8b1bd954a4def10ca" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Sebkha de Timimoun</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-2.318</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.786 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-0.430 mm/dec</td></tr>       <tr><td>PET trend</td><td>-14.389 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_a35472aa51af9f2f3b4ac2bb5f5eb3f1.setContent(html_e0398844701a23d8b1bd954a4def10ca);
+            
+        
+
+        circle_marker_722cd71695f3f43dcc1017d3d05377fd.bindPopup(popup_a35472aa51af9f2f3b4ac2bb5f5eb3f1)
+        ;
+
+        
+    
+    
+            var circle_marker_7adb37f7f88ea334ab6371673abab898 = L.circleMarker(
+                [19.057499999999997, 20.505],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_0046399c5015ef5298c1190210417587 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c699e135e26506e5b2536b76967d384d = $(`<div id="html_c699e135e26506e5b2536b76967d384d" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Yoa</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>228.042</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.478 °C/dec</td></tr>       <tr><td>Precip trend</td><td>1.902 mm/dec</td></tr>       <tr><td>PET trend</td><td>-0.582 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_0046399c5015ef5298c1190210417587.setContent(html_c699e135e26506e5b2536b76967d384d);
+            
+        
+
+        circle_marker_7adb37f7f88ea334ab6371673abab898.bindPopup(popup_0046399c5015ef5298c1190210417587)
+        ;
+
+        
+    
+    
+            var circle_marker_4f00d04a7af5babf71b140434a84fc01 = L.circleMarker(
+                [19.015, 20.525],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_67f4a5c08bc3456875917aea7e63ce49 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_909dce02c8731859187dfac4055da683 = $(`<div id="html_909dce02c8731859187dfac4055da683" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Katam</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>34.567</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.460 °C/dec</td></tr>       <tr><td>Precip trend</td><td>1.731 mm/dec</td></tr>       <tr><td>PET trend</td><td>-0.688 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_67f4a5c08bc3456875917aea7e63ce49.setContent(html_909dce02c8731859187dfac4055da683);
+            
+        
+
+        circle_marker_4f00d04a7af5babf71b140434a84fc01.bindPopup(popup_67f4a5c08bc3456875917aea7e63ce49)
+        ;
+
+        
+    
+    
+            var circle_marker_30be5a069d9c74f9f102afc4425cb879 = L.circleMarker(
+                [18.935000000000002, 20.875],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_f06e8f2df3f8e0b1a2597da0bf2a2e36 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_660dcfb87b89fe0b1dd0269ae431e6b4 = $(`<div id="html_660dcfb87b89fe0b1dd0269ae431e6b4" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Ounianga Serir</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>1002.933</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.580 °C/dec</td></tr>       <tr><td>Precip trend</td><td>1.453 mm/dec</td></tr>       <tr><td>PET trend</td><td>1.665 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_f06e8f2df3f8e0b1a2597da0bf2a2e36.setContent(html_660dcfb87b89fe0b1dd0269ae431e6b4);
+            
+        
+
+        circle_marker_30be5a069d9c74f9f102afc4425cb879.bindPopup(popup_f06e8f2df3f8e0b1a2597da0bf2a2e36)
+        ;
+
+        
+    
+    
+            var circle_marker_e75cdf90cca0a480b6ef40f520946806 = L.circleMarker(
+                [53.735, 106.855],
+                {"bubblingMouseEvents": true, "color": "#c1c1ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#c1c1ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_6728d4ea72c6e9a559a3fb290054947d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_da6fb8b62e0afd222233fd5ba473a8c0 = $(`<div id="html_da6fb8b62e0afd222233fd5ba473a8c0" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Baikal</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.240</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.094 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-4.150 mm/dec</td></tr>       <tr><td>PET trend</td><td>-7.572 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.870 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.021 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_6728d4ea72c6e9a559a3fb290054947d.setContent(html_da6fb8b62e0afd222233fd5ba473a8c0);
+            
+        
+
+        circle_marker_e75cdf90cca0a480b6ef40f520946806.bindPopup(popup_6728d4ea72c6e9a559a3fb290054947d)
+        ;
+
+        
+    
+    
+            var circle_marker_c6b6ac3fa9df335f10c67cb5603cbfa0 = L.circleMarker(
+                [44.955, 132.365],
+                {"bubblingMouseEvents": true, "color": "#ffc8c8ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffc8c8ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_730e8ff850c9b817081c42c1579928b0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1a5a2d619883bcef1a23dad453fb5a74 = $(`<div id="html_1a5a2d619883bcef1a23dad453fb5a74" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Khanka</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.214</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.433 °C/dec</td></tr>       <tr><td>Precip trend</td><td>13.081 mm/dec</td></tr>       <tr><td>PET trend</td><td>6.127 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_730e8ff850c9b817081c42c1579928b0.setContent(html_1a5a2d619883bcef1a23dad453fb5a74);
+            
+        
+
+        circle_marker_c6b6ac3fa9df335f10c67cb5603cbfa0.bindPopup(popup_730e8ff850c9b817081c42c1579928b0)
+        ;
+
+        
+    
+    
+            var circle_marker_285fedc708e7d347b4330e0ad1c0672b = L.circleMarker(
+                [74.53, 102.43],
+                {"bubblingMouseEvents": true, "color": "#babaffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#babaffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_461ffcd52316764a8082da4d63d2748f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5774e3c2bb5d016d85467698835f0842 = $(`<div id="html_5774e3c2bb5d016d85467698835f0842" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Taimyr</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.267</b> / decade</td></tr>       <tr><td>Temp trend</td><td>1.012 °C/dec</td></tr>       <tr><td>Precip trend</td><td>0.768 mm/dec</td></tr>       <tr><td>PET trend</td><td>-3.863 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-371.639 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-1.563 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_461ffcd52316764a8082da4d63d2748f.setContent(html_5774e3c2bb5d016d85467698835f0842);
+            
+        
+
+        circle_marker_285fedc708e7d347b4330e0ad1c0672b.bindPopup(popup_461ffcd52316764a8082da4d63d2748f)
+        ;
+
+        
+    
+    
+            var circle_marker_7dcccaed8ae9b05f3d99eb7b51acde67 = L.circleMarker(
+                [54.83, 77.705],
+                {"bubblingMouseEvents": true, "color": "#ff1d1dff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff1d1dff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_d2038357c6e42d84b12f392baac1c1a7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0fcadbb577b81edc297d5a42503afd64 = $(`<div id="html_0fcadbb577b81edc297d5a42503afd64" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Chany</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.874</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.576 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-0.882 mm/dec</td></tr>       <tr><td>PET trend</td><td>-4.561 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.017 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_d2038357c6e42d84b12f392baac1c1a7.setContent(html_0fcadbb577b81edc297d5a42503afd64);
+            
+        
+
+        circle_marker_7dcccaed8ae9b05f3d99eb7b51acde67.bindPopup(popup_d2038357c6e42d84b12f392baac1c1a7)
+        ;
+
+        
+    
+    
+            var circle_marker_107df146366e6bba62fa12bdd8822bff = L.circleMarker(
+                [72.525, 141.97500000000002],
+                {"bubblingMouseEvents": true, "color": "#ff9c9cff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9c9cff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_8e9686ca3ae3c15c7cf6d12ef2d332f0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_47196f60affff358e12a44dc664de30d = $(`<div id="html_47196f60affff358e12a44dc664de30d" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Bustakh</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.384</b> / decade</td></tr>       <tr><td>Temp trend</td><td>1.003 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-7.962 mm/dec</td></tr>       <tr><td>PET trend</td><td>-11.698 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-259.191 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.472 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_8e9686ca3ae3c15c7cf6d12ef2d332f0.setContent(html_47196f60affff358e12a44dc664de30d);
+            
+        
+
+        circle_marker_107df146366e6bba62fa12bdd8822bff.bindPopup(popup_8e9686ca3ae3c15c7cf6d12ef2d332f0)
+        ;
+
+        
+    
+    
+            var circle_marker_9f085e67b362ecdc76d362a79c47abf1 = L.circleMarker(
+                [62.425, 143.615],
+                {"bubblingMouseEvents": true, "color": "#ffeeeeff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffeeeeff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_b5bc39b786248f2460c2c403119669e1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_781f3e32fa49ab1c68ffcac19c5cdafc = $(`<div id="html_781f3e32fa49ab1c68ffcac19c5cdafc" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Labynkyr</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.069</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.628 °C/dec</td></tr>       <tr><td>Precip trend</td><td>2.387 mm/dec</td></tr>       <tr><td>PET trend</td><td>-3.424 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-129.458 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.219 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_b5bc39b786248f2460c2c403119669e1.setContent(html_781f3e32fa49ab1c68ffcac19c5cdafc);
+            
+        
+
+        circle_marker_9f085e67b362ecdc76d362a79c47abf1.bindPopup(popup_b5bc39b786248f2460c2c403119669e1)
+        ;
+
+        
+    
+    
+            var circle_marker_46bb6aa56adc3289c56db4720c6d9f32 = L.circleMarker(
+                [62.715, 177.215],
+                {"bubblingMouseEvents": true, "color": "#ffd3d3ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffd3d3ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_c8f9619d9a1109ed7d13784bc50ce252 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d936d2c69c31d4e4a8fd98fad1bf49c0 = $(`<div id="html_d936d2c69c31d4e4a8fd98fad1bf49c0" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Pekulney</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.172</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.233 °C/dec</td></tr>       <tr><td>Precip trend</td><td>2.855 mm/dec</td></tr>       <tr><td>PET trend</td><td>3.123 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.447 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.229 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_c8f9619d9a1109ed7d13784bc50ce252.setContent(html_d936d2c69c31d4e4a8fd98fad1bf49c0);
+            
+        
+
+        circle_marker_46bb6aa56adc3289c56db4720c6d9f32.bindPopup(popup_c8f9619d9a1109ed7d13784bc50ce252)
+        ;
+
+        
+    
+    
+            var circle_marker_1a5dc91bb73db65f85236a756146ada2 = L.circleMarker(
+                [50.33, 92.955],
+                {"bubblingMouseEvents": true, "color": "#e4e4ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e4e4ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_c56c466ee1aab8ad21d24fa266f2665a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_72f342bc8ca1cd95fc059d8e8b1c7e2d = $(`<div id="html_72f342bc8ca1cd95fc059d8e8b1c7e2d" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Uvs</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.107</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.332 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-3.951 mm/dec</td></tr>       <tr><td>PET trend</td><td>-4.165 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-0.161 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_c56c466ee1aab8ad21d24fa266f2665a.setContent(html_72f342bc8ca1cd95fc059d8e8b1c7e2d);
+            
+        
+
+        circle_marker_1a5dc91bb73db65f85236a756146ada2.bindPopup(popup_c56c466ee1aab8ad21d24fa266f2665a)
+        ;
+
+        
+    
+    
+            var circle_marker_f68d42468035fd98644eeeb405f1093f = L.circleMarker(
+                [69.185, 146.655],
+                {"bubblingMouseEvents": true, "color": "#ff9090ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9090ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_00224ba5f4c6cc0e0f6a654cc5e893a2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_60691817e690fe33d8edf77a54319c90 = $(`<div id="html_60691817e690fe33d8edf77a54319c90" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Ozhogino</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.430</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.826 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-5.936 mm/dec</td></tr>       <tr><td>PET trend</td><td>-10.094 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-53.748 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.046 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_00224ba5f4c6cc0e0f6a654cc5e893a2.setContent(html_60691817e690fe33d8edf77a54319c90);
+            
+        
+
+        circle_marker_f68d42468035fd98644eeeb405f1093f.bindPopup(popup_00224ba5f4c6cc0e0f6a654cc5e893a2)
+        ;
+
+        
+    
+    
+            var circle_marker_e932d61769eb0f677ce1bd3a187b5d6d = L.circleMarker(
+                [68.43, 102.375],
+                {"bubblingMouseEvents": true, "color": "#fff8f8ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fff8f8ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_50678126d63b6055c0ba0a71815b8cc6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5e3f8d42ccd5b36512220b68dda4d7f5 = $(`<div id="html_5e3f8d42ccd5b36512220b68dda4d7f5" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Yessey</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.028</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.786 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-2.781 mm/dec</td></tr>       <tr><td>PET trend</td><td>-16.330 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>-72.461 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.040 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_50678126d63b6055c0ba0a71815b8cc6.setContent(html_5e3f8d42ccd5b36512220b68dda4d7f5);
+            
+        
+
+        circle_marker_e932d61769eb0f677ce1bd3a187b5d6d.bindPopup(popup_50678126d63b6055c0ba0a71815b8cc6)
+        ;
+
+        
+    
+    
+            var circle_marker_122f43ccfcc8deb061a30d2775934ad4 = L.circleMarker(
+                [67.155, -51.870000000000005],
+                {"bubblingMouseEvents": true, "color": "#ff4b4bff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff4b4bff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_9920499bb35b6e337ea78f376ad624bb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_53ea37ed323fa52fb971c8027526cfa6 = $(`<div id="html_53ea37ed323fa52fb971c8027526cfa6" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Supraglacial Lakes</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.697</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.194 °C/dec</td></tr>       <tr><td>Precip trend</td><td>6.055 mm/dec</td></tr>       <tr><td>PET trend</td><td>2.863 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>83.658 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.128 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_9920499bb35b6e337ea78f376ad624bb.setContent(html_53ea37ed323fa52fb971c8027526cfa6);
+            
+        
+
+        circle_marker_122f43ccfcc8deb061a30d2775934ad4.bindPopup(popup_9920499bb35b6e337ea78f376ad624bb)
+        ;
+
+        
+    
+    
+            var circle_marker_d21068c1612d6a944a1599e4f77073ba = L.circleMarker(
+                [69.224, -51.08],
+                {"bubblingMouseEvents": true, "color": "#ff7272ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7272ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_3e92c0312331dbef5070034f5affb75d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9799ecb7f6056969bf5da23e03b65a0d = $(`<div id="html_9799ecb7f6056969bf5da23e03b65a0d" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Ilulissat</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.547</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.321 °C/dec</td></tr>       <tr><td>Precip trend</td><td>6.994 mm/dec</td></tr>       <tr><td>PET trend</td><td>5.866 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>39.354 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.037 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_3e92c0312331dbef5070034f5affb75d.setContent(html_9799ecb7f6056969bf5da23e03b65a0d);
+            
+        
+
+        circle_marker_d21068c1612d6a944a1599e4f77073ba.bindPopup(popup_3e92c0312331dbef5070034f5affb75d)
+        ;
+
+        
+    
+    
+            var circle_marker_7116369d97aafd09e18be1b9e2408e9e = L.circleMarker(
+                [70.1, -50.435],
+                {"bubblingMouseEvents": true, "color": "#ffceceff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffceceff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_0325360792201ebfda46e154d3beaf12 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0b553e00546286d051152c5059a390d7 = $(`<div id="html_0b553e00546286d051152c5059a390d7" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Amitsup Tasia</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.191</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.283 °C/dec</td></tr>       <tr><td>Precip trend</td><td>7.248 mm/dec</td></tr>       <tr><td>PET trend</td><td>6.295 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>189.903 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>1.017 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_0325360792201ebfda46e154d3beaf12.setContent(html_0b553e00546286d051152c5059a390d7);
+            
+        
+
+        circle_marker_7116369d97aafd09e18be1b9e2408e9e.bindPopup(popup_0325360792201ebfda46e154d3beaf12)
+        ;
+
+        
+    
+    
+            var circle_marker_5b6166cad783b6b93302be96fb848d27 = L.circleMarker(
+                [67.07499999999999, -50.57],
+                {"bubblingMouseEvents": true, "color": "#ff6969ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6969ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_308206678acac5ca144b1e69856b1651 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1da83b5208d723d0b557a2fa81a0f990 = $(`<div id="html_1da83b5208d723d0b557a2fa81a0f990" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Sanningasoq</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.582</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.271 °C/dec</td></tr>       <tr><td>Precip trend</td><td>9.963 mm/dec</td></tr>       <tr><td>PET trend</td><td>6.575 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>34.720 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.035 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_308206678acac5ca144b1e69856b1651.setContent(html_1da83b5208d723d0b557a2fa81a0f990);
+            
+        
+
+        circle_marker_5b6166cad783b6b93302be96fb848d27.bindPopup(popup_308206678acac5ca144b1e69856b1651)
+        ;
+
+        
+    
+    
+            var circle_marker_211031da24379560a35778071a076eac = L.circleMarker(
+                [67.09, -50.394999999999996],
+                {"bubblingMouseEvents": true, "color": "#ff8e8eff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff8e8eff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_f4a91e8ca426c0e532a36e158e519882 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_54baa8cdafe6b7afdcd30b726a10d645 = $(`<div id="html_54baa8cdafe6b7afdcd30b726a10d645" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Aajuitsup Tasia</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.438</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.279 °C/dec</td></tr>       <tr><td>Precip trend</td><td>10.297 mm/dec</td></tr>       <tr><td>PET trend</td><td>6.937 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>38.121 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.038 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_f4a91e8ca426c0e532a36e158e519882.setContent(html_54baa8cdafe6b7afdcd30b726a10d645);
+            
+        
+
+        circle_marker_211031da24379560a35778071a076eac.bindPopup(popup_f4a91e8ca426c0e532a36e158e519882)
+        ;
+
+        
+    
+    
+            var circle_marker_653cd5e55dc3491b0e9a9094bb1ea65f = L.circleMarker(
+                [66.97, -50.64],
+                {"bubblingMouseEvents": true, "color": "#ffb3b3ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffb3b3ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_a82bbdfeb7e28d3e14ff13c5ad211083 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dabcafa1bcf784179dac80fd1f339ff5 = $(`<div id="html_dabcafa1bcf784179dac80fd1f339ff5" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Ferguson</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.295</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.236 °C/dec</td></tr>       <tr><td>Precip trend</td><td>9.567 mm/dec</td></tr>       <tr><td>PET trend</td><td>5.815 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>32.239 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.033 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_a82bbdfeb7e28d3e14ff13c5ad211083.setContent(html_dabcafa1bcf784179dac80fd1f339ff5);
+            
+        
+
+        circle_marker_653cd5e55dc3491b0e9a9094bb1ea65f.bindPopup(popup_a82bbdfeb7e28d3e14ff13c5ad211083)
+        ;
+
+        
+    
+    
+            var circle_marker_adb2a579b633a50ab8ccb1b8f65ebf66 = L.circleMarker(
+                [67.00999999999999, -51.825],
+                {"bubblingMouseEvents": true, "color": "#ffc8c8ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ffc8c8ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_05af946701a3456c5f1444d40163511c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e813d2818f4b543caf93131bd96882f9 = $(`<div id="html_e813d2818f4b543caf93131bd96882f9" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Tasersuaq</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.215</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.212 °C/dec</td></tr>       <tr><td>Precip trend</td><td>6.068 mm/dec</td></tr>       <tr><td>PET trend</td><td>2.655 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>46.503 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>0.057 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_05af946701a3456c5f1444d40163511c.setContent(html_e813d2818f4b543caf93131bd96882f9);
+            
+        
+
+        circle_marker_adb2a579b633a50ab8ccb1b8f65ebf66.bindPopup(popup_05af946701a3456c5f1444d40163511c)
+        ;
+
+        
+    
+    
+            var circle_marker_a46760bb5568e514c7f8f7551dd47530 = L.circleMarker(
+                [-28.66, 137.365],
+                {"bubblingMouseEvents": true, "color": "#d9d9ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d9d9ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_d5353e83fbacc4c7456e0bbee594d0da = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_04bda5c18ea53ff98fc0ea2a513b6327 = $(`<div id="html_04bda5c18ea53ff98fc0ea2a513b6327" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Eyre</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.151</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.236 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-6.132 mm/dec</td></tr>       <tr><td>PET trend</td><td>-4.052 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_d5353e83fbacc4c7456e0bbee594d0da.setContent(html_04bda5c18ea53ff98fc0ea2a513b6327);
+            
+        
+
+        circle_marker_a46760bb5568e514c7f8f7551dd47530.bindPopup(popup_d5353e83fbacc4c7456e0bbee594d0da)
+        ;
+
+        
+    
+    
+            var circle_marker_55b633d1096e53e626afd3e5bf7ffed4 = L.circleMarker(
+                [-31.05, 137.625],
+                {"bubblingMouseEvents": true, "color": "#2929ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2929ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_f7526a4efb627446cbf6fb21ff52ce6a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e894b8d6b13f417595fbba6f9827b98a = $(`<div id="html_e894b8d6b13f417595fbba6f9827b98a" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Torrens</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.828</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.073 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-1.373 mm/dec</td></tr>       <tr><td>PET trend</td><td>1.064 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_f7526a4efb627446cbf6fb21ff52ce6a.setContent(html_e894b8d6b13f417595fbba6f9827b98a);
+            
+        
+
+        circle_marker_55b633d1096e53e626afd3e5bf7ffed4.bindPopup(popup_f7526a4efb627446cbf6fb21ff52ce6a)
+        ;
+
+        
+    
+    
+            var circle_marker_f4c6290e861e2aac408a001f8f03bce0 = L.circleMarker(
+                [-31.69, 135.835],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_87f97f274181a568597a18a00c27ac72 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0ce669fc4c46762fc4bb197fbcaa6b6a = $(`<div id="html_0ce669fc4c46762fc4bb197fbcaa6b6a" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Gairdner</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>1.158</b> / decade</td></tr>       <tr><td>Temp trend</td><td>-0.119 °C/dec</td></tr>       <tr><td>Precip trend</td><td>4.187 mm/dec</td></tr>       <tr><td>PET trend</td><td>6.362 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_87f97f274181a568597a18a00c27ac72.setContent(html_0ce669fc4c46762fc4bb197fbcaa6b6a);
+            
+        
+
+        circle_marker_f4c6290e861e2aac408a001f8f03bce0.bindPopup(popup_87f97f274181a568597a18a00c27ac72)
+        ;
+
+        
+    
+    
+            var circle_marker_9fd633b759dbc07980cc0880dceeed67 = L.circleMarker(
+                [-30.685000000000002, 139.79000000000002],
+                {"bubblingMouseEvents": true, "color": "#ff3535ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff3535ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_b19aeee7a19dd0763045ba6525976891 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_734f9678f1404d0954cafc530501ba81 = $(`<div id="html_734f9678f1404d0954cafc530501ba81" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Frome</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.783</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.370 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-2.263 mm/dec</td></tr>       <tr><td>PET trend</td><td>-5.893 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_b19aeee7a19dd0763045ba6525976891.setContent(html_734f9678f1404d0954cafc530501ba81);
+            
+        
+
+        circle_marker_9fd633b759dbc07980cc0880dceeed67.bindPopup(popup_b19aeee7a19dd0763045ba6525976891)
+        ;
+
+        
+    
+    
+            var circle_marker_411fba2a7acc436593885e7b26149d75 = L.circleMarker(
+                [-24.73, 130.925],
+                {"bubblingMouseEvents": true, "color": "#d9d9ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d9d9ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_939ffcc02fa3d5d5f278619b23fe7263 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_457c2f4d8ae5000c1cfa4496af754091 = $(`<div id="html_457c2f4d8ae5000c1cfa4496af754091" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Amadeus</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.148</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.280 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-11.735 mm/dec</td></tr>       <tr><td>PET trend</td><td>-7.265 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_939ffcc02fa3d5d5f278619b23fe7263.setContent(html_457c2f4d8ae5000c1cfa4496af754091);
+            
+        
+
+        circle_marker_411fba2a7acc436593885e7b26149d75.bindPopup(popup_939ffcc02fa3d5d5f278619b23fe7263)
+        ;
+
+        
+    
+    
+            var circle_marker_88b98e318c9d070b6d496b5347bc8a66 = L.circleMarker(
+                [-23.445, 122.895],
+                {"bubblingMouseEvents": true, "color": "#ff0000ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000ff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_ea0affaeed48dbbba3a9c507807d17c7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a09b9b8e095d96f9fc2803d673bc540a = $(`<div id="html_a09b9b8e095d96f9fc2803d673bc540a" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Disappointment</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>1.863</b> / decade</td></tr>       <tr><td>Temp trend</td><td>1.068 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-18.998 mm/dec</td></tr>       <tr><td>PET trend</td><td>-16.300 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_ea0affaeed48dbbba3a9c507807d17c7.setContent(html_a09b9b8e095d96f9fc2803d673bc540a);
+            
+        
+
+        circle_marker_88b98e318c9d070b6d496b5347bc8a66.bindPopup(popup_ea0affaeed48dbbba3a9c507807d17c7)
+        ;
+
+        
+    
+    
+            var circle_marker_3577add14a033e6cc30afce2a50311f8 = L.circleMarker(
+                [-26.270000000000003, 122.575],
+                {"bubblingMouseEvents": true, "color": "#ff5f5fff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff5f5fff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_e34903ae5d8015fc008772c2a80b412c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1dd0cbb83cf70c7565a806263051d719 = $(`<div id="html_1dd0cbb83cf70c7565a806263051d719" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Carnegie</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>0.619</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.841 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-16.032 mm/dec</td></tr>       <tr><td>PET trend</td><td>-20.002 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_e34903ae5d8015fc008772c2a80b412c.setContent(html_1dd0cbb83cf70c7565a806263051d719);
+            
+        
+
+        circle_marker_3577add14a033e6cc30afce2a50311f8.bindPopup(popup_e34903ae5d8015fc008772c2a80b412c)
+        ;
+
+        
+    
+    
+            var circle_marker_66b303d86e1b06f7a7d7d5a46ec9d3f9 = L.circleMarker(
+                [-22.335, 128.76],
+                {"bubblingMouseEvents": true, "color": "#dbdbffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dbdbffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_34a96ed1abf260f4e54efe311f283ce7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9e8976e64d2593058a9edf781e7a7ff0 = $(`<div id="html_9e8976e64d2593058a9edf781e7a7ff0" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Mackay</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.140</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.768 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-23.786 mm/dec</td></tr>       <tr><td>PET trend</td><td>-15.756 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_34a96ed1abf260f4e54efe311f283ce7.setContent(html_9e8976e64d2593058a9edf781e7a7ff0);
+            
+        
+
+        circle_marker_66b303d86e1b06f7a7d7d5a46ec9d3f9.bindPopup(popup_34a96ed1abf260f4e54efe311f283ce7)
+        ;
+
+        
+    
+    
+            var circle_marker_9d78e13ad73b74ebaee86f4f0bce2236 = L.circleMarker(
+                [-20.185, 127.38499999999999],
+                {"bubblingMouseEvents": true, "color": "#c1c1ffff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#c1c1ffff", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_d8040520967775ee59d7d56a55b51b33);
+        
+    
+        var popup_3b70f4e11e63d631cd6ee24ac5babc10 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7005d23b52fe03c9b0d08a0dac4714c3 = $(`<div id="html_7005d23b52fe03c9b0d08a0dac4714c3" style="width: 100.0%; height: 100.0%;">     <div style="font-size:13px;">     <b>Lake Gregory</b><br>     <table style="border-collapse:collapse;">       <tr><td>Area trend</td><td><b>-0.242</b> / decade</td></tr>       <tr><td>Temp trend</td><td>0.514 °C/dec</td></tr>       <tr><td>Precip trend</td><td>-13.511 mm/dec</td></tr>       <tr><td>PET trend</td><td>-9.171 mm/dec</td></tr>       <tr><td>Snow cover trend</td><td>0.000 %/dec</td></tr>       <tr><td>Snow depth trend</td><td>-0.000 cm/dec</td></tr>     </table>     </div>     </div>`)[0];
+                popup_3b70f4e11e63d631cd6ee24ac5babc10.setContent(html_7005d23b52fe03c9b0d08a0dac4714c3);
+            
+        
+
+        circle_marker_9d78e13ad73b74ebaee86f4f0bce2236.bindPopup(popup_3b70f4e11e63d631cd6ee24ac5babc10)
+        ;
+
+        
+    
+    
+    var color_map_5da66e7ee0fcf7733a4638210394950d = {};
+
+    
+    color_map_5da66e7ee0fcf7733a4638210394950d.color = d3.scale.threshold()
+              .domain([-0.9890409935625556, -0.9850769014039882, -0.9811128092454209, -0.9771487170868535, -0.9731846249282862, -0.9692205327697188, -0.9652564406111515, -0.961292348452584, -0.9573282562940167, -0.9533641641354493, -0.949400071976882, -0.9454359798183146, -0.9414718876597473, -0.9375077955011799, -0.9335437033426126, -0.9295796111840452, -0.9256155190254779, -0.9216514268669105, -0.9176873347083432, -0.9137232425497758, -0.9097591503912085, -0.9057950582326411, -0.9018309660740738, -0.8978668739155063, -0.893902781756939, -0.8899386895983716, -0.8859745974398043, -0.8820105052812369, -0.8780464131226696, -0.8740823209641022, -0.8701182288055349, -0.8661541366469675, -0.8621900444884002, -0.8582259523298328, -0.8542618601712655, -0.8502977680126981, -0.8463336758541308, -0.8423695836955634, -0.8384054915369961, -0.8344413993784286, -0.8304773072198613, -0.8265132150612939, -0.8225491229027266, -0.8185850307441592, -0.8146209385855918, -0.8106568464270245, -0.8066927542684572, -0.8027286621098898, -0.7987645699513224, -0.7948004777927551, -0.7908363856341878, -0.7868722934756204, -0.782908201317053, -0.7789441091584857, -0.7749800169999184, -0.771015924841351, -0.7670518326827835, -0.7630877405242162, -0.7591236483656489, -0.7551595562070815, -0.7511954640485141, -0.7472313718899468, -0.7432672797313794, -0.7393031875728121, -0.7353390954142447, -0.7313750032556774, -0.7274109110971101, -0.7234468189385427, -0.7194827267799753, -0.715518634621408, -0.7115545424628407, -0.7075904503042733, -0.7036263581457058, -0.6996622659871385, -0.6956981738285711, -0.6917340816700037, -0.6877699895114364, -0.6838058973528691, -0.6798418051943018, -0.6758777130357344, -0.671913620877167, -0.6679495287185997, -0.6639854365600324, -0.660021344401465, -0.6560572522428976, -0.6520931600843303, -0.6481290679257629, -0.6441649757671954, -0.6402008836086281, -0.6362367914500608, -0.6322726992914935, -0.6283086071329261, -0.6243445149743587, -0.6203804228157914, -0.616416330657224, -0.6124522384986566, -0.6084881463400893, -0.604524054181522, -0.6005599620229546, -0.5965958698643872, -0.5926317777058199, -0.5886676855472526, -0.5847035933886853, -0.5807395012301179, -0.5767754090715504, -0.5728113169129831, -0.5688472247544157, -0.5648831325958483, -0.560919040437281, -0.5569549482787137, -0.5529908561201463, -0.5490267639615789, -0.5450626718030116, -0.5410985796444443, -0.5371344874858769, -0.5331703953273095, -0.5292063031687422, -0.5252422110101749, -0.5212781188516075, -0.51731402669304, -0.5133499345344728, -0.5093858423759055, -0.505421750217338, -0.5014576580587706, -0.49749356590020327, -0.4935294737416359, -0.4895653815830686, -0.4856012894245012, -0.4816371972659339, -0.4776731051073665, -0.4737090129487991, -0.4697449207902318, -0.4657808286316645, -0.46181673647309707, -0.45785264431452977, -0.45388855215596235, -0.44992445999739505, -0.44596036783882764, -0.44199627568026034, -0.43803218352169293, -0.43406809136312563, -0.4301039992045582, -0.4261399070459909, -0.4221758148874235, -0.4182117227288562, -0.4142476305702889, -0.4102835384117215, -0.4063194462531542, -0.40235535409458667, -0.39839126193601937, -0.39442716977745196, -0.39046307761888466, -0.38649898546031725, -0.38253489330174995, -0.37857080114318253, -0.37460670898461523, -0.37064261682604793, -0.3666785246674805, -0.3627144325089132, -0.3587503403503458, -0.3547862481917785, -0.3508221560332111, -0.3468580638746438, -0.3428939717160764, -0.3389298795575091, -0.3349657873989417, -0.33100169524037437, -0.32703760308180696, -0.32307351092323955, -0.31910941876467225, -0.31514532660610484, -0.31118123444753754, -0.3072171422889701, -0.3032530501304028, -0.2992889579718354, -0.2953248658132681, -0.2913607736547007, -0.2873966814961334, -0.283432589337566, -0.2794684971789987, -0.2755044050204314, -0.271540312861864, -0.2675762207032967, -0.26361212854472926, -0.25964803638616196, -0.25568394422759455, -0.25171985206902725, -0.24775575991045984, -0.24379166775189243, -0.23982757559332502, -0.23586348343475771, -0.2318993912761903, -0.227935299117623, -0.2239712069590557, -0.2200071148004883, -0.216043022641921, -0.21207893048335358, -0.20811483832478628, -0.20415074616621887, -0.20018665400765157, -0.19622256184908415, -0.19225846969051685, -0.18829437753194944, -0.18433028537338214, -0.18036619321481484, -0.17640210105624743, -0.17243800889768013, -0.1684739167391126, -0.1645098245805453, -0.1605457324219779, -0.1565816402634106, -0.15261754810484318, -0.14865345594627588, -0.14468936378770847, -0.14072527162914117, -0.13676117947057376, -0.13279708731200646, -0.12883299515343916, -0.12486890299487174, -0.12090481083630444, -0.11694071867773703, -0.11297662651916973, -0.10901253436060232, -0.10504844220203502, -0.10108435004346761, -0.09712025788490031, -0.0931561657263329, -0.08919207356776548, -0.08522798140919818, -0.08126388925063077, -0.07729979709206347, -0.07333570493349606, -0.06937161277492876, -0.06540752061636135, -0.06144342845779405, -0.057479336299226635, -0.053515244140659335, -0.04955115198209192, -0.04558705982352462, -0.04162296766495721, -0.03765887550638991, -0.03369478334782261, -0.0297306911892552, -0.025766599030687898, -0.021802506872120486, -0.017838414713553186, -0.013874322554985774, -0.009910230396418362, -0.005946138237850951, -0.0019820460792836503, 0.0019820460792837613, 0.005946138237851062, 0.009910230396418362, 0.013874322554985663, 0.017838414713553186, 0.021802506872120486, 0.025766599030687787, 0.029730691189255087, 0.03369478334782261, 0.03765887550638991, 0.04162296766495743, 0.04558705982352451, 0.049551151982092034, 0.053515244140659335, 0.057479336299226635, 0.061443428457793936, 0.06540752061636146, 0.06937161277492876, 0.07333570493349606, 0.07729979709206336, 0.08126388925063088, 0.08522798140919818, 0.08919207356776548, 0.09315616572633278, 0.09712025788490031, 0.10108435004346739, 0.10504844220203491, 0.10901253436060243, 0.11297662651916973, 0.11694071867773703, 0.12090481083630433, 0.12486890299487186, 0.12883299515343916, 0.13279708731200646, 0.13676117947057376, 0.14072527162914128, 0.14468936378770858, 0.14865345594627588, 0.15261754810484318, 0.1565816402634107, 0.16054573242197778, 0.1645098245805453, 0.1684739167391126, 0.17243800889768013, 0.1764021010562472, 0.18036619321481473, 0.18433028537338225, 0.18829437753194955, 0.19225846969051685, 0.19622256184908415, 0.20018665400765168, 0.20415074616621876, 0.20811483832478628, 0.21207893048335358, 0.2160430226419211, 0.22000711480048818, 0.2239712069590557, 0.227935299117623, 0.23189939127619053, 0.2358634834347576, 0.23982757559332513, 0.24379166775189243, 0.24775575991045973, 0.25171985206902703, 0.25568394422759455, 0.25964803638616185, 0.26361212854472915, 0.2675762207032967, 0.271540312861864, 0.2755044050204315, 0.2794684971789986, 0.2834325893375661, 0.2873966814961334, 0.2913607736547009, 0.295324865813268, 0.2992889579718355, 0.3032530501304028, 0.3072171422889701, 0.3111812344475374, 0.31514532660610495, 0.31910941876467225, 0.32307351092323955, 0.32703760308180685, 0.33100169524037437, 0.3349657873989417, 0.338929879557509, 0.3428939717160765, 0.3468580638746438, 0.3508221560332111, 0.3547862481917784, 0.3587503403503459, 0.3627144325089132, 0.3666785246674805, 0.3706426168260478, 0.37460670898461534, 0.37857080114318264, 0.38253489330174995, 0.38649898546031725, 0.39046307761888477, 0.39442716977745185, 0.39839126193601937, 0.40235535409458667, 0.4063194462531542, 0.41028353841172127, 0.4142476305702888, 0.4182117227288563, 0.4221758148874236, 0.4261399070459909, 0.4301039992045582, 0.43406809136312574, 0.4380321835216928, 0.44199627568026034, 0.44596036783882764, 0.44992445999739517, 0.45388855215596224, 0.45785264431452977, 0.46181673647309707, 0.4657808286316646, 0.46974492079023167, 0.4737090129487992, 0.4776731051073665, 0.481637197265934, 0.4856012894245011, 0.4895653815830686, 0.4935294737416359, 0.4974935659002032, 0.5014576580587707, 0.505421750217338, 0.5093858423759056, 0.5133499345344726, 0.5173140266930402, 0.5212781188516075, 0.525242211010175, 0.5292063031687421, 0.5331703953273096, 0.5371344874858769, 0.5410985796444442, 0.5450626718030115, 0.549026763961579, 0.5529908561201463, 0.5569549482787136, 0.5609190404372809, 0.5648831325958484, 0.5688472247544157, 0.572811316912983, 0.5767754090715506, 0.5807395012301179, 0.5847035933886852, 0.5886676855472525, 0.59263177770582, 0.5965958698643873, 0.6005599620229546, 0.6045240541815219, 0.6084881463400894, 0.6124522384986567, 0.616416330657224, 0.6203804228157913, 0.6243445149743588, 0.6283086071329259, 0.6322726992914934, 0.6362367914500607, 0.6402008836086283, 0.6441649757671953, 0.6481290679257629, 0.6520931600843304, 0.6560572522428977, 0.660021344401465, 0.6639854365600323, 0.6679495287185998, 0.6719136208771669, 0.6758777130357344, 0.6798418051943017, 0.6838058973528692, 0.6877699895114363, 0.6917340816700038, 0.6956981738285711, 0.6996622659871387, 0.7036263581457057, 0.7075904503042733, 0.7115545424628406, 0.7155186346214081, 0.7194827267799752, 0.7234468189385427, 0.72741091109711, 0.7313750032556773, 0.7353390954142448, 0.7393031875728121, 0.7432672797313796, 0.7472313718899467, 0.7511954640485142, 0.7551595562070815, 0.759123648365649, 0.7630877405242161, 0.7670518326827837, 0.771015924841351, 0.7749800169999183, 0.7789441091584856, 0.7829082013170531, 0.7868722934756204, 0.7908363856341877, 0.794800477792755, 0.7987645699513225, 0.8027286621098898, 0.8066927542684571, 0.8106568464270246, 0.8146209385855919, 0.8185850307441592, 0.8225491229027265, 0.826513215061294, 0.8304773072198613, 0.8344413993784286, 0.838405491536996, 0.8423695836955635, 0.8463336758541308, 0.8502977680126981, 0.8542618601712654, 0.8582259523298329, 0.8621900444884, 0.8661541366469675, 0.8701182288055348, 0.8740823209641023, 0.8780464131226694, 0.8820105052812369, 0.8859745974398044, 0.8899386895983717, 0.893902781756939, 0.8978668739155063, 0.9018309660740739, 0.9057950582326412, 0.9097591503912085, 0.9137232425497758, 0.9176873347083433, 0.9216514268669104, 0.9256155190254779, 0.9295796111840452, 0.9335437033426127, 0.9375077955011798, 0.9414718876597473, 0.9454359798183146, 0.9494000719768821, 0.9533641641354492, 0.9573282562940167, 0.961292348452584, 0.9652564406111513, 0.9692205327697189, 0.9731846249282862, 0.9771487170868537, 0.9811128092454208, 0.9850769014039883, 0.9890409935625556])
+              .range(['#0000ffff', '#0101ffff', '#0202ffff', '#0303ffff', '#0404ffff', '#0505ffff', '#0606ffff', '#0707ffff', '#0808ffff', '#0909ffff', '#0a0affff', '#0b0bffff', '#0c0cffff', '#0d0dffff', '#0e0effff', '#0f0fffff', '#1010ffff', '#1111ffff', '#1212ffff', '#1313ffff', '#1414ffff', '#1515ffff', '#1616ffff', '#1717ffff', '#1818ffff', '#1919ffff', '#1a1affff', '#1b1bffff', '#1c1cffff', '#1d1dffff', '#1e1effff', '#1f1fffff', '#2020ffff', '#2121ffff', '#2222ffff', '#2323ffff', '#2424ffff', '#2525ffff', '#2626ffff', '#2828ffff', '#2929ffff', '#2a2affff', '#2b2bffff', '#2c2cffff', '#2d2dffff', '#2e2effff', '#2f2fffff', '#3030ffff', '#3131ffff', '#3232ffff', '#3333ffff', '#3434ffff', '#3535ffff', '#3636ffff', '#3737ffff', '#3838ffff', '#3939ffff', '#3a3affff', '#3b3bffff', '#3c3cffff', '#3d3dffff', '#3e3effff', '#3f3fffff', '#4040ffff', '#4141ffff', '#4242ffff', '#4343ffff', '#4444ffff', '#4545ffff', '#4646ffff', '#4747ffff', '#4848ffff', '#4949ffff', '#4a4affff', '#4b4bffff', '#4c4cffff', '#4d4dffff', '#4f4fffff', '#5050ffff', '#5151ffff', '#5252ffff', '#5353ffff', '#5454ffff', '#5555ffff', '#5656ffff', '#5757ffff', '#5858ffff', '#5959ffff', '#5a5affff', '#5b5bffff', '#5c5cffff', '#5d5dffff', '#5e5effff', '#5f5fffff', '#6060ffff', '#6161ffff', '#6262ffff', '#6363ffff', '#6464ffff', '#6565ffff', '#6666ffff', '#6767ffff', '#6868ffff', '#6969ffff', '#6a6affff', '#6b6bffff', '#6c6cffff', '#6d6dffff', '#6e6effff', '#6f6fffff', '#7070ffff', '#7171ffff', '#7272ffff', '#7373ffff', '#7474ffff', '#7575ffff', '#7777ffff', '#7878ffff', '#7979ffff', '#7a7affff', '#7b7bffff', '#7c7cffff', '#7d7dffff', '#7e7effff', '#7f7fffff', '#8080ffff', '#8181ffff', '#8282ffff', '#8383ffff', '#8484ffff', '#8585ffff', '#8686ffff', '#8787ffff', '#8888ffff', '#8989ffff', '#8a8affff', '#8b8bffff', '#8c8cffff', '#8d8dffff', '#8e8effff', '#8f8fffff', '#9090ffff', '#9191ffff', '#9292ffff', '#9393ffff', '#9494ffff', '#9595ffff', '#9696ffff', '#9797ffff', '#9898ffff', '#9999ffff', '#9a9affff', '#9b9bffff', '#9c9cffff', '#9e9effff', '#9f9fffff', '#a0a0ffff', '#a1a1ffff', '#a2a2ffff', '#a3a3ffff', '#a4a4ffff', '#a5a5ffff', '#a6a6ffff', '#a7a7ffff', '#a8a8ffff', '#a9a9ffff', '#aaaaffff', '#ababffff', '#acacffff', '#adadffff', '#aeaeffff', '#afafffff', '#b0b0ffff', '#b1b1ffff', '#b2b2ffff', '#b3b3ffff', '#b4b4ffff', '#b5b5ffff', '#b6b6ffff', '#b7b7ffff', '#b8b8ffff', '#b9b9ffff', '#babaffff', '#bbbbffff', '#bcbcffff', '#bdbdffff', '#bebeffff', '#bfbfffff', '#c0c0ffff', '#c1c1ffff', '#c2c2ffff', '#c3c3ffff', '#c5c5ffff', '#c6c6ffff', '#c7c7ffff', '#c8c8ffff', '#c9c9ffff', '#cacaffff', '#cbcbffff', '#ccccffff', '#cdcdffff', '#ceceffff', '#cfcfffff', '#d0d0ffff', '#d1d1ffff', '#d2d2ffff', '#d3d3ffff', '#d4d4ffff', '#d5d5ffff', '#d6d6ffff', '#d7d7ffff', '#d8d8ffff', '#d9d9ffff', '#dadaffff', '#dbdbffff', '#dcdcffff', '#ddddffff', '#dedeffff', '#dfdfffff', '#e0e0ffff', '#e1e1ffff', '#e2e2ffff', '#e3e3ffff', '#e4e4ffff', '#e5e5ffff', '#e6e6ffff', '#e7e7ffff', '#e8e8ffff', '#e9e9ffff', '#eaeaffff', '#ebebffff', '#ededffff', '#eeeeffff', '#efefffff', '#f0f0ffff', '#f1f1ffff', '#f2f2ffff', '#f3f3ffff', '#f4f4ffff', '#f5f5ffff', '#f6f6ffff', '#f7f7ffff', '#f8f8ffff', '#f9f9ffff', '#fafaffff', '#fbfbffff', '#fcfcffff', '#fdfdffff', '#fefeffff', '#ffffffff', '#ffffffff', '#fffefeff', '#fffdfdff', '#fffcfcff', '#fffbfbff', '#fffafaff', '#fff9f9ff', '#fff8f8ff', '#fff7f7ff', '#fff6f6ff', '#fff5f5ff', '#fff4f4ff', '#fff3f3ff', '#fff2f2ff', '#fff1f1ff', '#fff0f0ff', '#ffefefff', '#ffeeeeff', '#ffededff', '#ffebebff', '#ffeaeaff', '#ffe9e9ff', '#ffe8e8ff', '#ffe7e7ff', '#ffe6e6ff', '#ffe5e5ff', '#ffe4e4ff', '#ffe3e3ff', '#ffe2e2ff', '#ffe1e1ff', '#ffe0e0ff', '#ffdfdfff', '#ffdedeff', '#ffddddff', '#ffdcdcff', '#ffdbdbff', '#ffdadaff', '#ffd9d9ff', '#ffd8d8ff', '#ffd7d7ff', '#ffd6d6ff', '#ffd5d5ff', '#ffd4d4ff', '#ffd3d3ff', '#ffd2d2ff', '#ffd1d1ff', '#ffd0d0ff', '#ffcfcfff', '#ffceceff', '#ffcdcdff', '#ffccccff', '#ffcbcbff', '#ffcacaff', '#ffc9c9ff', '#ffc8c8ff', '#ffc7c7ff', '#ffc6c6ff', '#ffc5c5ff', '#ffc3c3ff', '#ffc2c2ff', '#ffc1c1ff', '#ffc0c0ff', '#ffbfbfff', '#ffbebeff', '#ffbdbdff', '#ffbcbcff', '#ffbbbbff', '#ffbabaff', '#ffb9b9ff', '#ffb8b8ff', '#ffb7b7ff', '#ffb6b6ff', '#ffb5b5ff', '#ffb4b4ff', '#ffb3b3ff', '#ffb2b2ff', '#ffb1b1ff', '#ffb0b0ff', '#ffafafff', '#ffaeaeff', '#ffadadff', '#ffacacff', '#ffababff', '#ffaaaaff', '#ffa9a9ff', '#ffa8a8ff', '#ffa7a7ff', '#ffa6a6ff', '#ffa5a5ff', '#ffa4a4ff', '#ffa3a3ff', '#ffa2a2ff', '#ffa1a1ff', '#ffa0a0ff', '#ff9f9fff', '#ff9e9eff', '#ff9c9cff', '#ff9b9bff', '#ff9a9aff', '#ff9999ff', '#ff9898ff', '#ff9797ff', '#ff9696ff', '#ff9595ff', '#ff9494ff', '#ff9393ff', '#ff9292ff', '#ff9191ff', '#ff9090ff', '#ff8f8fff', '#ff8e8eff', '#ff8d8dff', '#ff8c8cff', '#ff8b8bff', '#ff8a8aff', '#ff8989ff', '#ff8888ff', '#ff8787ff', '#ff8686ff', '#ff8585ff', '#ff8484ff', '#ff8383ff', '#ff8282ff', '#ff8181ff', '#ff8080ff', '#ff7f7fff', '#ff7e7eff', '#ff7d7dff', '#ff7c7cff', '#ff7b7bff', '#ff7a7aff', '#ff7979ff', '#ff7878ff', '#ff7777ff', '#ff7575ff', '#ff7474ff', '#ff7373ff', '#ff7272ff', '#ff7171ff', '#ff7070ff', '#ff6f6fff', '#ff6e6eff', '#ff6d6dff', '#ff6c6cff', '#ff6b6bff', '#ff6a6aff', '#ff6969ff', '#ff6868ff', '#ff6767ff', '#ff6666ff', '#ff6565ff', '#ff6464ff', '#ff6363ff', '#ff6262ff', '#ff6161ff', '#ff6060ff', '#ff5f5fff', '#ff5e5eff', '#ff5d5dff', '#ff5c5cff', '#ff5b5bff', '#ff5a5aff', '#ff5959ff', '#ff5858ff', '#ff5757ff', '#ff5656ff', '#ff5555ff', '#ff5454ff', '#ff5353ff', '#ff5252ff', '#ff5151ff', '#ff5050ff', '#ff4f4fff', '#ff4d4dff', '#ff4c4cff', '#ff4b4bff', '#ff4a4aff', '#ff4949ff', '#ff4848ff', '#ff4747ff', '#ff4646ff', '#ff4545ff', '#ff4444ff', '#ff4343ff', '#ff4242ff', '#ff4141ff', '#ff4040ff', '#ff3f3fff', '#ff3e3eff', '#ff3d3dff', '#ff3c3cff', '#ff3b3bff', '#ff3a3aff', '#ff3939ff', '#ff3838ff', '#ff3737ff', '#ff3636ff', '#ff3535ff', '#ff3434ff', '#ff3333ff', '#ff3232ff', '#ff3131ff', '#ff3030ff', '#ff2f2fff', '#ff2e2eff', '#ff2d2dff', '#ff2c2cff', '#ff2b2bff', '#ff2a2aff', '#ff2929ff', '#ff2828ff', '#ff2626ff', '#ff2525ff', '#ff2424ff', '#ff2323ff', '#ff2222ff', '#ff2121ff', '#ff2020ff', '#ff1f1fff', '#ff1e1eff', '#ff1d1dff', '#ff1c1cff', '#ff1b1bff', '#ff1a1aff', '#ff1919ff', '#ff1818ff', '#ff1717ff', '#ff1616ff', '#ff1515ff', '#ff1414ff', '#ff1313ff', '#ff1212ff', '#ff1111ff', '#ff1010ff', '#ff0f0fff', '#ff0e0eff', '#ff0d0dff', '#ff0c0cff', '#ff0b0bff', '#ff0a0aff', '#ff0909ff', '#ff0808ff', '#ff0707ff', '#ff0606ff', '#ff0505ff', '#ff0404ff', '#ff0303ff', '#ff0202ff', '#ff0101ff', '#ff0000ff']);
+    
+
+    color_map_5da66e7ee0fcf7733a4638210394950d.x = d3.scale.linear()
+              .domain([-0.9890409935625556, 0.9890409935625556])
+              .range([0, 450 - 50]);
+
+    color_map_5da66e7ee0fcf7733a4638210394950d.legend = L.control({position: 'topright'});
+    color_map_5da66e7ee0fcf7733a4638210394950d.legend.onAdd = function (map) {var div = L.DomUtil.create('div', 'legend'); return div};
+    color_map_5da66e7ee0fcf7733a4638210394950d.legend.addTo(map_d8040520967775ee59d7d56a55b51b33);
+
+    color_map_5da66e7ee0fcf7733a4638210394950d.xAxis = d3.svg.axis()
+        .scale(color_map_5da66e7ee0fcf7733a4638210394950d.x)
+        .orient("top")
+        .tickSize(1)
+        .tickValues([-0.9890409935625556, 0.0, 0.9890409935625556]);
+
+    color_map_5da66e7ee0fcf7733a4638210394950d.svg = d3.select(".legend.leaflet-control").append("svg")
+        .attr("id", 'legend')
+        .attr("width", 450)
+        .attr("height", 40);
+
+    color_map_5da66e7ee0fcf7733a4638210394950d.g = color_map_5da66e7ee0fcf7733a4638210394950d.svg.append("g")
+        .attr("class", "key")
+        .attr("fill", "black")
+        .attr("transform", "translate(25,16)");
+
+    color_map_5da66e7ee0fcf7733a4638210394950d.g.selectAll("rect")
+        .data(color_map_5da66e7ee0fcf7733a4638210394950d.color.range().map(function(d, i) {
+          return {
+            x0: i ? color_map_5da66e7ee0fcf7733a4638210394950d.x(color_map_5da66e7ee0fcf7733a4638210394950d.color.domain()[i - 1]) : color_map_5da66e7ee0fcf7733a4638210394950d.x.range()[0],
+            x1: i < color_map_5da66e7ee0fcf7733a4638210394950d.color.domain().length ? color_map_5da66e7ee0fcf7733a4638210394950d.x(color_map_5da66e7ee0fcf7733a4638210394950d.color.domain()[i]) : color_map_5da66e7ee0fcf7733a4638210394950d.x.range()[1],
+            z: d
+          };
+        }))
+      .enter().append("rect")
+        .attr("height", 40 - 30)
+        .attr("x", function(d) { return d.x0; })
+        .attr("width", function(d) { return d.x1 - d.x0; })
+        .style("fill", function(d) { return d.z; });
+
+    color_map_5da66e7ee0fcf7733a4638210394950d.g.call(color_map_5da66e7ee0fcf7733a4638210394950d.xAxis).append("text")
+        .attr("class", "caption")
+        .attr("y", 21)
+        .attr("fill", "black")
+        .text("Lake summer area trend (per decade, index units)");
+</script>
+</html>
