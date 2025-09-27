@@ -12,7 +12,7 @@ drive.mount('/content/drive')
 
 # Select data source mode: "drive" (read from Google Drive) or "upload" (manual file upload).
 # NOTE: current value "updolad" appears to be a typo; expected "upload" or "drive".
-MODE = "updolad"  # "drive" or "upload"
+MODE = "upload"  # "drive" or "upload"
 
 # Root directory used when MODE == "drive". Adjust to your own Drive path.
 DRIVE_ROOT = "/content/drive/MyDrive"  # update if your folder differs
