@@ -1,22 +1,27 @@
-//  GEE Script: Annual lake area with full coverage (cloud-masked preferred, seasonal fallback, GSW backup)
+// GEE script: estimate annual lake surface area.
+// Strategy: prefer cloud-masked optical NDWI (10-day samples within summer),
+// fall back to seasonal median if insufficient samples, and finally to GSW MonthlyHistory.
 
-//  CLOUD MASKING FUNCTIONS
+// --- Cloud masking helpers ---
 function maskS2Clouds(img) {
+  // Mask S2 classes: cloud shadow(3), medium/high cloud(8/9), cirrus(10), snow(11)
   var scl = img.select('SCL');
   var mask = scl.neq(3).and(scl.neq(8)).and(scl.neq(9)).and(scl.neq(10)).and(scl.neq(11));
   return img.updateMask(mask);
 }
 
 function maskLandsatClouds(img) {
+  // Mask Landsat QA flags: cloud, shadow, snow
   var qa = img.select('QA_PIXEL');
-  var mask = qa.bitwiseAnd(1 << 3).eq(0)  // cloud
+  var mask = qa.bitwiseAnd(1 << 3).eq(0)   // cloud
               .and(qa.bitwiseAnd(1 << 4).eq(0))  // shadow
               .and(qa.bitwiseAnd(1 << 5).eq(0)); // snow
   return img.updateMask(mask);
 }
 
-// NDWI AREA CALCULATION 
+// --- NDWI-based area (optical) ---
 function computeNDWIArea(img, geom) {
+  // NDWI = (green - nir) / (green + nir); threshold 0.25; area in m² via pixelArea
   var ndwi = img.expression('float((green - nir) / (green + nir + 1e-6))', {
     green: img.select('green'),
     nir: img.select('nir')
@@ -30,7 +35,7 @@ function computeNDWIArea(img, geom) {
   }).get('ndwi');
 }
 
-// LAKE LIST (INSERT YOUR OWN LAKES)
+// --- Lake inventory (replace with study sites as needed) ---
 var lakes = [
   {name: 'Namtso', geom: ee.Geometry.Polygon([[[90.10, 30.20], [91.05, 30.20], [91.05, 31.10], [90.10, 31.10], [90.10, 30.20]]]), hemisphere: 'north'},
   {name: 'Yamdrok', geom: ee.Geometry.Polygon([[[90.3, 28.65], [91.1, 28.65], [91.1, 29.45], [90.3, 29.45], [90.3, 28.65]]]), hemisphere: 'north'},
@@ -134,7 +139,7 @@ var lakes = [
   {name: 'Lake Gregory', geom: ee.Geometry.Polygon([[[127.24, -20.31], [127.53, -20.31], [127.53, -20.06], [127.24, -20.06], [127.24, -20.31]]]), hemisphere: 'south'}
 ];
 
-//MAIN PROCESSING 
+// --- Annual processing per lake ---
 var years = ee.List.sequence(2000, 2025);
 var features = [];
 
@@ -145,15 +150,18 @@ lakes.forEach(function(lake) {
 
   var yearFeatures = years.map(function(y) {
     var year = ee.Number(y);
+    // Summer anchor month (Dec for south; Jun for north); sample every ~10 days
     var summerStart = ee.Date.fromYMD(year, hemi === 'south' ? 12 : 6, 1);
     var days = ee.List.sequence(0, 89, 9);
     var dates = days.map(function(d) { return summerStart.advance(d, 'day'); });
 
+    // NDWI areas from rolling 11-day windows centred on the sample date
     var areas = dates.map(function(date) {
       date = ee.Date(date);
       var wstart = date.advance(-5, 'day');
       var wend = date.advance(6, 'day');
 
+      // Sentinel-2 (preferred): cloud-filtered, band remap to blue/green/red/nir
       var s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
         .filterBounds(geom).filterDate(wstart, wend)
         .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 60))
@@ -164,6 +172,7 @@ lakes.forEach(function(lake) {
         .sort('CLOUDY_PIXEL_PERCENTAGE');
       var s2img = ee.Image(s2.first());
 
+      // Landsat (backup): scale to reflectance, handle L5/7 vs L8/9 band names
       var ls = ee.ImageCollection("LANDSAT/LT05/C02/T1_L2")
         .merge(ee.ImageCollection("LANDSAT/LE07/C02/T1_L2"))
         .merge(ee.ImageCollection("LANDSAT/LC08/C02/T1_L2"))
@@ -191,11 +200,13 @@ lakes.forEach(function(lake) {
       return ee.Algorithms.If(img, computeNDWIArea(ee.Image(img), geom), null);
     });
 
+    // Prefer the 10-day mean if any valid samples exist; otherwise compute seasonal fallback
     var validAreas = ee.List(areas).removeAll([null]);
-    var minDays = 3;
+    var minDays = 3; // retained for clarity (threshold can be applied if desired)
     var tenDayMean = ee.Number(validAreas.reduce(ee.Reducer.mean()));
 
     var fallback = (function() {
+      // Seasonal median (3-month window) with same band mapping as above
       var start = summerStart;
       var end = summerStart.advance(3, 'month');
       var s2s = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
@@ -227,41 +238,42 @@ lakes.forEach(function(lake) {
       return ee.Algorithms.If(median, computeNDWIArea(median, geom), null);
     })();
 
+    // Final backup: GSW MonthlyHistory seasonal mean over summer months
     var gswFallback = (function() {
-  var summerMonths = hemi === 'south' ? [12, 1, 2] : [6, 7, 8];
-  var start = ee.Date.fromYMD(year, hemi === 'south' ? 12 : 6, 1);
-  var end   = start.advance(3, 'month');
+      var summerMonths = hemi === 'south' ? [12, 1, 2] : [6, 7, 8];
+      var start = ee.Date.fromYMD(year, hemi === 'south' ? 12 : 6, 1);
+      var end   = start.advance(3, 'month');
 
-  var gswFC = ee.ImageCollection("JRC/GSW1_4/MonthlyHistory")
-    .filterBounds(geom)
-    .filterDate(start, end)
-    .filter(ee.Filter.inList('month', summerMonths))
-    .map(function(img) {
-      var water = img.eq(2).rename('water');
-      var area = water.multiply(ee.Image.pixelArea()).reduceRegion({
-        reducer: ee.Reducer.sum(),
-        geometry: geom,
-        scale: 30,
-        maxPixels: 1e9
-      }).get('water');
-      return ee.Feature(null, {area: area});
-    });
+      var gswFC = ee.ImageCollection("JRC/GSW1_4/MonthlyHistory")
+        .filterBounds(geom)
+        .filterDate(start, end)
+        .filter(ee.Filter.inList('month', summerMonths))
+        .map(function(img) {
+          var water = img.eq(2).rename('water');
+          var area = water.multiply(ee.Image.pixelArea()).reduceRegion({
+            reducer: ee.Reducer.sum(),
+            geometry: geom,
+            scale: 30,
+            maxPixels: 1e9
+          }).get('water');
+          return ee.Feature(null, {area: area});
+        });
 
-  return ee.Algorithms.If(gswFC.size().gt(0),
-    ee.Number(gswFC.aggregate_mean('area')),
-    null
-  );
-})();
+      return ee.Algorithms.If(gswFC.size().gt(0),
+        ee.Number(gswFC.aggregate_mean('area')),
+        null
+      );
+    })();
 
     var finalArea = ee.Algorithms.If(
-  validAreas.length().gt(0),
-  tenDayMean,
-  gswFallback
-);
+      validAreas.length().gt(0),
+      tenDayMean,
+      gswFallback
+    );
 
     var source = ee.String(
-  ee.Algorithms.If(validAreas.length().gt(0), '10day-mean', 'GSW-fallback')
-);
+      ee.Algorithms.If(validAreas.length().gt(0), '10day-mean', 'GSW-fallback')
+    );
 
     return ee.Feature(null, {
       lake: name,
@@ -276,6 +288,7 @@ lakes.forEach(function(lake) {
   features = features.concat(fc.toList(fc.size()));
 });
 
+// Assemble and export results as CSV to Drive
 var result = ee.FeatureCollection(ee.List(features).flatten());
 Export.table.toDrive({
   collection: result,
