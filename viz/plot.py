@@ -10,15 +10,17 @@ Original file is located at
 from google.colab import drive
 drive.mount('/content/drive')
 
-# Choose "drive" or "upload"
+# Select data source mode: "drive" (read from Google Drive) or "upload" (manual file upload).
+# NOTE: current value "updolad" appears to be a typo; expected "upload" or "drive".
 MODE = "updolad"  # "drive" or "upload"
 
-# When MODE="drive", set your Drive root directory (modify to your path)
-DRIVE_ROOT = "/content/drive/MyDrive"  # ← modify to yours
+# Root directory used when MODE == "drive". Adjust to your own Drive path.
+DRIVE_ROOT = "/content/drive/MyDrive"  # update if your folder differs
 
-# Whether to also copy generated figures back to DRIVE_ROOT
+# If True, copy generated figures to DRIVE_ROOT/figs_out when MODE == "drive".
 SAVE_TO_DRIVE = True
 
+# System and Python dependencies for HTML screenshotting and plotting
 !sudo apt-get update -y
 !sudo apt-get install -y chromium-chromedriver
 !pip install -q selenium pandas matplotlib opencv-python
@@ -32,25 +34,26 @@ import matplotlib.pyplot as plt
 if MODE == "drive":
     from google.colab import drive
     drive.mount('/content/drive')
-    # Convention file paths (adjust according to your directory structure)
-    TEST_IMG_DIR  = f"{DRIVE_ROOT}/dataset/test/images/"        # or images/
-    TEST_MASK_DIR = f"{DRIVE_ROOT}/dataset/test/masks/"         # or masks/
+    # Canonical locations for test data and cached predictions
+    TEST_IMG_DIR  = f"{DRIVE_ROOT}/dataset/test/images/"
+    TEST_MASK_DIR = f"{DRIVE_ROOT}/dataset/test/masks/"
     UNET_NPY      = f"{DRIVE_ROOT}/evaluation_results/pred_unet_test.npy"
     SEGNET_NPY    = f"{DRIVE_ROOT}/evaluation_results/pred_segnet_test.npy"
     FCN_NPY       = f"{DRIVE_ROOT}/evaluation_results/pred_fcn_test.npy"
-    # Map HTML (fuzzy match, no need to change)
+    # Optional interactive HTML outputs (best-effort fuzzy matching)
     GLOBAL_HTML = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/global_heatmap_lakes_trends (1).html") if "global" in f.lower() or "heatmap" in f.lower()), None)
     REGION_HTML = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/region_trends_map (1).html") if "region" in f.lower()), None)
-    # Time series and importance CSV (adjust if needed)
+    # Optional time-series / feature-importance CSVs (edit patterns if needed)
     TS_CSV = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/100Lake_area_Temperature_2000-2025.csv") if "Lake" in f or "Temperature" in f or "2000" in f), None)
     PERM_CSV = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/Permutation_importance（by_region_summer）.csv") if "Permutation" in f), None)
     TOP3_CSV = next((f for f in glob.glob(f"{DRIVE_ROOT}/lake_analysis_outputs/Top-3_features_by_region_summer.csv") if "Top-3" in f or "Top3" in f), None)
 
 else:
     from google.colab import files
-    print("Please select the required files (multiple selection allowed): test images/masks ZIP, NPY, HTML, CSV etc.")
+    print("Please select required files (NPY/HTML/CSV and optionally zipped test images/masks).")
     uploaded = files.upload()
-    # If zip is uploaded, unzip it
+
+    # Unzip helper for user-provided archives
     def unzip_if_exists(zipname, outdir):
         if os.path.exists(zipname):
             os.makedirs(outdir, exist_ok=True)
@@ -60,7 +63,7 @@ else:
     unzip_if_exists("test_images.zip", "test_images")
     unzip_if_exists("test_masks.zip", "test_masks")
 
-    # Guess directories
+    # Heuristics to locate image/mask folders after upload
     def guess_dir(root):
         if os.path.isdir(root): return root
         for d in glob.glob("*"):
@@ -70,7 +73,7 @@ else:
     TEST_IMG_DIR  = guess_dir("test_images")
     TEST_MASK_DIR = guess_dir("test_masks")
 
-    # Guess NPY/HTML/CSV files
+    # Try to identify uploaded NPY/HTML/CSV artefacts
     UNET_NPY   = next((k for k in uploaded if "unet"   in k and k.endswith(".npy")), None)
     SEGNET_NPY = next((k for k in uploaded if "segnet" in k and k.endswith(".npy")), None)
     FCN_NPY    = next((k for k in uploaded if "fcn"    in k and k.endswith(".npy")), None)
@@ -90,6 +93,7 @@ print("HTML:", GLOBAL_HTML, REGION_HTML)
 print("TS_CSV:", TS_CSV, "PERM_CSV:", PERM_CSV, "TOP3_CSV:", TOP3_CSV)
 
 def read_img_rgb(path, size=None):
+    # Read BGR image, convert to RGB, optional resize, normalise to [0,1]
     img = cv2.imread(path);
     if img is None: raise FileNotFoundError(path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -98,6 +102,7 @@ def read_img_rgb(path, size=None):
     return (img.astype(np.float32)/255.)
 
 def read_mask_bin(path, size=None):
+    # Read grayscale mask, optional resize, then binarise (0/1) at threshold 127
     m = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     if m is None: raise FileNotFoundError(path)
     if size and m.shape[:2] != size:
@@ -105,6 +110,7 @@ def read_mask_bin(path, size=None):
     return (m>127).astype(np.uint8)
 
 def load_pairs(img_dir, msk_dir):
+    # Match images to masks by filename stem; support common extensions
     img_paths = sorted(glob.glob(os.path.join(img_dir, "*")))
     pairs = []
     for ip in img_paths:
@@ -114,10 +120,10 @@ def load_pairs(img_dir, msk_dir):
             p = os.path.join(msk_dir, stem+ext)
             if os.path.exists(p): mp = p; break
         if mp: pairs.append((ip, mp))
-    if not pairs: raise RuntimeError("No (image, mask) pairs found, please check image and mask directories")
+    if not pairs: raise RuntimeError("No (image, mask) pairs found; check directories and filenames.")
     return pairs
 
-# HTML → PNG screenshot
+# Render a static screenshot (PNG) from a local HTML file using headless Chrome
 def html_to_png(html_path, out_png="map.png", width=1600, height=1000, wait_sec=3):
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
@@ -136,43 +142,41 @@ def html_to_png(html_path, out_png="map.png", width=1600, height=1000, wait_sec=
 pairs = load_pairs(TEST_IMG_DIR, TEST_MASK_DIR)
 
 def save_triptych(img_path, msk_path, out_path, size=(256, 256), show=True):
-    # Read image and optionally resize; normalize RGB to [0,1]
+    # Create a 3-panel figure: image, mask, and overlay for qualitative alignment
     img = read_img_rgb(img_path, size=size)
-    # Read mask and optionally resize; convert to binary (0/1), use nearest neighbor to keep edges sharp
     msk = read_mask_bin(msk_path, size=size)
 
-    # One row three columns: Image / GSW mask / overlay
     fig, ax = plt.subplots(1, 3, figsize=(9, 3))
     ax[0].imshow(img);                 ax[0].set_title("Image");     ax[0].axis("off")
     ax[1].imshow(msk, cmap="gray");    ax[1].set_title("GSW mask");  ax[1].axis("off")
     ax[2].imshow(img);
-    ax[2].imshow(msk, cmap="gray", alpha=0.35)  # Semi-transparent overlay for alignment check
+    ax[2].imshow(msk, cmap="gray", alpha=0.35)  # semi-transparent overlay
     ax[2].set_title("Aligned pair");   ax[2].axis("off")
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=300)     # Save before show to avoid margin issues
+    plt.savefig(out_path, dpi=300)
     if show:
-        plt.show()                     # Show must be before close
-    plt.close(fig)                     # Release memory (important for batch figure generation)
+        plt.show()
+    plt.close(fig)
     print("Saved:", out_path)
 
-# Example: generate Fig.2 using the 969th sample
+# Example panel (Fig.2) using the 969th sample
 save_triptych(pairs[968][0], pairs[968][1], "Fig2_sample_triptych.png", size=(256, 256), show=True)
 
-# Load probability cache
+# Load cached per-pixel probabilities for each model; assert alignment with pairs
 pred_unet   = np.load(UNET_NPY).squeeze()
 pred_segnet = np.load(SEGNET_NPY).squeeze()
 pred_fcn    = np.load(FCN_NPY).squeeze()
 N = len(pairs)
-assert pred_unet.shape[0]==pred_segnet.shape[0]==pred_fcn.shape[0]==N, "NPY count not consistent with samples"
+assert pred_unet.shape[0]==pred_segnet.shape[0]==pred_fcn.shape[0]==N, "NPY counts must match number of samples"
 
-# Best (w, τ)
+# Pre-selected ensemble weights and thresholds (τ for individual and ensemble outputs)
 best = {"w":[0.3,0.3,0.4], "tau_ens":0.39, "tau_unet":0.5, "tau_segnet":0.5, "tau_fcn":0.5}
 
 wU, wS, wF = best["w"]
 tauU = best.get("tau_unet",0.5); tauS = best.get("tau_segnet",0.5); tauF = best.get("tau_fcn",0.5); tauE = best.get("tau_ens",0.5)
 
-# Select first/middle/last three samples
+# Choose representative samples for qualitative comparison
 idxs = [4, 298, 1135] if N>=3 else [0]
 H,W = pred_unet.shape[1], pred_unet.shape[2]
 
@@ -203,39 +207,40 @@ plt.show()
 plt.close(fig)
 print("Saved: Fig3_qualitative_comparison.png")
 
+# Optional: convert interactive HTML maps to static PNG for inclusion in reports
 if GLOBAL_HTML and os.path.exists(GLOBAL_HTML):
     html_to_png(GLOBAL_HTML, "Fig6_global_trends.png", width=1600, height=1000, wait_sec=3)
     img = cv2.cvtColor(cv2.imread("Fig6_global_trends.png"), cv2.COLOR_BGR2RGB)
     plt.figure(figsize=(12,7)); plt.imshow(img); plt.axis('off')
     plt.title("Fig.6 Global trends (screenshot)");
-    plt.show()  # <—— show
+    plt.show()
 
 if REGION_HTML and os.path.exists(REGION_HTML):
     html_to_png(REGION_HTML, "Fig7_region_trends.png", width=1600, height=1000, wait_sec=3)
     img = cv2.cvtColor(cv2.imread("Fig7_region_trends.png"), cv2.COLOR_BGR2RGB)
     plt.figure(figsize=(12,7)); plt.imshow(img); plt.axis('off')
     plt.title("Fig.7 Regional trends (screenshot)")
-    plt.show()  # <—— show
+    plt.show()
 
-#  Fig.8 (robust version): automatically compute area_index and plot region small multiples
+# Fig.8: compute region-level summer area index and plot small multiples
 import os, numpy as np, pandas as pd, matplotlib.pyplot as plt, math
 
-# If auto-search failed above, manually specify CSV path:
+# If automatic search failed above, set TS_CSV explicitly:
 # TS_CSV = "/content/drive/MyDrive/your_project_folder/100Lake_area_Temperature_2000-2025.csv"
 
 assert TS_CSV is not None and os.path.exists(TS_CSV), f"Time-series CSV not found: {TS_CSV}"
 df = pd.read_csv(TS_CSV)
 
-# 1) Infer year column
+# Infer the 'year' column if missing (allowed: 'date' or 'Year')
 if "year" not in df.columns:
     if "date" in df.columns:
         df["year"] = pd.to_datetime(df["date"]).dt.year
     elif "Year" in df.columns:
         df["year"] = df["Year"]
     else:
-        raise ValueError("CSV must contain year or date column (cannot infer year).")
+        raise ValueError("CSV must contain a 'year' or 'date' column.")
 
-# 2) Infer lake / region column names
+# Identify lake and region columns heuristically when names vary
 def find_col(cands):
     for c in cands:
         if c in df.columns: return c
@@ -247,14 +252,13 @@ def find_col(cands):
 lake_col   = find_col(["lake","lakename","name","lake","location"])
 region_col = find_col(["region","zone","area","region","district"])
 if lake_col is None:
-    # If no lake column, fallback to global baseline
-    print("No lake column detected, will use global baseline of all samples.")
+    print("No lake column detected; using a global baseline across all records.")
 if region_col is None:
-    print("No region column detected, all assigned to 'All'.")
+    print("No region column detected; assigning all rows to 'All'.")
     region_col = "region"
     df[region_col] = "All"
 
-# 3) Infer area column (choose one)
+# Identify area column; fall back to loose matching if necessary
 area_candidates = ["area_index","area_m2","area_km2","area","Area","AREA"]
 area_col = None
 for c in area_candidates:
@@ -262,26 +266,24 @@ for c in area_candidates:
         area_col = c
         break
 if area_col is None:
-    # Loose match
     for col in df.columns:
         l = col.lower()
         if "area" in l:
             area_col = col; break
 if area_col is None:
-    raise ValueError("CSV missing area column (e.g., area_m2/area_km2/area).")
+    raise ValueError("CSV missing an area column (e.g. area_m2/area_km2/area).")
 
 print(f"Detected columns: year={'year'}, region={region_col}, lake={lake_col}, area={area_col}")
 
-# 4) If area_index not present, compute area_index
+# Compute normalised area index relative to an early-year baseline if missing
 if "area_index" not in df.columns:
-    # Convert area to numeric
     df[area_col] = pd.to_numeric(df[area_col], errors="coerce")
     df = df.dropna(subset=[area_col, "year"])
 
     BASELINE_YEARS = {2000,2001,2002}
 
     def compute_baseline(g):
-        # Prefer mean of 2000–2002; if missing, fallback to first 3 records of that lake
+        # Prefer mean of years 2000–2002; otherwise use first three records by year
         cand = g[g["year"].isin(BASELINE_YEARS)][area_col]
         if cand.dropna().shape[0] >= 1:
             return float(cand.mean())
@@ -291,18 +293,16 @@ if "area_index" not in df.columns:
         base_map = df.groupby(lake_col).apply(compute_baseline).to_dict()
         df["__baseline__"] = df[lake_col].map(base_map)
     else:
-        # Without lake column: use global baseline (2000–2002 or first 3 records)
         all_base = compute_baseline(df.copy())
         df["__baseline__"] = all_base
 
     df = df[df["__baseline__"] > 0]
     df["area_index"] = df[area_col] / df["__baseline__"]
 else:
-    # If area_index already exists, ensure numeric
     df["area_index"] = pd.to_numeric(df["area_index"], errors="coerce")
     df = df.dropna(subset=["area_index"])
 
-# 5) Aggregate to region-year and plot
+# Aggregate by region and year; plot trend with optional linear fit
 g = df.groupby([region_col,"year"], as_index=False)["area_index"].mean()
 
 regions = sorted(g[region_col].unique().tolist())
@@ -323,7 +323,7 @@ for i, reg in enumerate(regions):
     axes[r,c].set_xlabel("Year"); axes[r,c].set_ylabel("Summer area index")
     axes[r,c].grid(True, linestyle="--", alpha=0.3)
 
-# Close extra subplots
+# Hide any empty panels from grid layout
 for j in range(len(regions), nrow*ncol):
     r, c = divmod(j, ncol); axes[r,c].axis("off")
 
@@ -333,6 +333,7 @@ plt.show()
 plt.close(fig)
 print("Saved: Fig8_region_small_multiples.png")
 
+# Fig.9: either permutation importance by region, or top-3 features per region (if provided)
 out9 = None
 if PERM_CSV and os.path.exists(PERM_CSV):
     dfp = pd.read_csv(PERM_CSV)
@@ -376,7 +377,7 @@ elif TOP3_CSV and os.path.exists(TOP3_CSV):
         plt.tight_layout(); out9 = "Fig9_top3_features.png"; plt.savefig(out9, dpi=300); plt.show(); plt.close(fig)
         print("Saved:", out9)
 else:
-    print("Importance/Top-3 CSV not found, skipping Fig.9")
+    print("Importance/Top-3 CSV not found; Fig.9 skipped.")
 
 from google.colab import files
 outs = ["Fig2_sample_triptych.png","Fig3_qualitative_comparison.png",
@@ -385,6 +386,7 @@ outs = ["Fig2_sample_triptych.png","Fig3_qualitative_comparison.png",
         "Fig9_permutation_importance.png","Fig9_top3_features.png"]
 outs = [f for f in outs if os.path.exists(f)]
 
+# Optionally copy outputs to Drive for archival
 if SAVE_TO_DRIVE and MODE=="drive":
     import shutil, os
     out_dir = os.path.join(DRIVE_ROOT, "figs_out")
@@ -396,4 +398,3 @@ if SAVE_TO_DRIVE and MODE=="drive":
 print("Select the images you want to download (multiple allowed):")
 for f in outs:
     files.download(f)
-
