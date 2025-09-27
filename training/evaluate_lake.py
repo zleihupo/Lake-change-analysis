@@ -114,6 +114,7 @@ def best_threshold_from_probs(p_flat, y_true_flat, lo=0.3, hi=0.7, steps=41):
 def tune_or_fixed(p_test, name):
     if x_val is None:
         return 0.5
+    p_flat = p_test  # placeholder
     t,_ = best_threshold_from_probs(
         p_flat = p_unet_v.reshape(-1) if name=='U' else p_seg_v.reshape(-1) if name=='S' else p_fcn_v.reshape(-1),
         y_true_flat = y_val_flat
@@ -162,7 +163,8 @@ for wu in weights:
         rows.append([wu,ws,wf,t,f1,iou,acc,prec,rec])
         if f1>best['F1']:
             best = {"wu":wu,"ws":ws,"wf":wf,"t":t,"F1":f1,"IoU":iou,"Acc":acc,"Prec":prec,"Rec":rec}
-
+            
+df = pd.DataFrame(rows, columns=["U-Net","SegNet","FCN","Thresh","F1","IoU","Accuracy","Precision","Recall"])
 # Save ensemble search results
 columns = ["U-Net","SegNet","FCN","Thresh","F1","IoU","Accuracy","Precision","Recall"]
 df = pd.DataFrame(rows, columns=columns)
