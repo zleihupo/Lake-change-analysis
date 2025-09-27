@@ -8,32 +8,32 @@ Original file is located at
 """
 
 from google.colab import drive
+# Mount Google Drive for file I/O
 drive.mount('/content/drive')
 
-# Fast Evaluate + Soft Voting (cached preds, vectorized metrics)
 import os, glob
 import numpy as np
 import tensorflow as tf
 import cv2
 from tqdm import tqdm
 import pandas as pd
-
 from sklearn.metrics import f1_score, jaccard_score, accuracy_score, precision_score, recall_score
 
-# Paths 
+# Paths to trained models
 UNET_PATH   = '/content/drive/My Drive/unet_model_final.h5'
 SEGNET_PATH = '/content/drive/My Drive/segnet_model_final.h5'
 FCN_PATH    = '/content/drive/My Drive/fcn_model_final.h5'
 
+# Directories for test and (optional) validation data
 TEST_IMG_DIR = '/content/drive/My Drive/dataset/test/images/'
 TEST_MASK_DIR= '/content/drive/My Drive/dataset/test/masks/'
 VAL_IMG_DIR  = '/content/drive/My Drive/dataset/val/images/'   # optional
 VAL_MASK_DIR = '/content/drive/My Drive/dataset/val/masks/'    # optional
 
 IMG_SIZE = (256,256)
-BATCH    = 64  # try 64/128 on A100
+BATCH    = 64  # batch size used for inference
 
-#  Data loader 
+# Load images and corresponding binary masks; resize to IMG_SIZE, normalise to [0,1]
 def load_data(img_dir, mask_dir, img_size=(256,256)):
     files = sorted(glob.glob(os.path.join(img_dir, '*')))
     X, y = [], []
@@ -51,29 +51,31 @@ def load_data(img_dir, mask_dir, img_size=(256,256)):
     y = np.asarray(y, np.uint8)
     return X, y
 
-# Cache helpers 
+# Ensure predictions have shape (N, H, W) when models output (N, H, W, 1)
 def squeeze(p): return p[...,0] if (p.ndim==4 and p.shape[-1]==1) else p
+
+# Load cached predictions if available; otherwise run inference and cache
 
 def get_or_predict(model_path, X, cache_name):
     npy = cache_name + '.npy'
     if os.path.exists(npy):
-        return np.load(npy)                          # (N,H,W)
+        return np.load(npy)
     model = tf.keras.models.load_model(model_path, compile=False)
     P = squeeze(model.predict(X, batch_size=BATCH, verbose=0))
     np.save(npy, P)
     return P
 
-#  Load once
+# Load test set once
 x_test, y_test = load_data(TEST_IMG_DIR, TEST_MASK_DIR, IMG_SIZE)
-y_test_flat = y_test.reshape(-1)                     # (N*H*W,)
+y_test_flat = y_test.reshape(-1)  # flatten to (N*H*W,)
 
-# optional val for threshold tuning
+# Optionally load validation set for threshold tuning
 x_val = y_val = None
 if os.path.isdir(VAL_IMG_DIR) and os.path.isdir(VAL_MASK_DIR):
     x_val, y_val = load_data(VAL_IMG_DIR, VAL_MASK_DIR, IMG_SIZE)
     y_val_flat = y_val.reshape(-1)
 
-# Predict or load cached
+# Obtain per-pixel probabilities for each model (from cache or inference)
 p_unet = get_or_predict(UNET_PATH,  x_test, 'pred_unet_test')
 p_seg  = get_or_predict(SEGNET_PATH,x_test, 'pred_segnet_test')
 p_fcn  = get_or_predict(FCN_PATH,   x_test, 'pred_fcn_test')
@@ -83,9 +85,9 @@ if x_val is not None:
     p_seg_v  = get_or_predict(SEGNET_PATH,x_val, 'pred_segnet_val')
     p_fcn_v  = get_or_predict(FCN_PATH,   x_val, 'pred_fcn_val')
 
-# Fast metrics (vectorized for whole dataset) 
+# Vectorised metrics: returns (F1, IoU, Accuracy, Precision, Recall)
 def metrics_from_flat(y_true_flat, y_pred_flat):
-    # y_* are 0/1 uint8 flat arrays
+    # y_* are uint8 arrays with values {0,1}
     tp = np.logical_and(y_true_flat==1, y_pred_flat==1).sum()
     tn = np.logical_and(y_true_flat==0, y_pred_flat==0).sum()
     fp = np.logical_and(y_true_flat==0, y_pred_flat==1).sum()
@@ -98,6 +100,7 @@ def metrics_from_flat(y_true_flat, y_pred_flat):
     f1   = 2*prec*rec / (prec+rec+1e-9)
     return f1, iou, acc, prec, rec
 
+# Brute-force the decision threshold on validation probabilities (if provided)
 def best_threshold_from_probs(p_flat, y_true_flat, lo=0.3, hi=0.7, steps=41):
     best_t, best_m = 0.5, -1
     for t in np.linspace(lo, hi, steps):
@@ -107,11 +110,10 @@ def best_threshold_from_probs(p_flat, y_true_flat, lo=0.3, hi=0.7, steps=41):
             best_m, best_t = f1, float(t)
     return best_t, best_m
 
-#  Tune thresholds for single models (on val if available)
+# Use validation-tuned threshold if available; otherwise fallback to 0.5
 def tune_or_fixed(p_test, name):
     if x_val is None:
         return 0.5
-    p_flat = p_test  # placeholder
     t,_ = best_threshold_from_probs(
         p_flat = p_unet_v.reshape(-1) if name=='U' else p_seg_v.reshape(-1) if name=='S' else p_fcn_v.reshape(-1),
         y_true_flat = y_val_flat
@@ -119,11 +121,12 @@ def tune_or_fixed(p_test, name):
     print(f"[{name}] best thr on val: {t:.3f}")
     return t
 
+# Model-specific thresholds
 t_unet = tune_or_fixed(p_unet, 'U')
 t_seg  = tune_or_fixed(p_seg,  'S')
 t_fcn  = tune_or_fixed(p_fcn,  'F')
 
-# Single models (vectorized metrics) 
+# Evaluate single models at tuned thresholds
 y_unet = (p_unet.reshape(-1) > t_unet).astype(np.uint8)
 y_seg  = (p_seg.reshape(-1)  > t_seg ).astype(np.uint8)
 y_fcn  = (p_fcn.reshape(-1)  > t_fcn ).astype(np.uint8)
@@ -133,17 +136,19 @@ for name, yb in [('U-Net',y_unet),('SegNet',y_seg),('FCN',y_fcn)]:
     f1,iou,acc,prec,rec = metrics_from_flat(y_test_flat, yb)
     print(f"{name:6s} → F1={f1:.4f}, IoU={iou:.4f}, Acc={acc:.4f}, Prec={prec:.4f}, Rec={rec:.4f}")
 
-# Ensemble grid (use cached probs; vectorized; val-tuned thr if available) 
+# Soft-voting ensemble: grid-search over weights (wu, ws, wf) with wu+ws+wf=1
 weights = np.arange(0.0, 1.0001, 0.1)
 rows, best = [], {'F1':-1}
 
-# precompute val thr per weight if val exists (optional, else 0.5)
+# Determine ensemble threshold on validation set (if available)
+
 def ens_thr(wu,ws,wf):
     if x_val is None: return 0.5
     p_ens_v = wu*p_unet_v + ws*p_seg_v + wf*p_fcn_v
     t,_ = best_threshold_from_probs(p_ens_v.reshape(-1), y_val_flat)
     return t
 
+# Search across all valid weight combinations
 for wu in weights:
     for ws in weights:
         if wu+ws>1.0: continue
@@ -158,7 +163,9 @@ for wu in weights:
         if f1>best['F1']:
             best = {"wu":wu,"ws":ws,"wf":wf,"t":t,"F1":f1,"IoU":iou,"Acc":acc,"Prec":prec,"Rec":rec}
 
-df = pd.DataFrame(rows, columns=["U-Net","SegNet","FCN","Thresh","F1","IoU","Accuracy","Precision","Recall"])
+# Save ensemble search results
+columns = ["U-Net","SegNet","FCN","Thresh","F1","IoU","Accuracy","Precision","Recall"]
+df = pd.DataFrame(rows, columns=columns)
 df = df.sort_values('F1', ascending=False).reset_index(drop=True)
 df.to_csv("grid_search_ensemble_results.csv", index=False)
 
@@ -167,7 +174,7 @@ print("\nBest (F1): (wu,ws,wf) =", (best['wu'],best['ws'],best['wf']),
 print("   → F1={F1:.4f}, IoU={IoU:.4f}, Acc={Acc:.4f}, Prec={Prec:.4f}, Rec={Rec:.4f}".format(**best))
 print("Saved: grid_search_ensemble_results.csv")
 
-# (Optional) Save the three test probabilities and read them directly for subsequent evaluation
+# Persist predictions for reuse (optional)
 np.save("pred_unet_test.npy", p_unet)
 np.save("pred_segnet_test.npy", p_seg)
 np.save("pred_fcn_test.npy",  p_fcn)
@@ -176,18 +183,12 @@ if x_val is not None:
     np.save("pred_segnet_val.npy", p_seg_v)
     np.save("pred_fcn_val.npy",  p_fcn_v)
 
-
-# Visualization (Matplotlib-only, fast)
-# Attach directly to the end of the above script
-# Required variables: df (weighted combination results table), best, y_unet/y_seg/y_fcn, y_test_flat, metrics_from_flat
-
+# Visualise results: ensemble heatmap and model comparison bar chart
 import matplotlib.pyplot as plt
-import numpy as np
 
-#1) Top combinations heatmap (U-Net weight is x, SegNet weight is y)
-# Construct an 11x11 grid, filter positions where wu+ws<=1, and fill them with F1; otherwise, fill them with NaN
+# Heatmap of F1 over (wu, ws) with wf=1-wu-ws
 w_vals = np.round(np.arange(0.0, 1.0001, 0.1), 1)
-grid = np.full((len(w_vals), len(w_vals)), np.nan, dtype=float)  # [SegNet(y), U-Net(x)]
+grid = np.full((len(w_vals), len(w_vals)), np.nan, dtype=float)
 
 for _, r in df.iterrows():
     wu, ws, f1 = round(r["U-Net"],1), round(r["SegNet"],1), r["F1"]
@@ -199,7 +200,7 @@ im = plt.imshow(grid, origin='lower', extent=[0,1,0,1], aspect='equal')
 plt.colorbar(im, label='F1 Score')
 plt.title('Soft Voting Ensemble — F1 Heatmap')
 plt.xlabel('U-Net weight'); plt.ylabel('SegNet weight')
-# Contour line auxiliary reading (optional)
+# Optional contour lines for readability
 cs = plt.contour(np.linspace(0,1,grid.shape[1]), np.linspace(0,1,grid.shape[0]),
                  np.nan_to_num(grid, nan=-1), levels=8, linewidths=0.5)
 plt.clabel(cs, inline=True, fontsize=8)
@@ -207,8 +208,7 @@ plt.tight_layout()
 plt.savefig('ensemble_heatmap.png', dpi=300)
 plt.close()
 
-# 2) Single Model vs. Optimal Ensemble Comparison Bar Chart
-# Re-obtain single model metrics (based on the calculated y_* and y_test_flat)
+# Bar chart: single models vs best ensemble
 u_f1,u_iou,u_acc,u_prec,u_rec = metrics_from_flat(y_test_flat, y_unet)
 s_f1,s_iou,s_acc,s_prec,s_rec = metrics_from_flat(y_test_flat, y_seg)
 f_f1,f_iou,f_acc,f_prec,f_rec = metrics_from_flat(y_test_flat, y_fcn)
@@ -236,11 +236,10 @@ plt.close()
 
 print("Saved figures: ensemble_heatmap.png, model_vs_ensemble.png")
 
+# Package outputs and trigger download (Colab)
 import zipfile
-import os
 from google.colab import files
 
-# Assume the file to be packaged
 files_to_zip = [
     "grid_search_ensemble_results.csv",
     "ensemble_heatmap.png",
@@ -251,13 +250,11 @@ files_to_zip = [
 ]
 
 files_existing = [f for f in files_to_zip if os.path.exists(f)]
-
-zip_path = "/content/evaluation_results.zip"  # Change to /content
+zip_path = "/content/evaluation_results.zip"
 with zipfile.ZipFile(zip_path, 'w') as zf:
     for f in files_existing:
         zf.write(f, arcname=os.path.basename(f))
 
-# Download to local
 files.download(zip_path)
 
 !ls -lh /content/evaluation_results.zip
