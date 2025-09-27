@@ -10,7 +10,7 @@ Original file is located at
 from google.colab import drive
 drive.mount('/content/drive')
 
-# ========== 0) Dependency installation (if necessary) ==========
+#  0) Dependency installation (if necessary) 
 import sys, subprocess
 
 def pip_install(pkgs):
@@ -44,7 +44,7 @@ try:
 except:
     pip_install(["xlsxwriter"]) ; import xlsxwriter
 
-# ========== 1)Import basic ==========
+#  1)Import basic 
 import os
 import warnings
 warnings.filterwarnings("ignore")
@@ -59,7 +59,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.inspection import permutation_importance
 from scipy.stats import spearmanr
 
-# ========== 2) I/O Tools ==========
+#  2) I/O Tools 
 CONTENT_DIR = "/content"
 CSV_DEFAULT = os.path.join(CONTENT_DIR, "100Lake_area_Temperature_2000-2025.csv")
 XLSX_OUT = os.path.join(CONTENT_DIR, "lake_summer_AI_analysis.xlsx")
@@ -81,7 +81,7 @@ def show(df: pd.DataFrame, title: str = None, save_csv: bool = False, fname: str
         df.to_csv(fname, index=False)
         print("saved:", fname)
 
-# ========== 3) load data ==========
+#  3) load data 
 # Method A: Read directly from /content 
 CSV_PATH = CSV_DEFAULT
 
@@ -105,7 +105,7 @@ print("use data file:", CSV_PATH)
 
 df = pd.read_csv(CSV_PATH)
 
-# ========== 4) Preprocessing==========
+#  4) Preprocessing
 
 def to_numeric(x):
     try:
@@ -202,7 +202,7 @@ summer_lake_year = (
 show(summer_lake_year.head(20), "Preview of summer lake-year aggregation", head=20)
 
 
-# ========== 5) Regional trends (slope per decade) ==========
+# 5) Regional trends (slope per decade) 
 import statsmodels.api as sm
 
 
@@ -249,7 +249,7 @@ try:
 except:
     SHAP_AVAILABLE = False
 
-# ========== 6) Machine Learning by Region (GBR)==========
+#6) Machine Learning by Region (GBR)
 features_raw = required_feats
 perf_rows, imp_rows, direction_rows = [], [], []
 
@@ -421,7 +421,7 @@ if not imp_tbl.empty:
 else:
     top3_tbl = pd.DataFrame()
 
-# ========== 7) 导出 Excel ==========
+#  7) 导出 Excel 
 with pd.ExcelWriter(XLSX_OUT, engine='xlsxwriter') as writer:
     trend_show.to_excel(writer, sheet_name='Trends_per_decade', index=False)
     if not perf_pivot.empty:
@@ -437,7 +437,7 @@ print("\nExported to Excel:", XLSX_OUT)
 print("Right-click in the file panel on the left of Colab to download, or use:")
 print("from google.colab import files; files.download(r'" + XLSX_OUT + "')")
 
-# ========== 8) Quick Summary/Review ==========
+#  8) Quick Summary/Review 
 try:
     perf = pd.read_excel(XLSX_OUT, sheet_name='Model_Perf')
     if 'R2_test' in perf.columns:
