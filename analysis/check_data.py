@@ -13,15 +13,15 @@ import os, re
 from google.colab import files
 import matplotlib.pyplot as plt
 
-# ===== Upload file if not exists =====
+#  Upload file if not exists 
 if not os.path.exists("/content/Lake_Area_and_Climate_2000_2025.csv"):
     print("Please upload Lake_Area_and_Climate_2000_2025.csv file")
     uploaded = files.upload()
 
-# ===== Read data =====
+# Read data
 df = pd.read_csv("/content/Lake_Area_and_Climate_2000_2025.csv")
 
-# ===== Clean area_m2 column =====
+#  Clean area_m2 column 
 def to_numeric_area(val):
     m = re.search(r"-?\d+\.?\d*", str(val))
     if m:
@@ -33,13 +33,13 @@ def to_numeric_area(val):
 
 df['area_m2'] = df['area_m2'].apply(to_numeric_area)
 
-# ===== Check required columns =====
+#  Check required columns 
 required_cols = {'lake', 'hemisphere', 'year', 'area_m2'}
 missing = required_cols - set(df.columns)
 if missing:
     raise ValueError(f"Missing required columns: {missing}")
 
-# ===== Group by lake-year =====
+#  Group by lake-year
 summary = (
     df.groupby(['lake','year'])
     .agg(
@@ -52,11 +52,11 @@ summary = (
 # Percentage change
 summary['pct_change'] = summary.groupby('lake')['mean_area'].pct_change(fill_method=None)
 
-# ===== Flags =====
+#  Flags 
 summary['incomplete'] = summary['n_records'] < 3
 summary['high_risk'] = (summary['incomplete']) & (summary['pct_change'].abs() > 0.5)
 
-# ===== Yearly stats =====
+#  Yearly stats 
 year_stats = (
     summary.groupby('year')
     .agg(
@@ -67,7 +67,7 @@ year_stats = (
 )
 year_stats['high_risk_ratio'] = year_stats['high_risk_lakes'] / year_stats['total_lakes']
 
-# ===== Save results =====
+#  Save results
 quality_path = "/content/quality_flags.csv"
 summary.to_csv(quality_path, index=False)
 
@@ -87,7 +87,7 @@ files.download(quality_path)
 files.download(suspect_path)
 files.download(year_stats_path)
 
-# ===== Plot =====
+#  Plot 
 plt.figure(figsize=(10,5))
 years = year_stats['year']
 ratios = year_stats['high_risk_ratio']
