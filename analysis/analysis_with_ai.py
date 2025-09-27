@@ -10,7 +10,7 @@ Original file is located at
 from google.colab import drive
 drive.mount('/content/drive')
 
-#  0) Dependency installation (if necessary) 
+#  Dependency installation (run if a package is missing) 
 import sys, subprocess
 
 def pip_install(pkgs):
@@ -27,13 +27,13 @@ except:
 try:
     import shap  # noqa: F401
 except:
-    # Not mandatory, if it fails, the PDP direction will be automatically enabled
+    # Optional dependency; if unavailable the PDP-based direction is used instead
     try:
         pip_install(["shap"]) ; import shap
     except Exception:
         shap = None
 
-# Excel Write Engine
+# Excel backends for writing .xlsx files
 try:
     import openpyxl  # noqa: F401
 except:
@@ -44,7 +44,7 @@ try:
 except:
     pip_install(["xlsxwriter"]) ; import xlsxwriter
 
-#  1)Import basic 
+#  Import basic libraries 
 import os
 import warnings
 warnings.filterwarnings("ignore")
@@ -59,14 +59,14 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.inspection import permutation_importance
 from scipy.stats import spearmanr
 
-#  2) I/O Tools 
+#  I/O paths and defaults 
 CONTENT_DIR = "/content"
 CSV_DEFAULT = os.path.join(CONTENT_DIR, "100Lake_area_Temperature_2000-2025.csv")
 XLSX_OUT = os.path.join(CONTENT_DIR, "lake_summer_AI_analysis.xlsx")
 
 
 def show(df: pd.DataFrame, title: str = None, save_csv: bool = False, fname: str = None, head: int = 10):
-    """General display functions: print shapes, display first few rows, optionally save to CSV."""
+    """Compact table preview and optional CSV export."""
     if title:
         print("\n===", title, "===")
     print("shape:", df.shape)
@@ -81,21 +81,21 @@ def show(df: pd.DataFrame, title: str = None, save_csv: bool = False, fname: str
         df.to_csv(fname, index=False)
         print("saved:", fname)
 
-#  3) load data 
-# Method A: Read directly from /content 
+#  Load data 
+# Method A: attempt to read from /content 
 CSV_PATH = CSV_DEFAULT
 
 if not os.path.exists(CSV_PATH):
-    # Method B: If it does not exist, the upload window will pop up.
+    # Method B: fall back to manual upload
     try:
         from google.colab import files
         print("No CSV found in /content, please select local CSV upload...")
         uploaded = files.upload()
         if uploaded:
-            # Get the first file
+            # Use the first uploaded file
             CSV_PATH = list(uploaded.keys())[0]
     except Exception:
-        # Method C: Optional Mount Drive Manually Specify Path
+        # Method C: instruct user to mount Drive and set path
         print("To read from Google Drive, mount it first:")
         print("from google.colab import drive; drive.mount('/content/drive')")
         print("Then point CSV_PATH to your Drive path.")
@@ -105,7 +105,7 @@ print("use data file:", CSV_PATH)
 
 df = pd.read_csv(CSV_PATH)
 
-#  4) Preprocessing
+#  Pre-processing
 
 def to_numeric(x):
     try:
@@ -113,21 +113,21 @@ def to_numeric(x):
     except:
         return np.nan
 
-# Clean area values
+# Validate and clean area column
 if 'area_m2' not in df.columns:
     raise ValueError("Missing 'area_m2' column in the dataset")
 
 df['area_m2'] = df['area_m2'].apply(to_numeric)
 
-# Check basic fields
+# Validate and cast year
 if 'year' not in df.columns:
     raise ValueError("Missing 'year' column in the dataset")
 df['year'] = df['year'].astype(int)
 
-#  Remove strict check on 'month', but keep original variable name
+#  Keep summer flag even if month is absent; fall back to all-summer
 if 'month' not in df.columns:
     print(" 'month' column not found; skipping 'date' and 'is_summer' processing")
-    df['is_summer'] = True  # Ensure consistency, default to all being summer
+    df['is_summer'] = True  # default to summer
 else:
     df['month'] = df['month'].astype(int)
     df['date'] = pd.to_datetime(dict(year=df['year'], month=df['month'], day=1))
@@ -141,19 +141,19 @@ else:
 
     df['is_summer'] = df.apply(is_summer, axis=1)
 
-# Keep only positive area values
+# Filter invalid area values
 df = df[df['area_m2'] > 0].copy()
 
-# Check other required fields
+# Ensure required identifiers exist
 if 'lake' not in df.columns:
     raise ValueError("Missing 'lake' column in the dataset")
 if 'hemisphere' not in df.columns:
     raise ValueError("Missing 'hemisphere' column in the dataset")
 
-#  Keep 'summer' logic (even though it's not filtering by actual summer here)
+#  Retain summer observations (logical guardrail even if already all-summer)
 df = df[df['is_summer']].copy()
 
-# Compute baseline area (2000–2002) or fallback to first 3 entries
+# Compute per-lake baseline (2000–2002) with fallback to the first 3 records
 baseline = (
     df[(df['year'] >= 2000) & (df['year'] <= 2002)]
       .groupby('lake')['area_m2']
@@ -174,11 +174,11 @@ base['baseline_area_m2'] = base['baseline_area_m2'].fillna(base['fallback_baseli
 base = base[['baseline_area_m2']].dropna()
 base = base[base['baseline_area_m2'] > 0]
 
-# Merge and compute area index
+# Merge baseline and compute area index
 df = df.merge(base, left_on='lake', right_index=True, how='inner')
 df['area_index'] = df['area_m2'] / df['baseline_area_m2']
 
-# Aggregation (keep the 'summer_lake_year' naming)
+# Aggregate to lake–year within regions (summer means)
 required_feats = ['temp_C', 'precip_mm', 'pet_mm', 'snow_cover_pct', 'snow_depth_cm']
 for c in required_feats + ['region', 'hemisphere']:
     if c not in df.columns:
@@ -202,7 +202,7 @@ summer_lake_year = (
 show(summer_lake_year.head(20), "Preview of summer lake-year aggregation", head=20)
 
 
-# 5) Regional trends (slope per decade) 
+#  Regional trends (slope per decade) 
 import statsmodels.api as sm
 
 
@@ -249,27 +249,27 @@ try:
 except:
     SHAP_AVAILABLE = False
 
-#6) Machine Learning by Region (GBR)
+#6) Machine learning by region (GBR)
 features_raw = required_feats
 perf_rows, imp_rows, direction_rows = [], [], []
 
 for reg in regions:
     d = summer_lake_year[summer_lake_year['region'] == reg].dropna(subset=['area_index'] + features_raw).copy()
     if d['year'].nunique() < 6 or len(d) < 100:
-        # Too few samples to skip
+        # Too few samples; skip this region
         continue
 
-    # Encode only the hemisphere (drop_first=True -> the southern hemisphere is 1)
+    # Encode the hemisphere only (drop_first=True → southern hemisphere encoded as 1)
     dummies = pd.get_dummies(d[['hemisphere']], drop_first=True)
     X = pd.concat([d[features_raw], dummies], axis=1)
     y = d['area_index']
 
-    # Time division：train<=2018, val 2019-2021, test>=2022
+    # Time split: train ≤ 2018; val 2019–2021; test ≥ 2022
     train_mask = d['year'] <= 2018
     val_mask = (d['year'] >= 2019) & (d['year'] <= 2021)
     test_mask = d['year'] >= 2022
 
-    # If splitting is not available, fallback to 7/3 time split
+    # If unavailable, fall back to a 70/30 time split with a narrow validation window
     if y[train_mask].empty or y[test_mask].empty:
         years_sorted = sorted(d['year'].unique())
         split_year = years_sorted[int(len(years_sorted) * 0.7)]
@@ -301,7 +301,7 @@ for reg in regions:
     perf_rows.append({'region': reg, 'split': 'train', **train_m})
     perf_rows.append({'region': reg, 'split': 'test', **test_m})
 
-    # Permutation Importance (Test Set)
+    # Permutation importance on the test split
     try:
         perm = permutation_importance(
             model, X_test, y_test,
@@ -314,7 +314,7 @@ for reg in regions:
         for col in X.columns:
             imp_rows.append({'region': reg, 'feature': col, 'perm_importance': np.nan})
 
-    # Direction: Prioritize SHAP
+    # Direction: prefer SHAP when available; otherwise use PDP slope
     if SHAP_AVAILABLE:
         try:
             explainer = shap.Explainer(model)
@@ -326,10 +326,10 @@ for reg in regions:
                 direction_rows.append({'region': reg, 'feature': col, 'shap_abs_mean': mag, 'direction_rho': float(rho)})
         except Exception as e:
             print(f"SHAP fail（{reg}）：", e)
-            SHAP_AVAILABLE = False  # Downgrade to PDP
+            SHAP_AVAILABLE = False  # revert to PDP
 
     if not SHAP_AVAILABLE:
-        # Directional regression: the slope of the PDP in the 20th-80th percentile range
+        # PDP-based direction: slope between 20th–80th percentiles
         for col in X.columns:
             xs = X_test[col].values
             if len(xs) < 10 or np.std(xs) == 0:
@@ -347,12 +347,12 @@ for reg in regions:
             slope = (preds[-1] - preds[0]) / (q80 - q20) if (q80 - q20) != 0 else np.nan
             direction_rows.append({'region': reg, 'feature': col, 'pdp_slope': slope})
 
-# Summary Table
+# Summary tables
 perf_tbl = pd.DataFrame(perf_rows)
 imp_tbl = pd.DataFrame(imp_rows)
 dir_tbl = pd.DataFrame(direction_rows)
 
-# Top-3 features（dismiss hemisphere dummy）
+# Top-3 features (drop hemisphere dummy variables)
 
 def summarize_top3(imp_df: pd.DataFrame) -> pd.DataFrame:
     rows = []
@@ -374,7 +374,7 @@ def summarize_top3(imp_df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values('region')
 
 
-# Incorporate directional information (SHAP rho first, PDP slope second)
+# Incorporate directional metrics (SHAP rho preferred; PDP slope otherwise)
 
 def merge_direction(imp_df: pd.DataFrame, dir_df: pd.DataFrame) -> pd.DataFrame:
     out = []
@@ -394,7 +394,7 @@ def merge_direction(imp_df: pd.DataFrame, dir_df: pd.DataFrame) -> pd.DataFrame:
 
 dir_merge = merge_direction(imp_tbl, dir_tbl)
 
-# Display main table
+# Display key outputs
 if not perf_tbl.empty:
     perf_pivot = perf_tbl.pivot_table(index='region', columns='split', values=['MAE', 'RMSE', 'R2', 'n'])
     perf_pivot.columns = ['_'.join(col).strip() for col in perf_pivot.columns.values]
@@ -421,7 +421,7 @@ if not imp_tbl.empty:
 else:
     top3_tbl = pd.DataFrame()
 
-#  7) 导出 Excel 
+#  Export Excel workbook 
 with pd.ExcelWriter(XLSX_OUT, engine='xlsxwriter') as writer:
     trend_show.to_excel(writer, sheet_name='Trends_per_decade', index=False)
     if not perf_pivot.empty:
@@ -437,7 +437,7 @@ print("\nExported to Excel:", XLSX_OUT)
 print("Right-click in the file panel on the left of Colab to download, or use:")
 print("from google.colab import files; files.download(r'" + XLSX_OUT + "')")
 
-#  8) Quick Summary/Review 
+#  Quick summary (optional) 
 try:
     perf = pd.read_excel(XLSX_OUT, sheet_name='Model_Perf')
     if 'R2_test' in perf.columns:
