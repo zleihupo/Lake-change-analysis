@@ -1,10 +1,10 @@
-// ========== Data Sources ==========
+//  Data Sources 
 var ERA5_CLIMATE = ee.ImageCollection("ECMWF/ERA5_LAND/MONTHLY_AGGR").select([
   'total_precipitation_sum', 'potential_evaporation_sum',
   'snow_depth', 'snow_cover', 'temperature_2m'
 ]);
 
-// ========== Sample Lake List ==========
+//  Sample Lake List
 var lakes = [
   {name: 'Namtso', geom: ee.Geometry.Polygon([[[90.10, 30.20], [91.05, 30.20], [91.05, 31.10], [90.10, 31.10], [90.10, 30.20]]]), hemisphere: 'north'},
   {name: 'Yamdrok', geom: ee.Geometry.Polygon([[[90.3, 28.65], [91.1, 28.65], [91.1, 29.45], [90.3, 29.45], [90.3, 28.65]]]), hemisphere: 'north'},
@@ -108,10 +108,10 @@ var lakes = [
   {name: 'Lake Gregory', geom: ee.Geometry.Polygon([[[127.24, -20.31], [127.53, -20.31], [127.53, -20.06], [127.24, -20.06], [127.24, -20.31]]]), hemisphere: 'south'}
 ];
 
-// ========== Year Range ==========
+// Year Range 
 var years = ee.List.sequence(2000, 2025);
 
-// ========== Main Extraction Function ==========
+//  Main Extraction Function 
 function getAnnualSummerClimate(lake) {
   var name = lake.name;
   var geom = lake.geom.buffer(10000); // Buffer lake by 10km
@@ -166,7 +166,7 @@ function getAnnualSummerClimate(lake) {
   })).filter(ee.Filter.notNull(['lake']));
 }
 
-// ========== Batch Run for All Lakes ==========
+//  Batch Run for All Lakes 
 var allRows = ee.FeatureCollection([]);
 lakes.forEach(function(lk){
   allRows = allRows.merge(getAnnualSummerClimate(lk));
@@ -175,7 +175,7 @@ lakes.forEach(function(lk){
 print('Total number of records:', allRows.size());
 print(allRows.limit(10));
 
-// ========== Export to Google Drive ==========
+//  Export to Google Drive 
 Export.table.toDrive({
   collection: allRows,
   description: 'Lake_Climate_AnnualSummer_2000_2025',
