@@ -4,7 +4,7 @@ var ERA5_CLIMATE = ee.ImageCollection("ECMWF/ERA5_LAND/MONTHLY_AGGR").select([
   'snow_depth', 'snow_cover', 'temperature_2m'
 ]);
 
-//  Sample Lake List
+//  Study lake list (edit as required)
 var lakes = [
   {name: 'Namtso', geom: ee.Geometry.Polygon([[[90.10, 30.20], [91.05, 30.20], [91.05, 31.10], [90.10, 31.10], [90.10, 30.20]]]), hemisphere: 'north'},
   {name: 'Yamdrok', geom: ee.Geometry.Polygon([[[90.3, 28.65], [91.1, 28.65], [91.1, 29.45], [90.3, 29.45], [90.3, 28.65]]]), hemisphere: 'north'},
@@ -111,26 +111,26 @@ var lakes = [
 // Year Range 
 var years = ee.List.sequence(2000, 2025);
 
-//  Main Extraction Function 
+//  Annual summer climate extraction per lake 
 function getAnnualSummerClimate(lake) {
   var name = lake.name;
-  var geom = lake.geom.buffer(10000); // Buffer lake by 10km
+  var geom = lake.geom.buffer(10000); // buffer by 10 km to reduce edge effects
   var hemi = (lake.hemisphere || 'north').toLowerCase();
 
   return ee.FeatureCollection(years.map(function(y){
     y = ee.Number(y);
 
-    // Define summer period based on hemisphere
+    // Define summer window by hemisphere
     var startDate = (hemi === 'south')
       ? ee.Date.fromYMD(y.subtract(1), 12, 1)
       : ee.Date.fromYMD(y, 6, 1);
     var endDate = startDate.advance(3, 'month');
 
-    // Filter ERA5_AGGR for the summer period and compute mean
+    // ERA5 monthly aggregates over the summer; take mean across months
     var climate = ERA5_CLIMATE.filterDate(startDate, endDate);
     var climateMean = climate.mean();
 
-    // Extract and convert variables
+    // Extract variable means over buffered geometry (units converted below)
     var precip = climateMean.select('total_precipitation_sum').reduceRegion({
       reducer: ee.Reducer.mean(), geometry: geom, scale: 9000, maxPixels: 1e13
     }).get('total_precipitation_sum');
@@ -166,7 +166,7 @@ function getAnnualSummerClimate(lake) {
   })).filter(ee.Filter.notNull(['lake']));
 }
 
-//  Batch Run for All Lakes 
+//  Batch run for all lakes 
 var allRows = ee.FeatureCollection([]);
 lakes.forEach(function(lk){
   allRows = allRows.merge(getAnnualSummerClimate(lk));
