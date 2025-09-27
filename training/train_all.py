@@ -460,15 +460,15 @@ def build_fcn(input_shape=(256, 256, 3)):
     o = Conv2D(1,   (1, 1), padding='same', activation=None)(o)
 
     # Upsample and add skip connections
-    o = Conv2DTranspose(1, (4, 4), strides=(2, 2), padding='same')(o)
-    o2 = Conv2D(1, (1, 1), padding='same')(f4)
+    o = Conv2DTranspose(1, kernel_size=(4, 4), strides=(2, 2), padding='same', activation=None)(o)
+    o2 = Conv2D(1, (1, 1), padding='same', activation=None)(f4)
     o = Add()([o, o2])
 
-    o = Conv2DTranspose(1, (4, 4), strides=(2, 2), padding='same')(o)
-    o3 = Conv2D(1, (1, 1), padding='same')(f3)
+    o = Conv2DTranspose(1, kernel_size=(4, 4), strides=(2, 2), padding='same', activation=None)(o)
+    o3 = Conv2D(1, (1, 1), padding='same', activation=None)(f3)
     o = Add()([o, o3])
 
-    o = Conv2DTranspose(1, (8, 8), strides=(8, 8), padding='same')(o)
+    o = Conv2DTranspose(1, kernel_size=(8, 8), strides=(8, 8), padding='same', activation=None)(o)
     o = Activation('sigmoid')(o)
 
     model = Model(inputs=vgg.input, outputs=o)
