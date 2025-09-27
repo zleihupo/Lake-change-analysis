@@ -7,10 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/15mHmpKcKzPc7sH3JBuxt0SS3y3j-Vr7u
 """
 
-# Install dependencies (only needed for the first run)
+# Install required packages (Colab; safe to re-run)
 !pip install rasterio matplotlib tqdm
 
-# Mount Google Drive (if running on Colab)
+# Mount Google Drive when running on Colab
 from google.colab import drive
 drive.mount('/content/drive')
 
@@ -24,7 +24,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import gc
 
-#  Parameter settings 
+# Configuration: input/output roots and parallel/batch settings
 input_root = "/content/drive/MyDrive/lake100_orignal"
 output_root = "/content/drive/MyDrive/image"
 os.makedirs(output_root, exist_ok=True)
@@ -32,27 +32,27 @@ os.makedirs(output_root, exist_ok=True)
 batch_size = 200
 max_workers = 2
 
-# Image scoring function (enhanced version) 
-# Final strict version of image_score function
-
-
+# Image scoring heuristic:
+# - reject frames with NaN/invalid shapes or very dark/low-contrast centres
+# - penalise bright grey (cloud-like) and saturated white pixels
+# - lower score is better; return (-score, reason)
 def image_score(img):
-    # Step 0: Check channels and dimensions
+    # Basic dimensional checks (expects at least 3 bands in CHW order)
     if img.shape[0] < 3 or img.shape[1] == 0 or img.shape[2] == 0:
         return -1, "❌ Insufficient channels or zero dimension"
 
-    # Step 1: Check if contains NaN (possibly from corrupted image)
+    # Reject frames with NaN values
     if np.isnan(img).any():
         return -1, "❌ Image contains NaN"
 
-    # Step 2: Preprocessing
+    # Split channels and compute brightness
     r = img[0].astype(np.float32)
     g = img[1].astype(np.float32)
     b = img[2].astype(np.float32)
     brightness = (r + g + b) / 3
     h, w = brightness.shape
 
-    # Step 3: Center region detection
+    # Central window statistics for basic quality control
     ch, cw = h // 4, w // 4
     center_r = r[ch:3 * ch, cw:3 * cw]
     center_g = g[ch:3 * ch, cw:3 * cw]
@@ -62,19 +62,16 @@ def image_score(img):
     center_mean = np.mean(center_brightness)
     center_std = np.std(center_brightness)
 
-
-    # Step 5: Cloud detection (grayish-white regions)
+    # Cloud proxy: bright and near-grey pixels
     grayish = (np.abs(r - g) < 25) & (np.abs(r - b) < 25) & (np.abs(g - b) < 25)
     cloud_mask = (brightness > 220) & grayish
     cloud_ratio = np.sum(cloud_mask) / brightness.size
 
-    # Step 6: White pixel ratio (high reflectance regions)
+    # Proportions of saturated white and near-black pixels
     white_ratio = np.sum(brightness > 245) / brightness.size
-
-    # Step 7: Black pixel ratio (missing images)
     black_ratio = np.sum(brightness < 10) / brightness.size
 
-    # Step 8: Image integrity filtering
+    # Hard filters for centre quality and overall exposure
     if center_mean < 30:
         return -1, "Center brightness too low"
     if center_std < 5:
@@ -84,13 +81,11 @@ def image_score(img):
     if np.max(brightness) < 50:
         return -1, "Overall brightness too low"
 
-    # Step 9: Comprehensive score (the smaller the better)
+    # Aggregate score: clouds weighted more than specular whites
     score = cloud_ratio + 0.5 * white_ratio
     return -score, "Qualified"
 
-
-
-#  Process a single folder 
+# Evaluate all .tif files in a folder and export the best candidate as PNG
 def process_folder(folder):
     try:
         tif_files = [f for f in os.listdir(folder) if f.lower().endswith(".tif")]
@@ -117,10 +112,12 @@ def process_folder(folder):
         if best_img is None or best_score == -1:
             return f"No valid image: {folder} (Reason: {best_reason})"
 
+        # Convert first three bands to uint8 RGB and save
         rgb = best_img[:3].astype(np.uint8)
         rgb = np.transpose(rgb, (1, 2, 0))
         img_pil = Image.fromarray(rgb)
 
+        # Expect folder names like "<lake>-<YY>-<MM>"; parse to construct filename
         folder_name = os.path.basename(folder)
         match = re.match(r"(.*)-(\d{2})-(\d{2})", folder_name)
         if match:
@@ -139,7 +136,7 @@ def process_folder(folder):
     except Exception as e:
         return f"Error: {folder}\n{e}"
 
-#  Batch execution
+# Batch execution over subfolders of input_root using a thread pool
 total = len(all_folders)
 print(f"Total to process {total} folders, {batch_size} per batch")
 
