@@ -217,7 +217,7 @@ if REGION_HTML and os.path.exists(REGION_HTML):
     plt.title("Fig.7 Regional trends (screenshot)")
     plt.show()  # <—— show
 
-# ===== Fig.8 (robust version): automatically compute area_index and plot region small multiples =====
+#  Fig.8 (robust version): automatically compute area_index and plot region small multiples
 import os, numpy as np, pandas as pd, matplotlib.pyplot as plt, math
 
 # If auto-search failed above, manually specify CSV path:
