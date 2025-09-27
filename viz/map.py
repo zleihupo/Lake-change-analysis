@@ -18,7 +18,7 @@ import branca.colormap as cm
 import os
 from google.colab import files
 
-# 1) Ensure files exist, otherwise upload
+# Ensure required CSV files are present; fall back to manual upload if missing
 for fname in ["Lake_Area_and_Climate_2000_2025.csv", "100lake.csv"]:
     if not os.path.exists(f"/content/{fname}"):
         print(f"File not found: {fname}, please upload:")
@@ -26,10 +26,11 @@ for fname in ["Lake_Area_and_Climate_2000_2025.csv", "100lake.csv"]:
         for k in uploaded.keys():
             print(f"Uploaded: {k}")
 
-#  2) Read and clean main data
+# Read main dataset and standardise area column to numeric
 df = pd.read_csv('/content/Lake_Area_and_Climate_2000_2025.csv')
 
 def clean_area(val):
+    # Extract numeric value from strings like "1,234.5"; return NaN if not parsable
     if pd.isna(val):
         return np.nan
     m = re.search(r"[-+]?\d*\.\d+|\d+", str(val))
@@ -43,11 +44,11 @@ def clean_area(val):
 df['area_m2'] = df['area_m2'].apply(clean_area)
 df = df[df['area_m2'] > 0].copy()
 
-# Keep only summer months
+# Restrict to summer subset (already pre-filtered in this pipeline)
 df['is_summer'] = True
 df = df[df['is_summer']].copy()
 
-#3) Per-lake trend calculation 
+# Per-lake linear trend (per decade); require at least 4 unique years
 def trend_per_decade(series_year, series_value):
     d = pd.DataFrame({'year': series_year, 'y': series_value}).dropna()
     if d['year'].nunique() < 4:
@@ -59,6 +60,7 @@ def trend_per_decade(series_year, series_value):
 vars_climate = ['temp_C','precip_mm','pet_mm','snow_cover_pct','snow_depth_cm']
 climate_trends = []
 
+# Compute lake-wise area index trend and climate variable trends
 for lake, g in df.groupby('lake'):
     g = g.sort_values('year')
     baseline = g[(g['year']>=2000)&(g['year']<=2002)]['area_m2'].mean()
@@ -74,10 +76,11 @@ for lake, g in df.groupby('lake'):
 
 trends_df = pd.DataFrame(climate_trends)
 
-#  4) Lake coordinates 
+# Read lake rectangles and derive point centres for mapping
 coords = pd.read_csv('/content/100lake.csv', encoding='latin1')
 
 def rect_center(rect_str):
+    # Parse "lon1,lat1,lon2,lat2" and return centre (lat, lon)
     nums = re.findall(r"[-+]?\d*\.\d+|\d+", str(rect_str))
     if len(nums) >= 4:
         lon1, lat1, lon2, lat2 = map(float, nums[:4])
@@ -87,21 +90,24 @@ def rect_center(rect_str):
 coords['lat'], coords['lon'] = zip(*coords['rectangle'].map(rect_center))
 coords_clean = coords[['lake_name','lat','lon']].dropna()
 
+# Combine coordinates with per-lake trends for plotting
 map_df = coords_clean.merge(trends_df, left_on='lake_name', right_on='lake', how='left')
 
-# 5) Folium interactive map 
+# Helper for safe numeric clipping used by colour mapping
 def clip(v, lo, hi):
     try:
         return max(lo, min(hi, float(v)))
     except:
         return 0.0
 
+# Build colour scale from empirical quantiles of area trend
 area_vals = map_df['area_trend_per_decade'].dropna()
 vmax = float(np.percentile(area_vals, 85))
 vmin = -vmax
 colormap = cm.LinearColormap(['blue', 'white', 'red'], vmin=vmin, vmax=vmax)
 colormap.caption = 'Lake summer area trend (per decade, index units)'
 
+# Create interactive point map with per-lake popups
 m = folium.Map(location=[20, 0], zoom_start=2, tiles='CartoDB positron')
 
 for _, r in map_df.iterrows():
@@ -138,44 +144,40 @@ for _, r in map_df.iterrows():
 
 colormap.add_to(m)
 
+# Add fixed title/legend box overlay to the map
 title_html = '''
 <div style="position: fixed;
      top: 10px; left: 50px; width: 420px; z-index:9999;
      background-color: rgba(255,255,255,0.9); padding: 8px 12px; border-radius: 6px;
      box-shadow: 0 2px 6px rgba(0,0,0,0.2); font-size:14px;">
 <b>Lake Summer Area Trend & Climate Factor Trends (2000–2025)</b><br>
-Color = Area trend per decade (blue ↑, red ↓). Click points for detailed climate trends.
+Colour encodes area trend per decade (blue ↑, red ↓). Click points for detailed climate trends.
 </div>
 '''
 m.get_root().html.add_child(folium.Element(title_html))
 
-#  6) Save map 
+# Save interactive HTML map and provide a download hint
 out_path = '/content/lake_area_trend_with_climate.html'
 m.save(out_path)
 print(f"Map saved: {out_path}")
-print("Download from the left /content panel in Colab, or run the following command:")
+print("Download from the left /content panel in Colab, or run:")
 print(f"from google.colab import files; files.download('{out_path}')")
 
 from google.colab import files
 files.download('/content/lake_area_trend_with_climate.html')
 
 
-# Install dependencies (Colab)
-
+# Install runtime dependencies required below (Colab environment)
 !pip -q install statsmodels folium branca
 
-# 
-# Imports & basic setup
-# 
-import os, re, numpy as np, pandas as pd
+# Imports and basic setup for region-level aggregation/map
+import os, re, numpy as np, pandas as pd, matplotlib.pyplot as plt, math
 import statsmodels.api as sm
 import folium
 import branca.colormap as cm
 from google.colab import files
 
-
-# Trigger upload if files not found
-# 
+# Prompt upload if expected files are missing
 needed = ["Lake_Area_and_Climate_2000_2025.csv", "100lake.csv"]
 for fname in needed:
     if not os.path.exists(f"/content/{fname}"):
@@ -186,11 +188,8 @@ for fname in needed:
     else:
         print(f"Found: /content/{fname}")
 
-
-# Helper functions
-
+# Helpers used for cleaning, trends, geometry parsing, and CSV loading with encoding fallback
 def clean_area(val):
-    """Extract numeric value from string, convert to float. Otherwise return NaN."""
     if pd.isna(val):
         return np.nan
     m = re.search(r"[-+]?\d*\.\d+|\d+", str(val))
@@ -202,7 +201,6 @@ def clean_area(val):
     return np.nan
 
 def slope_per_decade(years, values):
-    """Linear regression slope ×10 to get per-decade change."""
     d = pd.DataFrame({'year': years, 'y': values}).dropna()
     if d['year'].nunique() < 4:
         return np.nan
@@ -211,7 +209,6 @@ def slope_per_decade(years, values):
     return float(m.params['year'] * 10.0)
 
 def rect_center(rect_str):
-    """Parse ee.Geometry.Rectangle([lon1,lat1,lon2,lat2]) -> (lat_center, lon_center)"""
     nums = re.findall(r"[-+]?\d*\.\d+|\d+", str(rect_str))
     if len(nums) >= 4:
         lon1, lat1, lon2, lat2 = map(float, nums[:4])
@@ -219,7 +216,6 @@ def rect_center(rect_str):
     return np.nan, np.nan
 
 def read_100lake_csv(path="/content/100lake.csv"):
-    """Try multiple encodings to read 100lake.csv"""
     for enc in ("utf-8", "utf-8-sig", "gbk", "latin1", "ISO-8859-1"):
         try:
             return pd.read_csv(path, encoding=enc)
@@ -227,12 +223,10 @@ def read_100lake_csv(path="/content/100lake.csv"):
             pass
     return pd.read_csv(path)
 
-
-# 1) Read and clean main data (summer only)
-
+# Read data and restrict to summer observations (pipeline assumes pre-filtering)
 df = pd.read_csv('/content/Lake_Area_and_Climate_2000_2025.csv')
 
-# Required columns check
+# Validate mandatory columns used later in the pipeline
 required_main_cols = {'lake','region','hemisphere','year','month','area_m2',
                       'temp_C','precip_mm','pet_mm','snow_cover_pct','snow_depth_cm'}
 missing = required_main_cols - set(df.columns)
@@ -241,13 +235,9 @@ if missing:
 
 df['area_m2'] = df['area_m2'].apply(clean_area)
 df = df[df['area_m2'] > 0].copy()
-
 df['is_summer'] = True
 
-
-# 2) Lake baseline (2000–2002) -> area_index
-#    If missing, fallback to mean of first 3 records of that lake
-
+# Compute per-lake baseline (2000–2002) and derive area_index; fallback: first three records per lake
 baseline = (
     df[(df['year']>=2000)&(df['year']<=2002)]
     .groupby('lake')['area_m2'].mean()
@@ -268,9 +258,7 @@ base = base[['baseline_area_m2']].dropna()
 df = df.merge(base, left_on='lake', right_index=True, how='inner')
 df['area_index'] = df['area_m2'] / df['baseline_area_m2']
 
-
-# 3) Aggregate to region-year level, compute temperature/area index trends (per decade)
-
+# Aggregate to region-year and compute trends for temperature and area_index
 reg_year = (df.groupby(['region','year'])
             .agg(mean_temp=('temp_C','mean'),
                  mean_area_index=('area_index','mean'))
@@ -287,9 +275,7 @@ for reg in regions:
                        'area_index_trend_per_decade': a_slope})
 trend_tbl = pd.DataFrame(trend_rows)
 
-
-# 4) Use 100lake.csv rectangle coordinates -> lake center -> region centroid
-
+# Derive lake centres from rectangles, then compute region centroids as means of lake centres
 coords = read_100lake_csv('/content/100lake.csv')
 if 'rectangle' not in coords.columns or 'lake_name' not in coords.columns:
     raise ValueError("100lake.csv must contain 'rectangle' and 'lake_name' columns.")
@@ -297,24 +283,16 @@ if 'rectangle' not in coords.columns or 'lake_name' not in coords.columns:
 coords['lat'], coords['lon'] = zip(*coords['rectangle'].map(rect_center))
 coords = coords[['lake_name','lat','lon']].dropna()
 
-# lake_name -> region mapping from main data
 lake_to_region = df[['lake','region']].drop_duplicates().rename(columns={'lake':'lake_name'})
 coords_reg = coords.merge(lake_to_region, on='lake_name', how='left').dropna(subset=['region'])
 
-# Region centroid = mean of lake centers within the region
 reg_centroids = (coords_reg.groupby('region')
                  .agg(lat=('lat','mean'), lon=('lon','mean'), n_lakes=('lake_name','nunique'))
                  .reset_index())
 
-# Merge trends & centroids
 reg_map = reg_centroids.merge(trend_tbl, on='region', how='left')
 
-
-# 5) Folium interactive region-level trend map
-#    - Layer1: Temperature trend (blue→white→red)
-#    - Layer2: Area index trend (red→white→blue)
-
-# Temperature trend color range: 5%-95% quantiles (default if missing)
+# Build interactive region-level map with two layers: temperature trend and area-index trend
 temp_vals = reg_map['temp_trend_C_per_decade'].dropna()
 tmax = float(np.nanpercentile(temp_vals, 90))
 tmin = -tmax
@@ -338,7 +316,7 @@ for _, r in reg_map.iterrows():
     lat, lon = r['lat'], r['lon']
     if pd.isna(lat) or pd.isna(lon):
         continue
-    # Temperature layer
+    # Temperature layer marker
     t = r['temp_trend_C_per_decade']
     color_t = '#888888' if pd.isna(t) else cmap_temp(t)
     popup_t = folium.Popup(
@@ -352,7 +330,7 @@ for _, r in reg_map.iterrows():
         location=[lat,lon], radius=8, color=color_t,
         fill=True, fill_color=color_t, fill_opacity=0.85, popup=popup_t
     ).add_to(fg_temp)
-    # Area layer
+    # Area layer marker
     a = r['area_index_trend_per_decade']
     color_a = '#888888' if pd.isna(a) else cmap_area(a)
     popup_a = folium.Popup(
@@ -379,14 +357,12 @@ title_html = '''
      background-color: rgba(255,255,255,0.95); padding: 8px 12px; border-radius: 6px;
      box-shadow: 0 2px 6px rgba(0,0,0,0.2); font-size:14px;">
 <b>Region-level Map: Summer Temperature & Lake Area Trends (2000–2025)</b><br>
-Toggle layers to view temperature trend (blue→red) or area trend (red→blue). Click markers for details.
+Use layer control to switch between temperature (blue→red) and area index (red→blue). Click markers for details.
 </div>
 '''
 m.get_root().html.add_child(folium.Element(title_html))
 
-
-# Save and download prompt
-
+# Save map and provide download instruction for Colab
 out_path = '/content/region_trends_map.html'
 m.save(out_path)
 print(f"Map saved: {out_path}")
@@ -397,13 +373,10 @@ from google.colab import files
 files.download('/content/region_trends_map.html')
 
 
-# Install dependencies (Colab)
-
+# Install dependencies used in the final heatmap section (redundant install is harmless in Colab)
 !pip -q install statsmodels folium
 
-
-# Imports
-
+# Imports for global heatmap visualisation
 import os, re
 import numpy as np
 import pandas as pd
@@ -412,9 +385,7 @@ import folium
 from folium.plugins import HeatMap
 from google.colab import files
 
-
-# Trigger upload if files not found
-
+# Ensure required inputs are available; prompt upload if not
 def ensure_file(fname):
     path = f"/content/{fname}"
     if not os.path.exists(path):
@@ -428,9 +399,7 @@ def ensure_file(fname):
 ensure_file("Lake_Area_and_Climate_2000_2025.csv")
 ensure_file("100lake.csv")
 
-
-# Helpers
-
+# Utility functions used for cleaning, trend estimation, and geometry handling
 def clean_area(val):
     if pd.isna(val):
         return np.nan
@@ -465,12 +434,9 @@ def read_100lake_csv(path="/content/100lake.csv"):
             pass
     return pd.read_csv(path)
 
-
-# 1) Read data (summer only)
-
+# Read data subset (summer) and coordinates
 df = pd.read_csv('/content/Lake_Area_and_Climate_2000_2025.csv')
 
-# Required columns check
 need_cols = {'lake','hemisphere','year','month','area_m2','temp_C'}
 miss = need_cols - set(df.columns)
 if miss:
@@ -487,30 +453,24 @@ if 'rectangle' not in coords.columns or 'lake_name' not in coords.columns:
 coords['lat'], coords['lon'] = zip(*coords['rectangle'].map(rect_center))
 coords = coords[['lake_name','lat','lon']].dropna()
 
-
-# 2) Per-lake summer trends
-
+# Per-lake summer trends for area index (baseline 2000–2002) and temperature
 records = []
 for lake, g in df.groupby('lake'):
     g = g.sort_values('year')
-    # Area index baseline (2000–2002)
     baseline = g[(g['year']>=2000)&(g['year']<=2002)]['area_m2'].mean()
     area_trend = np.nan
     if pd.notna(baseline) and baseline > 0:
         g['area_index'] = g['area_m2'] / baseline
         area_trend = trend_per_decade(g['year'], g['area_index'])
-    # Temperature trend
     temp_trend = trend_per_decade(g['year'], g['temp_C'])
     records.append({'lake': lake, 'area_trend': area_trend, 'temp_trend': temp_trend})
 
 trends = pd.DataFrame(records)
 
-# Merge coordinates
+# Merge lake centres with trends for point-based overlays
 points = coords.merge(trends, left_on='lake_name', right_on='lake', how='left').dropna(subset=['lat','lon'])
 
-
-# 3) Heatmap layers prep
-
+# Normalise absolute magnitudes to [0,1] for heatmap intensity
 def norm_weights(series):
     s = series.replace([np.inf, -np.inf], np.nan).dropna()
     if s.empty:
@@ -530,9 +490,7 @@ area_neg['w'] = norm_weights(area_neg['area_trend'])
 temp_pos['w'] = norm_weights(temp_pos['temp_trend'])
 temp_neg['w'] = norm_weights(temp_neg['temp_trend'])
 
-
-# 4) Build interactive heatmap
-
+# Build interactive heatmap layers for positive/negative trends of area and temperature
 m = folium.Map(location=[20, 0], zoom_start=2, tiles='CartoDB positron')
 
 grad_blue   = {0.2:'#b3d9ff', 0.5:'#66b3ff', 0.8:'#1a8cff', 1.0:'#0059b3'}  # Area ↑
@@ -563,7 +521,7 @@ fg_area_neg.add_to(m)
 fg_temp_pos.add_to(m)
 fg_temp_neg.add_to(m)
 
-# Optional point layer
+# Optional discrete point layer with basic popups
 fg_points = folium.FeatureGroup(name='Lake Points', show=False)
 for _, r in points.iterrows():
     popup = folium.Popup(
@@ -586,14 +544,12 @@ title_html = '''
      background-color: rgba(255,255,255,0.95); padding: 8px 12px; border-radius: 6px;
      box-shadow: 0 2px 6px rgba(0,0,0,0.2); font-size:14px;">
 <b>Global Heatmap of Lake Trends (Summer, 2000–2025)</b><br>
-Toggle layers: Area ↑(blue), Area ↓(red), Temp ↑(orange), Temp ↓(cyan). Intensity reflects magnitude.
+Toggle layers: Area ↑(blue), Area ↓(red), Temp ↑(orange), Temp ↓(cyan). Intensity ≈ magnitude.
 </div>
 '''
 m.get_root().html.add_child(folium.Element(title_html))
 
-
-# Save & download prompt
-
+# Save final heatmap and show a download helper
 out_path = '/content/global_heatmap_lakes_trends.html'
 m.save(out_path)
 print(f"Heatmap saved: {out_path}")
