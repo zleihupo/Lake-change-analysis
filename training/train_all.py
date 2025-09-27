@@ -8,55 +8,56 @@ Original file is located at
 """
 
 from google.colab import drive
+# Mount Google Drive for dataset access
 drive.mount('/content/drive')
 
 import os
 import shutil
 import random
 
-# Your dataset path (after mounting Drive)
-image_dir = '/content/drive/My Drive/train/img'     # all raw images
-mask_dir = '/content/drive/My Drive/train/mask'     # all raw masks
-output_base = '/content/drive/My Drive/dataset/'    # output path
+# Define dataset paths and desired split ratios
+image_dir = '/content/drive/My Drive/train/img'
+mask_dir = '/content/drive/My Drive/train/mask'
+output_base = '/content/drive/My Drive/dataset/'
 splits = ['train', 'val', 'test']
 split_ratio = {'train': 0.7, 'val': 0.1, 'test': 0.2}
 
-# Create output directory structure
+# Create output folders for each split and type (images/masks)
 for split in splits:
     os.makedirs(os.path.join(output_base, split, 'images'), exist_ok=True)
     os.makedirs(os.path.join(output_base, split, 'masks'), exist_ok=True)
 
-# Collect all image filenames
+# Get all image filenames and randomly shuffle them
 all_files = sorted([f for f in os.listdir(image_dir) if f.endswith(('.jpg', '.png'))])
 random.shuffle(all_files)
 total = len(all_files)
 
-# Split dataset
+# Split filenames according to the specified ratio
 train_end = int(split_ratio['train'] * total)
 val_end = train_end + int(split_ratio['val'] * total)
-
 split_files = {
     'train': all_files[:train_end],
     'val': all_files[train_end:val_end],
     'test': all_files[val_end:]
 }
 
-# Copy files into new directories
+# Copy image and corresponding mask files into respective folders
 for split, files in split_files.items():
     for f in files:
         img_src = os.path.join(image_dir, f)
         mask_name = f.replace('.jpg', '.png').replace('.jpeg', '.png')
         mask_src = os.path.join(mask_dir, mask_name)
-
         shutil.copy(img_src, os.path.join(output_base, split, 'images', f))
         shutil.copy(mask_src, os.path.join(output_base, split, 'masks', mask_name))
 
+# Print summary of split counts
 print("Dataset split completed, total:")
 for k, v in split_files.items():
     print(f"{k}: {len(v)} images")
 
-# Step 1: Train U-Net model (train_unet.py) — Improved version
-# Reproducible, more metrics, more stable training process
+# Step 1: Train U-Net model (train_unet.py)
+# This section implements a U-Net model with dropout for regularization, metrics for evaluation, and training callbacks.
+
 import os, random, glob
 import numpy as np
 import tensorflow as tf
@@ -67,12 +68,12 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-# 1) Fix random seeds for reproducibility 
+# Set fixed random seeds to ensure reproducible training results
 SEED = 7
 os.environ["PYTHONHASHSEED"] = str(SEED)
 random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
 
-# 2) Paths
+# Define image and mask directories for training and validation
 train_img_path = '/content/drive/My Drive/dataset/train/images/'
 train_mask_path = '/content/drive/My Drive/dataset/train/masks/'
 val_img_path   = '/content/drive/My Drive/dataset/val/images/'
@@ -80,7 +81,9 @@ val_mask_path  = '/content/drive/My Drive/dataset/val/masks/'
 
 IMG_SIZE = (256, 256)
 
-# 3) Load data 
+# Load and preprocess image-mask pairs
+# Convert images to RGB, resize, normalize; binarize masks
+
 def load_data(img_dir, mask_dir, img_size=(256, 256)):
     images, masks = [], []
     img_files = sorted(glob.glob(os.path.join(img_dir, '*')))
@@ -99,19 +102,21 @@ def load_data(img_dir, mask_dir, img_size=(256, 256)):
         if mask is None:
             continue
         mask = cv2.resize(mask, img_size, interpolation=cv2.INTER_NEAREST)
-        mask = (mask > 127).astype(np.float32)[..., None]  # (H,W,1)
+        mask = (mask > 127).astype(np.float32)[..., None]  # shape (H, W, 1)
 
         images.append(img)
         masks.append(mask)
 
     return np.asarray(images, dtype=np.float32), np.asarray(masks, dtype=np.float32)
 
+# Load datasets into memory
 x_train, y_train = load_data(train_img_path, train_mask_path, IMG_SIZE)
 x_val,   y_val   = load_data(val_img_path,   val_mask_path,   IMG_SIZE)
 
 print('Train:', x_train.shape, y_train.shape, ' Val:', x_val.shape, y_val.shape)
 
-# 4) Metrics (IoU / Dice)
+# Define evaluation metrics: Intersection over Union (IoU) and Dice coefficient
+
 def iou_metric(y_true, y_pred, smooth=1e-6):
     y_true = tf.cast(y_true, tf.float32)
     y_pred = tf.cast(y_pred, tf.float32)
@@ -128,7 +133,8 @@ def dice_coef(y_true, y_pred, smooth=1e-6):
     denom = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
     return (2.0 * intersection + smooth) / (denom + smooth)
 
-# 5) U-Net model 
+# Define the U-Net architecture with skip connections and dropout in bottleneck
+
 def unet_model(input_size=(256, 256, 3)):
     inputs = Input(input_size)
 
@@ -168,14 +174,15 @@ def unet_model(input_size=(256, 256, 3)):
     outputs = Conv2D(1, 1, activation='sigmoid')(c9)
     return Model(inputs, outputs)
 
+# Instantiate and compile U-Net model using binary cross-entropy and custom metrics
 model = unet_model(input_size=(IMG_SIZE[0], IMG_SIZE[1], 3))
 model.compile(
     optimizer='adam',
-    loss='binary_crossentropy',          # same as original; can switch to BCE+Dice if needed
+    loss='binary_crossentropy',  # standard loss for binary segmentation
     metrics=['accuracy', iou_metric, dice_coef]
 )
 
-# 6) Training callbacks 
+# Define callbacks: save best model, reduce learning rate on plateau, early stopping
 ckpt_path = '/content/drive/My Drive/unet_model_best.h5'
 callbacks = [
     ModelCheckpoint(ckpt_path, monitor='val_iou_metric', mode='max',
@@ -186,24 +193,26 @@ callbacks = [
                   patience=15, restore_best_weights=True, verbose=1)
 ]
 
-# 7) Train 
+# Train the model on training data with validation monitoring
 history = model.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
     batch_size=8,
-    epochs=100,                 # aligned with paper training strength
+    epochs=100,
     callbacks=callbacks,
     shuffle=True,
     verbose=1
 )
 
-# 8) Save final model 
+# Save the final model to disk
 final_path = '/content/drive/My Drive/unet_model_final.h5'
 model.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
 
-# Step 2: Train SegNet model (train_segnet.py) — Improved version
-# Reproducible, more metrics, more stable training
+
+# Step 2: Train SegNet model (train_segnet.py)
+# This section implements the SegNet model with batch normalization, dropout, and standard callbacks.
+
 import os, random, glob
 import numpy as np
 import tensorflow as tf
@@ -215,12 +224,12 @@ from tensorflow.keras.layers import (Input, Conv2D, MaxPooling2D, UpSampling2D,
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-# 1) Fix random seeds 
+# Set seed values for reproducibility
 SEED = 7
 os.environ["PYTHONHASHSEED"] = str(SEED)
 random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
 
-# 2) Data paths 
+# Define paths for training and validation sets
 train_img_path = '/content/drive/My Drive/dataset/train/images/'
 train_mask_path = '/content/drive/My Drive/dataset/train/masks/'
 val_img_path   = '/content/drive/My Drive/dataset/val/images/'
@@ -228,7 +237,7 @@ val_mask_path  = '/content/drive/My Drive/dataset/val/masks/'
 
 IMG_SIZE = (256, 256)
 
-# 3) Load data 
+# Load and preprocess images and masks
 def load_data(img_dir, mask_dir, img_size=(256, 256)):
     images, masks = [], []
     img_files = sorted(glob.glob(os.path.join(img_dir, '*')))
@@ -246,20 +255,21 @@ def load_data(img_dir, mask_dir, img_size=(256, 256)):
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
         if mask is None:
             continue
-        # Use nearest neighbor for mask to keep edges clean
         mask = cv2.resize(mask, img_size, interpolation=cv2.INTER_NEAREST)
-        mask = (mask > 127).astype(np.float32)[..., None]  # (H,W,1)
+        mask = (mask > 127).astype(np.float32)[..., None]  # binary mask, shape (H, W, 1)
 
         images.append(img)
         masks.append(mask)
 
     return np.asarray(images, dtype=np.float32), np.asarray(masks, dtype=np.float32)
 
+# Load train/val datasets
 x_train, y_train = load_data(train_img_path, train_mask_path, IMG_SIZE)
-x_val,   y_val   = load_data(val_img_path,   val_mask_path,   IMG_SIZE)
+x_val, y_val = load_data(val_img_path, val_mask_path, IMG_SIZE)
+
 print('Train:', x_train.shape, y_train.shape, ' Val:', x_val.shape, y_val.shape)
 
-# 4) Metrics (IoU / Dice) 
+# Define evaluation metrics for segmentation tasks
 def iou_metric(y_true, y_pred, smooth=1e-6):
     y_true = tf.cast(y_true, tf.float32)
     y_pred = tf.clip_by_value(tf.cast(y_pred, tf.float32), 0.0, 1.0)
@@ -274,25 +284,25 @@ def dice_coef(y_true, y_pred, smooth=1e-6):
     denom = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
     return (2.0 * inter + smooth) / (denom + smooth)
 
-# 5) SegNet model 
+# Construct the SegNet architecture with batch normalization and dropout
 def build_segnet(input_shape=(256, 256, 3)):
     inputs = Input(shape=input_shape)
 
-    # Encoder
-    x = Conv2D(64,  (3,3), padding='same')(inputs); x = BatchNormalization()(x); x = Activation('relu')(x)
+    # Encoder blocks
+    x = Conv2D(64, (3,3), padding='same')(inputs); x = BatchNormalization()(x); x = Activation('relu')(x)
     x = MaxPooling2D()(x)
 
-    x = Conv2D(128, (3,3), padding='same')(x);     x = BatchNormalization()(x); x = Activation('relu')(x)
+    x = Conv2D(128, (3,3), padding='same')(x); x = BatchNormalization()(x); x = Activation('relu')(x)
     x = MaxPooling2D()(x)
 
-    x = Conv2D(256, (3,3), padding='same')(x);     x = BatchNormalization()(x); x = Activation('relu')(x)
+    x = Conv2D(256, (3,3), padding='same')(x); x = BatchNormalization()(x); x = Activation('relu')(x)
     x = MaxPooling2D()(x)
 
-    # Bottleneck (optional Dropout for regularization)
-    x = Conv2D(512, (3,3), padding='same')(x);     x = BatchNormalization()(x); x = Activation('relu')(x)
+    # Bottleneck with dropout for regularization
+    x = Conv2D(512, (3,3), padding='same')(x); x = BatchNormalization()(x); x = Activation('relu')(x)
     x = Dropout(0.3)(x)
 
-    # Decoder (UpSampling approximates SegNet upsampling)
+    # Decoder with upsampling and transposed convolution
     x = UpSampling2D()(x)
     x = Conv2DTranspose(256, (3,3), padding='same')(x); x = BatchNormalization()(x); x = Activation('relu')(x)
 
@@ -300,17 +310,18 @@ def build_segnet(input_shape=(256, 256, 3)):
     x = Conv2DTranspose(128, (3,3), padding='same')(x); x = BatchNormalization()(x); x = Activation('relu')(x)
 
     x = UpSampling2D()(x)
-    x = Conv2DTranspose(64,  (3,3), padding='same')(x); x = BatchNormalization()(x); x = Activation('relu')(x)
+    x = Conv2DTranspose(64, (3,3), padding='same')(x); x = BatchNormalization()(x); x = Activation('relu')(x)
 
     outputs = Conv2DTranspose(1, (1,1), activation='sigmoid')(x)
     return Model(inputs, outputs)
 
+# Initialize and compile SegNet model with binary cross-entropy and metrics
 segnet = build_segnet(input_shape=(IMG_SIZE[0], IMG_SIZE[1], 3))
 segnet.compile(optimizer='adam',
                loss='binary_crossentropy',
                metrics=['accuracy', iou_metric, dice_coef])
 
-# 6) Training callbacks 
+# Define callbacks for training
 ckpt_path  = '/content/drive/My Drive/segnet_model_best.h5'
 final_path = '/content/drive/My Drive/segnet_model_final.h5'
 callbacks = [
@@ -322,7 +333,7 @@ callbacks = [
                   patience=15, restore_best_weights=True, verbose=1),
 ]
 
-# 7) Train 
+# Train the SegNet model on training data
 history = segnet.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
@@ -333,12 +344,13 @@ history = segnet.fit(
     verbose=1
 )
 
-# 8) Save 
+# Save the final SegNet model to disk
 segnet.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
 
-# Step 3: Train FCN model (train_fcn.py) — Improved version
-# Reproducible, more metrics, more stable training; FCN-8s style skip connections and upsampling
+# Step 3: Train FCN model (train_fcn.py)
+# Implements FCN-8s model using a VGG16 backbone with skip connections and staged training.
+
 import os, random, glob
 import numpy as np
 import tensorflow as tf
@@ -349,12 +361,12 @@ from tensorflow.keras.layers import Input, Conv2D, Conv2DTranspose, Add, Activat
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-# 1) Fix random seeds 
+# Set seed values for reproducibility
 SEED = 7
 os.environ["PYTHONHASHSEED"] = str(SEED)
 random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
 
-# 2) Data paths 
+# Define data paths for FCN training
 train_img_path = '/content/drive/My Drive/dataset/train/images/'
 train_mask_path = '/content/drive/My Drive/dataset/train/masks/'
 val_img_path   = '/content/drive/My Drive/dataset/val/images/'
@@ -362,9 +374,8 @@ val_mask_path  = '/content/drive/My Drive/dataset/val/masks/'
 
 IMG_SIZE = (256, 256)
 
-# 3) Load data 
+# Load and preprocess training and validation images/masks
 def load_data(img_dir, mask_dir, img_size=(256, 256)):
-    # List common image extensions, not only .jpg
     patterns = ["*.jpg", "*.jpeg", "*.png", "*.tif", "*.tiff", "*.bmp"]
     img_files = []
     for pat in patterns:
@@ -378,8 +389,6 @@ def load_data(img_dir, mask_dir, img_size=(256, 256)):
 
     for img_path in tqdm(img_files, desc=f'Loading {os.path.basename(os.path.normpath(img_dir))}'):
         fname = os.path.basename(img_path)
-
-        # Allow original images to be .png/.tif etc., masks must have the same stem + .png/.jpg
         stem, _ = os.path.splitext(fname)
         mpath_candidates = [
             os.path.join(mask_dir, stem + ".png"),
@@ -401,7 +410,7 @@ def load_data(img_dir, mask_dir, img_size=(256, 256)):
         if mask is None:
             raise ValueError(f"Failed to read mask: {mask_path}")
         mask = cv2.resize(mask, img_size, interpolation=cv2.INTER_NEAREST)
-        mask = (mask > 127).astype(np.float32)[..., None]  # (H,W,1)
+        mask = (mask > 127).astype(np.float32)[..., None]  # (H, W, 1)
 
         images.append(img)
         masks.append(mask)
@@ -414,11 +423,14 @@ def load_data(img_dir, mask_dir, img_size=(256, 256)):
 
     return X, y
 
+# Load FCN training and validation sets
 x_train, y_train = load_data(train_img_path, train_mask_path, IMG_SIZE)
-x_val,   y_val   = load_data(val_img_path,   val_mask_path,   IMG_SIZE)
+x_val, y_val = load_data(val_img_path, val_mask_path, IMG_SIZE)
+
 print('Train:', x_train.shape, y_train.shape, ' Val:', x_val.shape, y_val.shape)
 
-# 4) Metrics (IoU / Dice)
+# Define evaluation metrics: IoU and Dice
+
 def iou_metric(y_true, y_pred, smooth=1e-6):
     y_true = tf.cast(y_true, tf.float32)
     y_pred = tf.clip_by_value(tf.cast(y_pred, tf.float32), 0.0, 1.0)
@@ -433,42 +445,37 @@ def dice_coef(y_true, y_pred, smooth=1e-6):
     denom = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
     return (2.0 * inter + smooth) / (denom + smooth)
 
-# 5) FCN model (VGG16 backbone, FCN-8s skip connections)
+# Build FCN-8s architecture based on VGG16 backbone
 def build_fcn(input_shape=(256, 256, 3)):
     vgg = VGG16(include_top=False, weights='imagenet', input_shape=input_shape)
 
-    # Feature maps
-    f3 = vgg.get_layer('block3_pool').output   # 1/8
-    f4 = vgg.get_layer('block4_pool').output   # 1/16
-    f5 = vgg.get_layer('block5_pool').output   # 1/32
+    # Extract feature maps from VGG
+    f3 = vgg.get_layer('block3_pool').output   # 1/8 resolution
+    f4 = vgg.get_layer('block4_pool').output   # 1/16 resolution
+    f5 = vgg.get_layer('block5_pool').output   # 1/32 resolution
 
-    # Classifier replacement (logits)
+    # Replace classifier with convolutional layers
     o = Conv2D(512, (7, 7), padding='same', activation='relu')(f5)
     o = Conv2D(512, (1, 1), padding='same', activation='relu')(o)
     o = Conv2D(1,   (1, 1), padding='same', activation=None)(o)
 
-    # 1/32 -> 1/16
-    o = Conv2DTranspose(1, kernel_size=(4, 4), strides=(2, 2), padding='same', activation=None)(o)
-    o2 = Conv2D(1, (1, 1), padding='same', activation=None)(f4)
+    # Upsample and add skip connections
+    o = Conv2DTranspose(1, (4, 4), strides=(2, 2), padding='same')(o)
+    o2 = Conv2D(1, (1, 1), padding='same')(f4)
     o = Add()([o, o2])
 
-    # 1/16 -> 1/8
-    o = Conv2DTranspose(1, kernel_size=(4, 4), strides=(2, 2), padding='same', activation=None)(o)
-    o3 = Conv2D(1, (1, 1), padding='same', activation=None)(f3)
+    o = Conv2DTranspose(1, (4, 4), strides=(2, 2), padding='same')(o)
+    o3 = Conv2D(1, (1, 1), padding='same')(f3)
     o = Add()([o, o3])
 
-    # 1/8 -> 1/1
-    o = Conv2DTranspose(1, kernel_size=(8, 8), strides=(8, 8), padding='same', activation=None)(o)
-
-    # Sigmoid
+    o = Conv2DTranspose(1, (8, 8), strides=(8, 8), padding='same')(o)
     o = Activation('sigmoid')(o)
 
     model = Model(inputs=vgg.input, outputs=o)
     return model
 
+# Instantiate FCN model and freeze encoder for warm-up training
 fcn = build_fcn(input_shape=(IMG_SIZE[0], IMG_SIZE[1], 3))
-
-# Freeze backbone for warmup
 for layer in fcn.layers:
     if layer.name.startswith('block'):
         layer.trainable = False
@@ -477,6 +484,7 @@ fcn.compile(optimizer='adam',
             loss='binary_crossentropy',
             metrics=['accuracy', iou_metric, dice_coef])
 
+# Define callbacks for FCN training
 ckpt_path  = '/content/drive/My Drive/fcn_model_best.h5'
 final_path = '/content/drive/My Drive/fcn_model_final.h5'
 callbacks = [
@@ -488,7 +496,7 @@ callbacks = [
                   patience=15, restore_best_weights=True, verbose=1),
 ]
 
-# 6) Train: warmup + optional fine-tune 
+# Warm-up training with frozen encoder
 history1 = fcn.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
@@ -499,10 +507,11 @@ history1 = fcn.fit(
     verbose=1
 )
 
-# Fine-tune: unfreeze block5
+# Fine-tuning: unfreeze deeper encoder layers and retrain
 for layer in fcn.layers:
     if layer.name.startswith('block5'):
         layer.trainable = True
+
 fcn.compile(optimizer=tf.keras.optimizers.Adam(1e-4),
             loss='binary_crossentropy',
             metrics=['accuracy', iou_metric, dice_coef])
@@ -517,6 +526,6 @@ history2 = fcn.fit(
     verbose=1
 )
 
-# 7) Save 
+# Save the final FCN model to disk
 fcn.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
