@@ -21,7 +21,7 @@ from tqdm import tqdm
 ee.Authenticate()
 ee.Initialize(project='lake-465014')
 
-# === Parameter settings ===
+#  Parameter settings 
 START_YEAR = 2000
 END_YEAR = 2021
 MONTHS_NORTH = [6, 7, 8]  # Northern Hemisphere summer
