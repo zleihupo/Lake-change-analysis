@@ -7,44 +7,43 @@ Original file is located at
     https://colab.research.google.com/drive/1x-yxuIUyvA5V3jOTzZ4oATKP7xo3Amtq
 """
 
-# STEP 1: Upload CSV files
+# Upload the required CSV files via Colab's file picker
 from google.colab import files
 import pandas as pd
 
-# Open file upload dialog
+# Trigger the upload dialogue
 uploaded = files.upload()
 
-# STEP 2: Read the uploaded files into pandas DataFrames
-# Make sure the filenames match exactly with your uploaded files
+# Read uploaded files into DataFrames (filenames must match the uploaded assets)
+# Adjust the names below if your files differ
 climate_file = 'Lake_Climate_AnnualSummer_2000_2025.csv'
 area_file = 'LakeArea_AllYears_Full.csv'
 
-# Load the CSV files
+# Load the CSVs
 climate_df = pd.read_csv(climate_file)
 area_df = pd.read_csv(area_file)
 
-# Print column names to confirm the join keys
+# Inspect column names to verify join keys
 print("Climate file columns:", climate_df.columns.tolist())
 print("Area file columns:", area_df.columns.tolist())
 
-# STEP 3: Merge the two DataFrames on 'lake_name' and 'year'
-# Change the column names here if they are different in your data
+# Merge on shared identifiers ('lake', 'year'); change keys here if your schema differs
 merged_df = pd.merge(area_df, climate_df, on=['lake', 'year'], how='inner')
 
-# Show merge result
+# Preview the merged result
 print("Merged DataFrame shape:", merged_df.shape)
 merged_df.head()
 
-# Step 4: Remove unnecessary columns
+# Drop geometry/index artefacts that are not needed downstream
 columns_to_remove = ['system:index_x', '.geo_x', 'system:index_y', '.geo_y']
 cleaned_columns = [col for col in merged_df.columns if col not in columns_to_remove]
 merged_df_cleaned = merged_df[cleaned_columns]
 
-# Step 5: Display cleaned merged data (first 5 rows)
+# Display a brief preview of the cleaned table
 print("✅ Cleaned merged data preview:")
 merged_df_cleaned.head()
 
-# Step 6: Save cleaned merged data
+# Persist the cleaned dataset and offer a download
 output_file = 'Lake_Area_and_Climate_2000_2025.csv'
 merged_df_cleaned.to_csv(output_file, index=False)
 files.download(output_file)
