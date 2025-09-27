@@ -7,33 +7,33 @@ Original file is located at
     https://colab.research.google.com/drive/173p2AmUCQzXNlC0c9i9FJX8wJwJqEbvo
 """
 
-# Step 1: Mount Google Drive (authorize after running)
+# Mount Google Drive (authorise in Colab when prompted)
 from google.colab import drive
 drive.mount('/content/drive')
 
-# Use Earth Engine to batch export monthly_history images (10 lakes per batch) + generate CSV index (using lake names)
+# Earth Engine-driven batch export of monthly history (10 lakes per batch) + CSV index
 import ee
 import time
 import csv
 from tqdm import tqdm
 
-# Initialize Earth Engine (authorization required)
+# Authenticate and initialise Earth Engine (authorisation required on first run)
 ee.Authenticate()
 ee.Initialize(project='lake-465014')
 
-#  Parameter settings 
+# Export configuration and seasonal month sets
 START_YEAR = 2000
 END_YEAR = 2021
-MONTHS_NORTH = [6, 7, 8]  # Northern Hemisphere summer
-MONTHS_SOUTH = [12, 1, 2] # Southern Hemisphere summer (cross year)
-EXPORT_SCALE = 30  # Resolution (meters)
-LAKES_PER_BATCH = 10  # Number of lakes exported per batch
-SLEEP_BETWEEN_TASKS = 0.5  # Interval between tasks (seconds)
-SLEEP_BETWEEN_BATCHES = 30  # Wait between batches (seconds)
-EXPORT_FOLDER = "GSW_MonthlyHistory"  # Root folder in Google Drive
-INDEX_CSV = "gsw_export_index.csv"  # Index file name
+MONTHS_NORTH = [6, 7, 8]   # boreal summer
+MONTHS_SOUTH = [12, 1, 2]  # austral summer (crosses year boundary)
+EXPORT_SCALE = 30
+LAKES_PER_BATCH = 10
+SLEEP_BETWEEN_TASKS = 0.5
+SLEEP_BETWEEN_BATCHES = 30
+EXPORT_FOLDER = "GSW_MonthlyHistory"
+INDEX_CSV = "gsw_export_index.csv"
 
-# Example: Lake names + coordinates
+# Lake list: (name, [lon_min, lat_min, lon_max, lat_max])
 lake_info = [
     ("Namtso", [90.1, 30.2, 91.05, 31.1]),
     ("Yamdrok", [90.3, 28.65, 91.1, 29.45]),
@@ -137,12 +137,11 @@ lake_info = [
     ("Lake Gregory", [127.24, -20.06, 127.53, -20.31]),
 ]
 
-# Prepare CSV index file
+# Create the index CSV; submit Drive export tasks in batches
 with open(INDEX_CSV, mode='w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["lake_name", "year", "month", "filename", "folder"])
 
-    # Execute export tasks in batches
     for batch_start in range(0, len(lake_info), LAKES_PER_BATCH):
         batch = lake_info[batch_start:batch_start + LAKES_PER_BATCH]
         print(f"Executing batch {batch_start//LAKES_PER_BATCH + 1}...")
@@ -154,6 +153,7 @@ with open(INDEX_CSV, mode='w', newline='') as csvfile:
 
             for year in range(START_YEAR, END_YEAR + 1):
                 for month in months:
+                    # For southern hemisphere, Dec/Jan/Feb are attributed to the following calendar year
                     ym_year = year if not (lat_center < 0 and month < 3) else year + 1
                     date_str = f"{ym_year}-{month:02d}-15"
                     image = ee.ImageCollection("JRC/GSW1_4/MonthlyHistory") \
@@ -182,12 +182,12 @@ with open(INDEX_CSV, mode='w', newline='') as csvfile:
 
 print("All tasks submitted. Check Earth Engine Task panel for progress.\nExported images will be automatically saved to your Google Drive → 'GSW_MonthlyHistory/<lake_name>/<year>/'\n📄 Index CSV file generated: gsw_export_index.csv")
 
-# Mask extraction function
+# Converts a GSW MonthlyHistory GeoTIFF to a binary mask PNG only when water exists
 def convert_to_mask_png_if_water(in_path, out_path):
     with rasterio.open(in_path) as src:
         image = src.read(1)
 
-    # Check if water pixels exist
+    # Water detection for classes {2, 254}; supports integer or float encodings
     has_water = np.any((image == 254) | (image == 2) | (np.isclose(image, 2.0)))
     if not has_water:
         print(f"No water pixels, skipped: {os.path.basename(in_path)}")
@@ -197,6 +197,7 @@ def convert_to_mask_png_if_water(in_path, out_path):
     Image.fromarray(mask).save(out_path)
     return True
 
+# Iterate over exported GeoTIFFs and create PNG masks into a single target folder
 converted = 0
 for folder, file in tqdm(tif_files):
     in_path = os.path.join(folder, file)
@@ -209,3 +210,4 @@ for folder, file in tqdm(tif_files):
         print(f"Failed: {file} → {e}")
 
 print("All PNG mask images generated and saved into a single mask folder!")
+
