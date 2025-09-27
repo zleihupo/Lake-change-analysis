@@ -24,7 +24,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import gc
 
-# ========== Parameter settings ==========
+#  Parameter settings 
 input_root = "/content/drive/MyDrive/lake100_orignal"
 output_root = "/content/drive/MyDrive/image"
 os.makedirs(output_root, exist_ok=True)
@@ -32,7 +32,7 @@ os.makedirs(output_root, exist_ok=True)
 batch_size = 200
 max_workers = 2
 
-# ========== Image scoring function (enhanced version) ==========
+# Image scoring function (enhanced version) 
 # Final strict version of image_score function
 
 
@@ -90,7 +90,7 @@ def image_score(img):
 
 
 
-# ========== Process a single folder ==========
+#  Process a single folder 
 def process_folder(folder):
     try:
         tif_files = [f for f in os.listdir(folder) if f.lower().endswith(".tif")]
@@ -139,7 +139,7 @@ def process_folder(folder):
     except Exception as e:
         return f"Error: {folder}\n{e}"
 
-# ========== Batch execution ==========
+#  Batch execution
 total = len(all_folders)
 print(f"Total to process {total} folders, {batch_size} per batch")
 
