@@ -7,23 +7,23 @@ Original file is located at
     https://colab.research.google.com/drive/1ydusM1iAW7RyITfgu-i0pLnd2VbCsd7t
 """
 
-# Install required libraries (execute once if running first time)
+# Install dependencies required by the notebook (safe to re-run in Colab)
 !pip install earthengine-api geemap geedim rasterio pillow -q
 
-# Install dependencies (needed for Colab)
+# Additional installs for Colab runtime (duplicated for robustness)
 !pip install geemap earthengine-api -q
 
-# Import libraries
+# Imports
 import ee, geemap
 import datetime
 
-# Initialize Earth Engine (Colab first run will ask for authorization)
+# Authenticate and initialise Earth Engine (first run will prompt authorisation)
 ee.Authenticate()
-ee.Initialize(project='lake-465014')  # Replace with your project ID (if needed)
+ee.Initialize(project='lake-465014')  # Replace with your GEE project ID if required
 
-# Set lake region and date
+# Define study region and target date
 lake_name = "Lake Name"
-# Refined Rectangle (actual lake boundary)
+# Rectangle approximating the lake boundary (lon/lat in degrees)
 region = ee.Geometry.Rectangle([-60.17,-3.66,-60.00,-3.56])
 
 year, month, day = 2018, 6, 11
@@ -32,9 +32,9 @@ end_date = start_date + datetime.timedelta(days=1)
 
 start = start_date.strftime("%Y-%m-%d")
 end = end_date.strftime("%Y-%m-%d")
-print(f"\n📅 Processing: {start}")
+print(f"\nProcessing date: {start}")
 
-# Band processing function (avoid empty images)
+# Helper: median composite with scaling and datatype normalisation; returns None if no data
 def get_median_image(collection, bands, scale_factor):
     if collection.size().getInfo() == 0:
         return None
@@ -45,7 +45,7 @@ def get_median_image(collection, bands, scale_factor):
         .clamp(0, 255) \
         .uint8()
 
-# Get three data sources
+# Image collections with basic cloud filtering and date/region constraints
 s2_col = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED") \
     .filterBounds(region).filterDate(start, end) \
     .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
@@ -57,20 +57,20 @@ landsat_col = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2") \
 modis_col = ee.ImageCollection("MODIS/006/MOD09GA") \
     .filterBounds(region).filterDate(start, end)
 
-# Composite images
+# Median composites (scaled to 8-bit)
 s2_img = get_median_image(s2_col, ['B4', 'B3', 'B2'], 3000)
 landsat_img = get_median_image(landsat_col, ['SR_B4', 'SR_B3', 'SR_B2'], 10000)
 modis_img = get_median_image(modis_col, ['sur_refl_b01', 'sur_refl_b04', 'sur_refl_b03'], 5000)
 
 if not any([s2_img, landsat_img, modis_img]):
-    print("No available images, skipped")
+    print("No images available for the specified date/region.")
 else:
-    # Merge images by priority
+    # Fused visual composite with priority: Sentinel-2 → Landsat-8 → MODIS
     fused = s2_img or landsat_img or modis_img
     if fused and landsat_img: fused = fused.unmask(landsat_img)
-    if fused and modis_img: fused = fused.unmask(modis_img)
+    if fused and modis_img:  fused = fused.unmask(modis_img)
 
-    # Set band visualization depending on image type
+    # Band configuration for visualisation according to the chosen source
     if s2_img:
         vis_params = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 255}
     elif landsat_img:
@@ -80,7 +80,7 @@ else:
     else:
         vis_params = None
 
-    # Display map
+    # Map display: clipped to region, centred on AOI, with simple layer control
     fused = fused.clip(region)
     Map = geemap.Map()
     Map.centerObject(region, zoom=8)
