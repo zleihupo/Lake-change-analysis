@@ -10,9 +10,7 @@ Original file is located at
 from google.colab import drive
 drive.mount('/content/drive')
 
-# =============================================
 # Fast Evaluate + Soft Voting (cached preds, vectorized metrics)
-# =============================================
 import os, glob
 import numpy as np
 import tensorflow as tf
@@ -22,7 +20,7 @@ import pandas as pd
 
 from sklearn.metrics import f1_score, jaccard_score, accuracy_score, precision_score, recall_score
 
-# ---- Paths ----
+# Paths 
 UNET_PATH   = '/content/drive/My Drive/unet_model_final.h5'
 SEGNET_PATH = '/content/drive/My Drive/segnet_model_final.h5'
 FCN_PATH    = '/content/drive/My Drive/fcn_model_final.h5'
@@ -35,7 +33,7 @@ VAL_MASK_DIR = '/content/drive/My Drive/dataset/val/masks/'    # optional
 IMG_SIZE = (256,256)
 BATCH    = 64  # try 64/128 on A100
 
-# ---- Data loader ----
+#  Data loader 
 def load_data(img_dir, mask_dir, img_size=(256,256)):
     files = sorted(glob.glob(os.path.join(img_dir, '*')))
     X, y = [], []
@@ -53,7 +51,7 @@ def load_data(img_dir, mask_dir, img_size=(256,256)):
     y = np.asarray(y, np.uint8)
     return X, y
 
-# ---- Cache helpers ----
+# Cache helpers 
 def squeeze(p): return p[...,0] if (p.ndim==4 and p.shape[-1]==1) else p
 
 def get_or_predict(model_path, X, cache_name):
@@ -65,7 +63,7 @@ def get_or_predict(model_path, X, cache_name):
     np.save(npy, P)
     return P
 
-# ---- Load once ----
+#  Load once
 x_test, y_test = load_data(TEST_IMG_DIR, TEST_MASK_DIR, IMG_SIZE)
 y_test_flat = y_test.reshape(-1)                     # (N*H*W,)
 
@@ -75,7 +73,7 @@ if os.path.isdir(VAL_IMG_DIR) and os.path.isdir(VAL_MASK_DIR):
     x_val, y_val = load_data(VAL_IMG_DIR, VAL_MASK_DIR, IMG_SIZE)
     y_val_flat = y_val.reshape(-1)
 
-# ---- Predict or load cached ----
+# Predict or load cached
 p_unet = get_or_predict(UNET_PATH,  x_test, 'pred_unet_test')
 p_seg  = get_or_predict(SEGNET_PATH,x_test, 'pred_segnet_test')
 p_fcn  = get_or_predict(FCN_PATH,   x_test, 'pred_fcn_test')
@@ -85,7 +83,7 @@ if x_val is not None:
     p_seg_v  = get_or_predict(SEGNET_PATH,x_val, 'pred_segnet_val')
     p_fcn_v  = get_or_predict(FCN_PATH,   x_val, 'pred_fcn_val')
 
-# ---- Fast metrics (vectorized for whole dataset) ----
+# Fast metrics (vectorized for whole dataset) 
 def metrics_from_flat(y_true_flat, y_pred_flat):
     # y_* are 0/1 uint8 flat arrays
     tp = np.logical_and(y_true_flat==1, y_pred_flat==1).sum()
@@ -109,7 +107,7 @@ def best_threshold_from_probs(p_flat, y_true_flat, lo=0.3, hi=0.7, steps=41):
             best_m, best_t = f1, float(t)
     return best_t, best_m
 
-# ---- Tune thresholds for single models (on val if available) ----
+#  Tune thresholds for single models (on val if available)
 def tune_or_fixed(p_test, name):
     if x_val is None:
         return 0.5
@@ -125,7 +123,7 @@ t_unet = tune_or_fixed(p_unet, 'U')
 t_seg  = tune_or_fixed(p_seg,  'S')
 t_fcn  = tune_or_fixed(p_fcn,  'F')
 
-# ---- Single models (vectorized metrics) ----
+# Single models (vectorized metrics) 
 y_unet = (p_unet.reshape(-1) > t_unet).astype(np.uint8)
 y_seg  = (p_seg.reshape(-1)  > t_seg ).astype(np.uint8)
 y_fcn  = (p_fcn.reshape(-1)  > t_fcn ).astype(np.uint8)
@@ -135,7 +133,7 @@ for name, yb in [('U-Net',y_unet),('SegNet',y_seg),('FCN',y_fcn)]:
     f1,iou,acc,prec,rec = metrics_from_flat(y_test_flat, yb)
     print(f"{name:6s} → F1={f1:.4f}, IoU={iou:.4f}, Acc={acc:.4f}, Prec={prec:.4f}, Rec={rec:.4f}")
 
-# ---- Ensemble grid (use cached probs; vectorized; val-tuned thr if available) ----
+# Ensemble grid (use cached probs; vectorized; val-tuned thr if available) 
 weights = np.arange(0.0, 1.0001, 0.1)
 rows, best = [], {'F1':-1}
 
@@ -178,15 +176,15 @@ if x_val is not None:
     np.save("pred_segnet_val.npy", p_seg_v)
     np.save("pred_fcn_val.npy",  p_fcn_v)
 
-# =============================================
+
 # Visualization (Matplotlib-only, fast)
 # Attach directly to the end of the above script
 # Required variables: df (weighted combination results table), best, y_unet/y_seg/y_fcn, y_test_flat, metrics_from_flat
-# =============================================
+
 import matplotlib.pyplot as plt
 import numpy as np
 
-# ---------- 1) Top combinations heatmap (U-Net weight is x, SegNet weight is y) ----------
+#1) Top combinations heatmap (U-Net weight is x, SegNet weight is y)
 # Construct an 11x11 grid, filter positions where wu+ws<=1, and fill them with F1; otherwise, fill them with NaN
 w_vals = np.round(np.arange(0.0, 1.0001, 0.1), 1)
 grid = np.full((len(w_vals), len(w_vals)), np.nan, dtype=float)  # [SegNet(y), U-Net(x)]
@@ -209,7 +207,7 @@ plt.tight_layout()
 plt.savefig('ensemble_heatmap.png', dpi=300)
 plt.close()
 
-# ---------- 2) Single Model vs. Optimal Ensemble Comparison Bar Chart ----------
+# 2) Single Model vs. Optimal Ensemble Comparison Bar Chart
 # Re-obtain single model metrics (based on the calculated y_* and y_test_flat)
 u_f1,u_iou,u_acc,u_prec,u_rec = metrics_from_flat(y_test_flat, y_unet)
 s_f1,s_iou,s_acc,s_prec,s_rec = metrics_from_flat(y_test_flat, y_seg)
