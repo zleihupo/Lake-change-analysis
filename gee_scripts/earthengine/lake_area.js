@@ -2,7 +2,7 @@
 // Strategy: prefer cloud-masked optical NDWI (10-day samples within summer),
 // fall back to seasonal median if insufficient samples, and finally to GSW MonthlyHistory.
 
-// --- Cloud masking helpers ---
+//Cloud masking helpers
 function maskS2Clouds(img) {
   // Mask S2 classes: cloud shadow(3), medium/high cloud(8/9), cirrus(10), snow(11)
   var scl = img.select('SCL');
@@ -19,7 +19,7 @@ function maskLandsatClouds(img) {
   return img.updateMask(mask);
 }
 
-// --- NDWI-based area (optical) ---
+//NDWI-based area
 function computeNDWIArea(img, geom) {
   // NDWI = (green - nir) / (green + nir); threshold 0.25; area in m² via pixelArea
   var ndwi = img.expression('float((green - nir) / (green + nir + 1e-6))', {
@@ -35,7 +35,7 @@ function computeNDWIArea(img, geom) {
   }).get('ndwi');
 }
 
-// --- Lake inventory (replace with study sites as needed) ---
+//Lake inventory 
 var lakes = [
   {name: 'Namtso', geom: ee.Geometry.Polygon([[[90.10, 30.20], [91.05, 30.20], [91.05, 31.10], [90.10, 31.10], [90.10, 30.20]]]), hemisphere: 'north'},
   {name: 'Yamdrok', geom: ee.Geometry.Polygon([[[90.3, 28.65], [91.1, 28.65], [91.1, 29.45], [90.3, 29.45], [90.3, 28.65]]]), hemisphere: 'north'},
@@ -139,7 +139,7 @@ var lakes = [
   {name: 'Lake Gregory', geom: ee.Geometry.Polygon([[[127.24, -20.31], [127.53, -20.31], [127.53, -20.06], [127.24, -20.06], [127.24, -20.31]]]), hemisphere: 'south'}
 ];
 
-// --- Annual processing per lake ---
+//Annual processing per lake
 var years = ee.List.sequence(2000, 2025);
 var features = [];
 
