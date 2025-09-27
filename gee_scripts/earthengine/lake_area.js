@@ -1,6 +1,6 @@
 //  GEE Script: Annual lake area with full coverage (cloud-masked preferred, seasonal fallback, GSW backup)
 
-// ========= CLOUD MASKING FUNCTIONS =========
+//  CLOUD MASKING FUNCTIONS
 function maskS2Clouds(img) {
   var scl = img.select('SCL');
   var mask = scl.neq(3).and(scl.neq(8)).and(scl.neq(9)).and(scl.neq(10)).and(scl.neq(11));
@@ -15,7 +15,7 @@ function maskLandsatClouds(img) {
   return img.updateMask(mask);
 }
 
-// ========= NDWI AREA CALCULATION =========
+// NDWI AREA CALCULATION 
 function computeNDWIArea(img, geom) {
   var ndwi = img.expression('float((green - nir) / (green + nir + 1e-6))', {
     green: img.select('green'),
@@ -30,7 +30,7 @@ function computeNDWIArea(img, geom) {
   }).get('ndwi');
 }
 
-// ========= LAKE LIST (INSERT YOUR OWN LAKES) =========
+// LAKE LIST (INSERT YOUR OWN LAKES)
 var lakes = [
   {name: 'Namtso', geom: ee.Geometry.Polygon([[[90.10, 30.20], [91.05, 30.20], [91.05, 31.10], [90.10, 31.10], [90.10, 30.20]]]), hemisphere: 'north'},
   {name: 'Yamdrok', geom: ee.Geometry.Polygon([[[90.3, 28.65], [91.1, 28.65], [91.1, 29.45], [90.3, 29.45], [90.3, 28.65]]]), hemisphere: 'north'},
@@ -134,7 +134,7 @@ var lakes = [
   {name: 'Lake Gregory', geom: ee.Geometry.Polygon([[[127.24, -20.31], [127.53, -20.31], [127.53, -20.06], [127.24, -20.06], [127.24, -20.31]]]), hemisphere: 'south'}
 ];
 
-// ========= MAIN PROCESSING =========
+//MAIN PROCESSING 
 var years = ee.List.sequence(2000, 2025);
 var features = [];
 
