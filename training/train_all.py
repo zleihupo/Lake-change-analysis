@@ -55,10 +55,8 @@ print("Dataset split completed, total:")
 for k, v in split_files.items():
     print(f"{k}: {len(v)} images")
 
-# =============================================
 # Step 1: Train U-Net model (train_unet.py) — Improved version
 # Reproducible, more metrics, more stable training process
-# =============================================
 import os, random, glob
 import numpy as np
 import tensorflow as tf
@@ -69,12 +67,12 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-# ---------- 1) Fix random seeds for reproducibility ----------
+# 1) Fix random seeds for reproducibility 
 SEED = 7
 os.environ["PYTHONHASHSEED"] = str(SEED)
 random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
 
-# ---------- 2) Paths ----------
+# 2) Paths
 train_img_path = '/content/drive/My Drive/dataset/train/images/'
 train_mask_path = '/content/drive/My Drive/dataset/train/masks/'
 val_img_path   = '/content/drive/My Drive/dataset/val/images/'
@@ -82,7 +80,7 @@ val_mask_path  = '/content/drive/My Drive/dataset/val/masks/'
 
 IMG_SIZE = (256, 256)
 
-# ---------- 3) Load data ----------
+# 3) Load data 
 def load_data(img_dir, mask_dir, img_size=(256, 256)):
     images, masks = [], []
     img_files = sorted(glob.glob(os.path.join(img_dir, '*')))
@@ -113,7 +111,7 @@ x_val,   y_val   = load_data(val_img_path,   val_mask_path,   IMG_SIZE)
 
 print('Train:', x_train.shape, y_train.shape, ' Val:', x_val.shape, y_val.shape)
 
-# ---------- 4) Metrics (IoU / Dice) ----------
+# 4) Metrics (IoU / Dice)
 def iou_metric(y_true, y_pred, smooth=1e-6):
     y_true = tf.cast(y_true, tf.float32)
     y_pred = tf.cast(y_pred, tf.float32)
@@ -130,7 +128,7 @@ def dice_coef(y_true, y_pred, smooth=1e-6):
     denom = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
     return (2.0 * intersection + smooth) / (denom + smooth)
 
-# ---------- 5) U-Net model ----------
+# 5) U-Net model 
 def unet_model(input_size=(256, 256, 3)):
     inputs = Input(input_size)
 
@@ -177,7 +175,7 @@ model.compile(
     metrics=['accuracy', iou_metric, dice_coef]
 )
 
-# ---------- 6) Training callbacks ----------
+# 6) Training callbacks 
 ckpt_path = '/content/drive/My Drive/unet_model_best.h5'
 callbacks = [
     ModelCheckpoint(ckpt_path, monitor='val_iou_metric', mode='max',
@@ -188,7 +186,7 @@ callbacks = [
                   patience=15, restore_best_weights=True, verbose=1)
 ]
 
-# ---------- 7) Train ----------
+# 7) Train 
 history = model.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
@@ -199,15 +197,13 @@ history = model.fit(
     verbose=1
 )
 
-# ---------- 8) Save final model ----------
+# 8) Save final model 
 final_path = '/content/drive/My Drive/unet_model_final.h5'
 model.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
 
-# =============================================
 # Step 2: Train SegNet model (train_segnet.py) — Improved version
 # Reproducible, more metrics, more stable training
-# =============================================
 import os, random, glob
 import numpy as np
 import tensorflow as tf
@@ -219,12 +215,12 @@ from tensorflow.keras.layers import (Input, Conv2D, MaxPooling2D, UpSampling2D,
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-# ---------- 1) Fix random seeds ----------
+# 1) Fix random seeds 
 SEED = 7
 os.environ["PYTHONHASHSEED"] = str(SEED)
 random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
 
-# ---------- 2) Data paths ----------
+# 2) Data paths 
 train_img_path = '/content/drive/My Drive/dataset/train/images/'
 train_mask_path = '/content/drive/My Drive/dataset/train/masks/'
 val_img_path   = '/content/drive/My Drive/dataset/val/images/'
@@ -232,7 +228,7 @@ val_mask_path  = '/content/drive/My Drive/dataset/val/masks/'
 
 IMG_SIZE = (256, 256)
 
-# ---------- 3) Load data ----------
+# 3) Load data 
 def load_data(img_dir, mask_dir, img_size=(256, 256)):
     images, masks = [], []
     img_files = sorted(glob.glob(os.path.join(img_dir, '*')))
@@ -263,7 +259,7 @@ x_train, y_train = load_data(train_img_path, train_mask_path, IMG_SIZE)
 x_val,   y_val   = load_data(val_img_path,   val_mask_path,   IMG_SIZE)
 print('Train:', x_train.shape, y_train.shape, ' Val:', x_val.shape, y_val.shape)
 
-# ---------- 4) Metrics (IoU / Dice) ----------
+# 4) Metrics (IoU / Dice) 
 def iou_metric(y_true, y_pred, smooth=1e-6):
     y_true = tf.cast(y_true, tf.float32)
     y_pred = tf.clip_by_value(tf.cast(y_pred, tf.float32), 0.0, 1.0)
@@ -278,7 +274,7 @@ def dice_coef(y_true, y_pred, smooth=1e-6):
     denom = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
     return (2.0 * inter + smooth) / (denom + smooth)
 
-# ---------- 5) SegNet model ----------
+# 5) SegNet model 
 def build_segnet(input_shape=(256, 256, 3)):
     inputs = Input(shape=input_shape)
 
@@ -314,7 +310,7 @@ segnet.compile(optimizer='adam',
                loss='binary_crossentropy',
                metrics=['accuracy', iou_metric, dice_coef])
 
-# ---------- 6) Training callbacks ----------
+# 6) Training callbacks 
 ckpt_path  = '/content/drive/My Drive/segnet_model_best.h5'
 final_path = '/content/drive/My Drive/segnet_model_final.h5'
 callbacks = [
@@ -326,7 +322,7 @@ callbacks = [
                   patience=15, restore_best_weights=True, verbose=1),
 ]
 
-# ---------- 7) Train ----------
+# 7) Train 
 history = segnet.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
@@ -337,14 +333,12 @@ history = segnet.fit(
     verbose=1
 )
 
-# ---------- 8) Save ----------
+# 8) Save 
 segnet.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
 
-# =============================================
 # Step 3: Train FCN model (train_fcn.py) — Improved version
 # Reproducible, more metrics, more stable training; FCN-8s style skip connections and upsampling
-# =============================================
 import os, random, glob
 import numpy as np
 import tensorflow as tf
@@ -355,12 +349,12 @@ from tensorflow.keras.layers import Input, Conv2D, Conv2DTranspose, Add, Activat
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-# ---------- 1) Fix random seeds ----------
+# 1) Fix random seeds 
 SEED = 7
 os.environ["PYTHONHASHSEED"] = str(SEED)
 random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
 
-# ---------- 2) Data paths ----------
+# 2) Data paths 
 train_img_path = '/content/drive/My Drive/dataset/train/images/'
 train_mask_path = '/content/drive/My Drive/dataset/train/masks/'
 val_img_path   = '/content/drive/My Drive/dataset/val/images/'
@@ -368,7 +362,7 @@ val_mask_path  = '/content/drive/My Drive/dataset/val/masks/'
 
 IMG_SIZE = (256, 256)
 
-# ---------- 3) Load data ----------
+# 3) Load data 
 def load_data(img_dir, mask_dir, img_size=(256, 256)):
     # List common image extensions, not only .jpg
     patterns = ["*.jpg", "*.jpeg", "*.png", "*.tif", "*.tiff", "*.bmp"]
@@ -424,7 +418,7 @@ x_train, y_train = load_data(train_img_path, train_mask_path, IMG_SIZE)
 x_val,   y_val   = load_data(val_img_path,   val_mask_path,   IMG_SIZE)
 print('Train:', x_train.shape, y_train.shape, ' Val:', x_val.shape, y_val.shape)
 
-# ---------- 4) Metrics (IoU / Dice) ----------
+# 4) Metrics (IoU / Dice)
 def iou_metric(y_true, y_pred, smooth=1e-6):
     y_true = tf.cast(y_true, tf.float32)
     y_pred = tf.clip_by_value(tf.cast(y_pred, tf.float32), 0.0, 1.0)
@@ -439,7 +433,7 @@ def dice_coef(y_true, y_pred, smooth=1e-6):
     denom = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
     return (2.0 * inter + smooth) / (denom + smooth)
 
-# ---------- 5) FCN model (VGG16 backbone, FCN-8s skip connections) ----------
+# 5) FCN model (VGG16 backbone, FCN-8s skip connections)
 def build_fcn(input_shape=(256, 256, 3)):
     vgg = VGG16(include_top=False, weights='imagenet', input_shape=input_shape)
 
@@ -494,7 +488,7 @@ callbacks = [
                   patience=15, restore_best_weights=True, verbose=1),
 ]
 
-# ---------- 6) Train: warmup + optional fine-tune ----------
+# 6) Train: warmup + optional fine-tune 
 history1 = fcn.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
@@ -523,6 +517,6 @@ history2 = fcn.fit(
     verbose=1
 )
 
-# ---------- 7) Save ----------
+# 7) Save 
 fcn.save(final_path)
 print(f"Best checkpoint: {ckpt_path}\nFinal model: {final_path}")
