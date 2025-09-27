@@ -7,10 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/173p2AmUCQzXNlC0c9i9FJX8wJwJqEbvo
 """
 
-# Install dependencies
+# Minimal runtime dependencies for geemap/Earth Engine in Colab
 !pip install earthengine-api geemap -q
 
-# Import libraries
+# Core imports (Earth Engine I/O, scheduling, CSV logging, Colab file ops)
 import ee, geemap
 import datetime
 import os
@@ -18,18 +18,18 @@ import pandas as pd
 import shutil
 from google.colab import files
 
-# GEE authentication and initialization
+# Authenticate and initialise Earth Engine (first run will prompt authorisation)
 ee.Authenticate()
 ee.Initialize(project='lake-465014')  # Replace with your project ID
 
-# Parameter settings: 8 lakes (name + Rectangle)
+# Lake configuration: provide a list of dicts with {"name": ..., "region": ee.Geometry.Rectangle(...)}
 lake_list = []
 
-
+# Target summer windows; years and months to iterate (boreal by default; austral handled in get_daily_dates)
 years = list(range(2000, 2025))
 months = [6, 7, 8]
 
-# Date generation function
+# Generate all dates for a given (year, base_month) with hemisphere adjustment for southern lakes
 def get_daily_dates(lat, base_year, base_month):
     if lat < 0:
         base_month = (base_month + 6 - 1) % 12 + 1
@@ -39,13 +39,13 @@ def get_daily_dates(lat, base_year, base_month):
     end = datetime.date(base_year + int(base_month == 12), (base_month % 12) + 1, 1)
     return [start + datetime.timedelta(days=i) for i in range((end - start).days)]
 
-# Image composite function
+# Median composite helper with scale-to-8bit display; returns None if the collection is empty
 def get_median_image(collection, bands, scale_factor):
     if collection.size().getInfo() == 0:
         return None
     return collection.median().select(bands).divide(scale_factor).multiply(255).clamp(0, 255).uint8()
 
-# Main loop
+# Accumulate per-date status for a final CSV log
 all_results = []
 
 for lake in lake_list:
@@ -54,7 +54,7 @@ for lake in lake_list:
     base_folder = lake_name.replace(" ", "_")
     os.makedirs(base_folder, exist_ok=True)
 
-    # Get latitude center
+    # Estimate latitude sign from region to choose seasonal window
     coords = region.bounds().coordinates().getInfo()[0]
     lat_center = (coords[0][1] + coords[2][1]) / 2
 
@@ -73,6 +73,7 @@ for lake in lake_list:
                 end = (date + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
                 print(f"📅 {lake_name} — {start}")
 
+                # Daily collections with simple cloud thresholds (S2/L8) and MODIS fallback
                 s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED") \
                     .filterBounds(region).filterDate(start, end) \
                     .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 60))
@@ -82,10 +83,12 @@ for lake in lake_list:
                 mod = ee.ImageCollection("MODIS/006/MOD09GA") \
                     .filterBounds(region).filterDate(start, end)
 
+                # Convert to 8-bit display composites
                 s2_img = get_median_image(s2, ['B4', 'B3', 'B2'], 3000)
                 l8_img = get_median_image(l8, ['SR_B4', 'SR_B3', 'SR_B2'], 10000)
                 mod_img = get_median_image(mod, ['sur_refl_b01', 'sur_refl_b04', 'sur_refl_b03'], 5000)
 
+                # Fuse by priority (S2 → L8 → MODIS) using unmask where available
                 fused = None
                 if s2_img:
                     fused = s2_img
@@ -101,6 +104,7 @@ for lake in lake_list:
                     all_results.append((lake_name, start, "⚠️ No image"))
                     continue
 
+                # Save daily GeoTIFF into the month subfolder
                 tif_name = f"{lake_name.replace(' ', '_')}_{date.strftime('%Y_%m_%d')}.tif"
                 tif_path = os.path.join(month_folder, tif_name)
 
@@ -116,12 +120,12 @@ for lake in lake_list:
                 except Exception as e:
                     all_results.append((lake_name, start, f"Download failed: {str(e)}"))
 
-    # Package current lake as ZIP and download
+    # Zip the current lake folder and trigger a download to local
     zip_name = f"{base_folder}.zip"
     shutil.make_archive(base_folder, 'zip', base_folder)
     files.download(zip_name)
 
-# Download total log
+# Write a simple run log to CSV and show the first few entries
 df_result = pd.DataFrame(all_results, columns=["Lake", "Date", "Status"])
 log_name = "multi_lake_download_log.csv"
 df_result.to_csv(log_name, index=False)
