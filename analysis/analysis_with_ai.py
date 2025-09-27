@@ -249,7 +249,7 @@ try:
 except:
     SHAP_AVAILABLE = False
 
-#6) Machine learning by region (GBR)
+# Machine learning by region (GBR)
 features_raw = required_feats
 perf_rows, imp_rows, direction_rows = [], [], []
 
