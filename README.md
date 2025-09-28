@@ -60,6 +60,7 @@ Lake-Change-Analysis/
 │ │ ├── Fig6_global_trends.png
 │ │ ├── Fig7_region_trends.png
 │ │ ├── Fig8_region_small_multiples.png
+│ │ ├── global_lake_trend_map.png
 │ │ ├── Fig9_top3_features.png
 │ │ └── Fig9_permutation_importance.png
 │ └── maps/                                # Interactive map outputs (HTML)
@@ -210,8 +211,9 @@ see [grid_search_ensemble_results.csv](results/grid_search_ensemble_results.csv)
 
 ### Global and Regional Trends
 - ![Fig6:](results/figures/Fig6_global_trends.png)  
-- ![Fig7:](results/figures/Fig7_region_trends.png)  
+- ![Fig7:](results/figures/Fig7_region_trends.png)
 - ![Fig8:](results/figures/Fig8_region_small_multiples.png)
+- ![global_lake_trend:](results/figures/global_lake_trend_map.png)
 
 ### Feature Importance
 - ![Fig9:](results/figures/Fig9_permutation_importance.png)
